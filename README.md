@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Tracking workspace
+
+Open `/track` for daily symptoms and bleeding, cycle history, medications and side effects, lab results, and previous-entry editing. Daily records are keyed by date; saving an existing date updates its entry. Lab and medication edits retain their IDs.
+
+Data is saved under `pcos-tracking:v1` in localStorage. This is device-local storage, without authentication, encryption, cloud sync, or backup. Loading invalid records fails without overwriting them, and failed writes leave the form available to retry.
+
+Run `npm test`, `npm run typecheck`, and `npm run lint`. Tests cover date validation, numeric bounds, medication dates, lab reference ranges, and cycle calculations. Browser visual verification at 1440, 1024, 768, 430, and 390px remains required; no browser was available during implementation.
