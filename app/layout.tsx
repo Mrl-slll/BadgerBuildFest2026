@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "A calm space to explore your health history, one day at a time.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
