@@ -791,7 +791,9 @@ main:focus {
   margin-top: 36px;
 }
 .entries-section {
-  scroll-margin-top: 20px;
+  scroll-margin-top: 24px;
+  margin-top: 36px;
+  max-width: 820px;
 }
 .entry-list {
   padding: 0;
@@ -1284,6 +1286,9 @@ main:focus {
   }
   .history-table {
     min-width: 520px;
+  }
+  .entries-section {
+    margin-top: 28px;
   }
   .home-bottom {
     grid-template-columns: minmax(0, 1fr);

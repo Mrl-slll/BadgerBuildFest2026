@@ -287,12 +287,12 @@ function HomeOverviewContent({
               selected; it does not confirm the absence of a symptom.
             </p>
           </section>
-          <div className="home-bottom">
-            <section id="recent-entries" className="entries-section">
-              <SectionHeading
-                title="Recent entries"
-                description="The details, in your own time."
-              />
+          <section id="recent-entries" className="entries-section" aria-labelledby="recent-entries-title">
+            <SectionHeading
+              title="Recent entries"
+              description="The details, in your own time."
+            />
+            {recent.length ? (
               <ol className="entry-list">
                 {recent.map((log) => (
                   <li key={log.id}>
@@ -323,20 +323,10 @@ function HomeOverviewContent({
                   </li>
                 ))}
               </ol>
-            </section>
-            <aside className="care-note">
-              <span className="context-label">A moment to reflect</span>
-              <h2>What would you like to remember?</h2>
-              <p>
-                A change in your routine. A question for your next appointment.
-                Something that felt different.
-              </p>
-              <p>You don’t need to have an explanation to make a note of it.</p>
-              <div className="care-note-footer">
-                Small details can help tell a fuller story.
-              </div>
-            </aside>
-          </div>
+            ) : (
+              <p className="cycle-empty">No entries recorded yet.</p>
+            )}
+          </section>
         </>
       ) : (
         <section className="history-surface">
