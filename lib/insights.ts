@@ -1,4 +1,4 @@
-import { addDays, daysBetween, scoped } from './health';
+import { addDays, daysBetween, linkedMedicationSymptoms, scoped } from './health';
 import type { HealthData, Log } from './health';
 
 export function summarize(data: HealthData, start: string, end: string) {
@@ -32,6 +32,7 @@ export function summarize(data: HealthData, start: string, end: string) {
   const paired = logs.filter(l => l.energy !== undefined);
   const co = paired.filter(l => l.symptoms.includes('Acne') && l.energy! <= 2).length;
   const medications = own.medications.filter(m => m.startedAt <= end && (!m.endedAt || m.endedAt >= start));
+  const medicationSymptoms = new Map(medications.map(m => [m.id, linkedMedicationSymptoms(logs, m.id)]));
   const events = medications.flatMap(m => [
     ...(m.startedAt >= start ? [{ date:m.startedAt, text:`${m.name} started · ${m.dosage} ${m.unit} · ${m.frequency}` }] : []),
     ...(m.endedAt && m.endedAt <= end ? [{date:m.endedAt,text:`${m.name} ended`}] : []),
@@ -41,5 +42,5 @@ export function summarize(data: HealthData, start: string, end: string) {
     paired.length ? `Acne and low energy (1–2 of 5) were recorded together on ${co} of ${paired.length} days with an energy entry.` : 'No energy entries in this period; a sleep and energy comparison is not available.',
     'These observations describe recorded entries only. Missing days and changes in logging can affect the picture; overlap does not establish cause.',
   ] : ['No entries in this period. Choose a longer time range to explore earlier records.'];
-  return { logs, cycles, frequency, symptomTrends, midpoint, earlierDays:earlier.length, recentDays:recent.length, weeks, medications, events, insights, sleep:average(logs,'sleepMinutes'), energy:average(logs,'energy'), totalDays:daysBetween(start,end)+1 };
+  return { logs, cycles, frequency, symptomTrends, midpoint, earlierDays:earlier.length, recentDays:recent.length, weeks, medications, medicationSymptoms, events, insights, sleep:average(logs,'sleepMinutes'), energy:average(logs,'energy'), totalDays:daysBetween(start,end)+1 };
 }

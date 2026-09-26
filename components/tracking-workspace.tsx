@@ -1,14 +1,12 @@
 "use client";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
-import { dateKey, emptyData, HealthData, scoped, pretty } from "../lib/health";
+import { dateKey, emptyData, HealthData, pretty } from "../lib/health";
 import {
-  validateDaily,
-  validateMedication,
-  validateLab,
-} from "../lib/tracking-validation";
+  healthStorageKey,
+  parseStoredHealthData,
+} from "../lib/health-storage";
 
-const storageKey = "pcos-tracking:v1";
 const sections = [
   "Daily log",
   "Cycles",
@@ -27,31 +25,18 @@ export function TrackingWorkspace() {
   return ready ? (
     <LoadedTrackingWorkspace />
   ) : (
-    <main className="tracking">
+    <div className="tracking">
       <p role="status">Loading your journal…</p>
-    </main>
+    </div>
   );
 }
 function readStorage(): { data: HealthData | null; error: string } {
   try {
-    const raw = localStorage.getItem(storageKey);
-    if (!raw) return { data: emptyData("local-user"), error: "" };
-    const parsed = JSON.parse(raw) as HealthData;
-    if (
-      parsed.version !== 1 ||
-      !parsed.user?.id ||
-      !Array.isArray(parsed.logs) ||
-      !Array.isArray(parsed.medications) ||
-      !Array.isArray(parsed.labs)
-    )
-      throw new Error();
-    if (
-      parsed.logs.some((l) => validateDaily(l)) ||
-      parsed.medications.some((m) => validateMedication(m)) ||
-      parsed.labs.some((l) => validateLab(l))
-    )
-      throw new Error();
-    return { data: scoped(parsed), error: "" };
+    const stored = parseStoredHealthData(
+      localStorage.getItem(healthStorageKey),
+    );
+    if (stored.invalid) throw new Error();
+    return { data: stored.data ?? emptyData("local-user"), error: "" };
   } catch {
     return {
       data: null,
@@ -89,7 +74,7 @@ function LoadedTrackingWorkspace() {
   }
   function save(next: HealthData) {
     try {
-      localStorage.setItem(storageKey, JSON.stringify(next));
+      localStorage.setItem(healthStorageKey, JSON.stringify(next));
       setData(next);
       setDirty(false);
       return true;
@@ -98,7 +83,7 @@ function LoadedTrackingWorkspace() {
     }
   }
   return (
-    <main className="tracking">
+    <div className="tracking">
       <a className="skip-link" href="#tracking-content">
         Skip to tracking form
       </a>
@@ -224,6 +209,6 @@ function LoadedTrackingWorkspace() {
         Your records stay on this device. Clearing browser data removes them.
         Anyone using this browser profile may be able to view them.
       </footer>
-    </main>
+    </div>
   );
 }

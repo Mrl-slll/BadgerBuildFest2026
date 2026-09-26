@@ -1,8 +1,35 @@
-export const symptoms = ['Fatigue', 'Pelvic pain', 'Cravings', 'Bloating', 'Headache', 'Acne', 'Oily skin', 'Hair loss', 'Increased facial/body hair', 'Mood changes', 'Sleep problems'];
-export type Log = { id: string; userId: string; date: string; symptoms: string[]; bleeding?: string; periodStart?: boolean; periodEnd?: boolean; pain?: number; painNote?: string; mood?: number; energy?: number; sleepMinutes?: number; sleepQuality?: string; movement?: string; meals?: string; notes?: string; doses: Record<string, string>; sideEffects: Record<string, string> };
+export const symptomGroups = [
+  {
+    label: 'Commonly tracked',
+    symptoms: ['Fatigue', 'Pelvic pain', 'Cravings', 'Bloating', 'Headache', 'Acne'],
+  },
+  {
+    label: 'Skin & hair',
+    symptoms: ['Oily skin', 'Dry skin', 'Hair loss', 'Increased facial/body hair', 'Rash or itching'],
+  },
+  {
+    label: 'Mood & thinking',
+    symptoms: ['Mood changes', 'Anxiety or stress', 'Irritability', 'Low mood', 'Brain fog', 'Difficulty concentrating'],
+  },
+  {
+    label: 'Sleep & temperature',
+    symptoms: ['Sleep problems', 'Night sweats', 'Hot flashes'],
+  },
+  {
+    label: 'Digestive',
+    symptoms: ['Nausea', 'Vomiting', 'Constipation', 'Diarrhea', 'Stomach pain', 'Heartburn'],
+  },
+  {
+    label: 'Pain & body',
+    symptoms: ['Migraine', 'Back pain', 'Joint pain', 'Muscle aches', 'Breast tenderness', 'Dizziness', 'Swelling'],
+  },
+] as const;
+export const symptoms: string[] = symptomGroups.flatMap((group) => [...group.symptoms]);
+export const quickSymptoms = symptomGroups[0].symptoms;
+export type Log = { id: string; userId: string; date: string; symptoms: string[]; bleeding?: string; periodStart?: boolean; periodEnd?: boolean; pain?: number; painNote?: string; mood?: number; energy?: number; sleepMinutes?: number; sleepQuality?: string; movement?: string; meals?: string; notes?: string; doses: Record<string, string>; sideEffects: Record<string, string>; medicationSymptoms?: Record<string, string[]> };
 export type Medication = { id: string; userId: string; name: string; dosage: string; unit: string; frequency: string; startedAt: string; endedAt?: string; active: boolean; notes: string };
 export type Lab = { id: string; userId: string; name: string; value: string; unit: string; date: string; low: string; high: string; source: string; notes: string };
-export type HealthData = { version: 1; user: { id: string; name: string }; logs: Log[]; medications: Medication[]; labs: Lab[]; questions: string[]; appointments: { date: string; title: string }[]; personalize: boolean; demo: boolean };
+export type HealthData = { version: 1; user: { id: string; name: string }; logs: Log[]; medications: Medication[]; labs: Lab[]; questions: string[]; appointments: { date: string; title: string }[]; personalize: boolean };
 export function dateKey(date = new Date()): string { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
 export function addDays(date: string, n: number) { const d = new Date(date+'T12:00:00'); d.setDate(d.getDate()+n); return dateKey(d); }
 export function daysBetween(a: string, b: string) { return Math.round((Date.parse(b+'T12:00:00Z')-Date.parse(a+'T12:00:00Z'))/86400000); }
@@ -14,7 +41,7 @@ export function frequencies(logs: Log[]) { const counts: Record<string,number>={
 export function sleepAverage(logs:Log[]) { const values=logs.flatMap(l=>l.sleepMinutes===undefined?[]:[l.sleepMinutes]); return values.length?Math.round(values.reduce((a,b)=>a+b,0)/values.length):null; }
 export function duration(minutes: number|null) { return minutes===null?'Not recorded':`${Math.floor(minutes/60)}h ${minutes%60}m`; }
 export function medicationWindow(data: HealthData, med:Medication) { const logs=scoped(data).logs; const count=(start:string,end:string)=>logs.filter(l=>l.date>=start && l.date<=end); const before=count(addDays(med.startedAt,-14),addDays(med.startedAt,-1)); const after=count(med.startedAt,addDays(med.startedAt,13)); return {before,after,sideEffectDays:after.filter(l=>l.sideEffects[med.id]?.trim()).length}; }
+export function linkedMedicationSymptoms(logs: Log[], medicationId: string) { const counts = new Map<string, number>(); logs.forEach((log) => new Set(log.medicationSymptoms?.[medicationId] ?? []).forEach((symptom) => counts.set(symptom, (counts.get(symptom) ?? 0) + 1))); return [...counts].sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0])); }
 export function observations(data: HealthData, start:string, end:string) { const logs=rangeLogs(data,start,end); if(logs.length<3)return [{category:'Your history',text:'A few more entries will help us describe patterns. Start with how you feel today.'}]; const co=logs.filter(l=>l.symptoms.includes('Acne') && l.energy!==undefined && l.energy<=2).length; const cycles=cycleHistory(scoped(data).logs).filter(c=>c.start>=start && c.start<=end).flatMap(c=>c.length===null?[]:[c.length]); const result=[{category:'Sleep & energy',text:`Your average recorded sleep was ${duration(sleepAverage(logs))} across ${logs.filter(l=>l.sleepMinutes!==undefined).length} entries.`},{category:'Symptoms',text:`Acne and low energy were recorded together on ${co} of ${logs.length} logged days.`},{category:'Cycle',text:cycles.length?`Your completed recorded cycles in this range were ${cycles.join(', ')} days.`:'There are not enough period starts in this range to calculate a completed cycle.'}]; scoped(data).medications.filter(m=>m.startedAt>=start && m.startedAt<=end).forEach(m=>{const w=medicationWindow(data,m);result.push({category:'Medications',text:`In the first 14 days after ${m.name} was added, side effects were recorded on ${w.sideEffectDays} of ${w.after.length} logged days. This does not establish cause.`});}); return result; }
 export { validateDaily as validateLog } from './tracking-validation';
-export function emptyData(userId='demo-user'):HealthData { return {version:1,user:{id:userId,name:''},logs:[],medications:[],labs:[],questions:[],appointments:[],personalize:false,demo:false}; }
-export function seedData(today=dateKey()):HealthData { const data=emptyData();data.user.name='Alex';data.demo=true;data.personalize=true;data.medications=[{id:'metformin',userId:data.user.id,name:'Metformin',dosage:'500',unit:'mg',frequency:'Once daily',startedAt:addDays(today,-43),active:true,notes:'Fictional demo prescription'}]; for(let i=100;i>=1;i--){if(i%11===0)continue;const n=100-i;const date=addDays(today,-i);const period=[100,62,18].find(p=>i<=p&&i>=p-4);data.logs.push({id:date,userId:data.user.id,date,symptoms:[...(n%3===0?['Acne']:[]),...(n%4===0?['Fatigue']:[]),...(n%7===0?['Bloating']:[]),...(n%17===0?['Hair loss']:[])],bleeding:period===undefined?'None':i===period?'Medium':'Light',periodStart:[100,62,18].includes(i),periodEnd:[96,58,14].includes(i),pain:period?4+n%3:n%4,energy:1+n%5,mood:2+n%4,sleepMinutes:350+(n*17)%150,movement:n%3===0?'Moderate':'Light',doses:i<=43?{metformin:n%8===0?'Missed':'Taken'}:{},sideEffects:i<43&&i>35&&n%2===0?{metformin:'Nausea'}:{},notes:n%21===0?'Felt tired in the afternoon.':''});}data.labs=[{id:'lab-1',userId:data.user.id,name:'HbA1c',value:'5.4',unit:'%',date:addDays(today,-46),low:'4',high:'5.6',source:'Example laboratory',notes:'Fictional result for demonstration.'},{id:'lab-2',userId:data.user.id,name:'Total testosterone',value:'42',unit:'ng/dL',date:addDays(today,-46),low:'',high:'',source:'Example laboratory',notes:'Discuss with clinician.'}];data.questions=['What should we discuss about the changes in my cycle length?','Could we review the side effects I recorded?'];data.appointments=[{date:addDays(today,-45),title:'Initial care appointment'}];return data; }
+export function emptyData(userId='local-user'):HealthData { return {version:1,user:{id:userId,name:''},logs:[],medications:[],labs:[],questions:[],appointments:[],personalize:false}; }

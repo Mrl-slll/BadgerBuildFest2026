@@ -2,7 +2,7 @@ import { addDays, dateKey, type HealthData } from './health';
 
 /** Identity-free projection. Notes, appointments, and identifiers are excluded. */
 export type HealthContext = {
-  start: string; end: string; demo: boolean; loggedDays: number;
+  start: string; end: string; loggedDays: number;
   symptoms: { name: string; days: number }[];
   periodStarts: string[];
   medications: { name: string; startedAt: string; endedAt?: string }[];
@@ -47,7 +47,7 @@ export function assembleHealthContext(input?: HealthData | unknown, end = dateKe
     }
   }
   return {
-    start, end, demo: data.demo === true,
+    start, end,
     loggedDays: new Set(logs.map(log => date(log.date))).size,
     symptoms: [...symptoms].map(([name, days]) => ({ name, days: days.size })).sort((a, b) => b.days - a.days || a.name.localeCompare(b.name)),
     periodStarts: [...new Set(logs.filter(log => log.periodStart === true).map(log => date(log.date)))].sort(),

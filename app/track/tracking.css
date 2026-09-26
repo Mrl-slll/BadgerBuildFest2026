@@ -4,6 +4,7 @@
   --ink: #233e40;
   --muted: #536968;
   --teal: #245d59;
+  --teal-dark: #164b47;
   --pale: #c8dfdb;
   --blue: #3368a0;
   --sky: #66a3bf;
@@ -164,11 +165,34 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+.tracking .field-hint {
+  margin: 2px 0 12px;
+  font-size: 14px;
+}
 .tracking .chips button[aria-pressed="true"] {
   background: var(--pale);
   border-color: var(--teal);
-  color: #164b47;
+  color: var(--teal-dark);
   box-shadow: inset 0 0 0 1px var(--teal);
+}
+.tracking .symptom-picker {
+  max-width: 390px;
+  margin-top: 18px;
+}
+.tracking .selected-symptoms,
+.tracking .medication-symptom-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.tracking :is(.selected-symptoms, .medication-symptom-links) button {
+  min-height: 44px;
+  padding: 7px 11px;
+  background: var(--pale);
+  border-color: var(--teal);
+  color: var(--teal-dark);
+  white-space: nowrap;
 }
 .tracking .inline-fields,
 .tracking .actions {
@@ -211,10 +235,28 @@
 }
 .tracking .med-log {
   display: grid;
-  grid-template-columns: 1fr 140px 1fr;
-  gap: 16px;
-  align-items: center;
-  margin: 16px 0;
+  grid-template-columns: minmax(160px, 0.7fr) 140px minmax(260px, 1.3fr);
+  gap: 20px;
+  align-items: start;
+  margin: 18px 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #dbe1d9;
+}
+.tracking .med-log:last-of-type {
+  border-bottom: 0;
+}
+.tracking .med-log > div:first-child {
+  padding-top: 9px;
+}
+.tracking .med-observations {
+  display: grid;
+  gap: 12px;
+}
+.tracking .med-observations > small {
+  line-height: 1.55;
+}
+.tracking .med-observations .medication-symptom-links {
+  margin-top: 0;
 }
 .tracking small {
   display: block;
@@ -318,10 +360,13 @@
     gap: 16px;
   }
   .tracking .med-log {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
-  .tracking .med-log > label:last-child {
-    grid-column: 1/-1;
+  .tracking .med-log > div:first-child {
+    padding-top: 0;
+  }
+  .tracking .symptom-picker {
+    max-width: none;
   }
   .tracking .record {
     flex-wrap: wrap;

@@ -36,7 +36,7 @@ export default async function SectionPage({
       </div>
       <section className="history-surface">
         <EmptyState title="This part of your journal is on its way">
-          {content.description} You can explore the sample history on Home.
+          {content.description} Return Home to continue with your journal.
         </EmptyState>
         <div className="empty-actions">
           <Link className="button button-primary" href="/">

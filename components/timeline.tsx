@@ -5,6 +5,14 @@ import { addDays, dateKey, pretty, scoped } from '../lib/health';
 import type { HealthData } from '../lib/health';
 
 const layers = ['Bleeding', 'Acne', 'Pain', 'Energy', 'Sleep', 'Medications'] as const;
+const layerMeta: Record<typeof layers[number], { scale: string; short: string }> = {
+  Bleeding: { scale: 'Recorded', short: 'Bleeding' },
+  Acne: { scale: 'Selected', short: 'Acne' },
+  Pain: { scale: '0–10', short: 'Pain' },
+  Energy: { scale: '1–5', short: 'Energy' },
+  Sleep: { scale: 'Hours', short: 'Sleep' },
+  Medications: { scale: 'Active period', short: 'Medication' },
+};
 export default function HealthTimeline({data, compact=false, start:providedStart, end=dateKey()}: {data:HealthData; compact?:boolean; start?:string; end?:string}) {
   const [days,setDays] = useState(30);
   const [visible,setVisible] = useState<string[]>([...layers]);
@@ -15,6 +23,8 @@ export default function HealthTimeline({data, compact=false, start:providedStart
   const dates:string[]=[];
   for(let d=start;d<=end;d=addDays(d,1)) dates.push(d);
   const activeDate = selected>=start && selected<=end ? selected : end;
+  const tickEvery = dates.length > 120 ? 28 : dates.length > 60 ? 14 : 7;
+  const visibleLayers = layers.filter(layer=>visible.includes(layer));
   function value(date:string, layer:typeof layers[number]) {
     const log=logs.get(date);
     if(layer==='Medications') {
@@ -28,14 +38,20 @@ export default function HealthTimeline({data, compact=false, start:providedStart
     const max=layer==='Pain'?10:layer==='Energy'?5:1440;
     return {height:n===undefined?0:Math.max(3,n/max*100),text:n===undefined?'Not recorded':layer==='Sleep'?`${(n/60).toFixed(1)} hours`:`${n} / ${max}`};
   }
+  function recordedCount(layer: typeof layers[number]) {
+    return dates.filter(date=>value(date,layer).height>0).length;
+  }
   return <section className="history-panel" aria-labelledby="timeline-title">
-    <div className="section-heading"><div><h2 id="timeline-title">Your health, over time</h2><p>See how your recorded experiences overlap.</p></div>{!providedStart&&<select aria-label="Timeline date range" value={days} onChange={e=>setDays(Number(e.target.value))}><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option><option value={180}>Last 180 days</option></select>}</div>
-    <div className="layer-controls" aria-label="Visible timeline layers">{layers.map(l=><button key={l} aria-pressed={visible.includes(l)} onClick={()=>setVisible(v=>v.includes(l)?v.filter(x=>x!==l):[...v,l])}>{visible.includes(l)?'−':'+'} {l}</button>)}</div>
-    <div className="timeline-scroll" role="region" aria-label="Health timeline, scroll horizontally for earlier days" tabIndex={0}><div className="timeline-grid" style={{minWidth:Math.max(660,dates.length*12)}}>
-      <div className="timeline-axis"><span>Recorded history</span><div>{[0,.25,.5,.75,1].map(n=><span key={n}>{pretty(dates[Math.round(n*(dates.length-1))])}</span>)}</div></div>
-      {layers.filter(l=>visible.includes(l)).map(layer=><div className="timeline-row" key={layer}><div className="row-label">{layer}<small>{layer==='Sleep'?'0–24 hours':layer==='Energy'?'1–5':layer==='Pain'?'0–10':'Recorded days'}</small></div><div className="day-grid" style={{gridTemplateColumns:`repeat(${dates.length}, minmax(0,1fr))`}}>{dates.map(date=>{const v=value(date,layer);return <button key={date} className={`day ${layer.toLowerCase()} ${v.event?'event':''}`} tabIndex={date===activeDate?0:-1} aria-label={`${pretty(date)}, ${layer}: ${v.text}`} title={`${pretty(date)}: ${v.text}`} onClick={()=>setSelected(date)} onKeyDown={e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const next=addDays(date,e.key==='ArrowRight'?1:-1);if(next>=start&&next<=end){setSelected(next);const sibling=e.key==='ArrowRight'?e.currentTarget.nextElementSibling:e.currentTarget.previousElementSibling;(sibling as HTMLButtonElement)?.focus();}}}}><span style={{height:`${v.height}%`}}/>{v.event&&<b aria-hidden="true">◆</b>}</button>})}</div></div>)}
-    </div></div>
-    <p className="chart-note">Bars show recorded values; ◆ marks a medication start or end. Blank space is not proof of symptom absence. Use arrow keys within a row, or choose a date below.</p>
-    {!compact&&<div className="day-detail"><label>Explore a day<input type="date" min={start} max={end} value={activeDate} onChange={e=>{if(e.target.value>=start&&e.target.value<=end)setSelected(e.target.value);}}/></label><p aria-live="polite"><strong>{pretty(activeDate)}</strong> — {layers.filter(l=>visible.includes(l)).map(l=>`${l}: ${value(activeDate,l).text}`).join(' · ')}</p></div>}
+    <div className="timeline-heading"><div><h2 id="timeline-title">Your health, over time</h2><p>Read down a date to see what happened together.</p></div>{!providedStart&&<select name="timeline-range" aria-label="Timeline date range" value={days} onChange={e=>setDays(Number(e.target.value))}><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option><option value={180}>Last 180 days</option></select>}</div>
+    <div className="layer-controls" aria-label="Visible timeline layers">{layers.map(layer=>{const isVisible=visible.includes(layer);const count=recordedCount(layer);return <button key={layer} aria-pressed={isVisible} onClick={()=>setVisible(current=>current.includes(layer)?current.filter(item=>item!==layer):[...current,layer])}><span className={`layer-swatch ${layer.toLowerCase()}`} aria-hidden="true"/><span>{layer}</span><small>{count} {count===1?'day':'days'}</small></button>})}</div>
+    <div className="timeline-shell">
+      <div className="timeline-scroll" role="region" aria-label="Health timeline, scroll horizontally for earlier days" tabIndex={0}><div className="timeline-grid" style={{minWidth:Math.max(720,dates.length*20+132)}}>
+        <div className="timeline-axis"><span className="axis-corner">{dates.length} days</span><div className="axis-days" style={{gridTemplateColumns:`repeat(${dates.length}, minmax(0,1fr))`}}>{dates.map((date,index)=>{const isLast=index===dates.length-1;const show=index===0||isLast||(index%tickEvery===0&&dates.length-1-index>=Math.ceil(tickEvery*.6));return <span key={date} className={date.slice(-2)==='01'?'month-start':''}>{show&&<time dateTime={date}>{pretty(date)}</time>}</span>})}</div></div>
+        {visibleLayers.length ? visibleLayers.map(layer=><div className={`timeline-row ${layer.toLowerCase()}`} key={layer}><div className="row-label"><span>{layerMeta[layer].short}</span><small>{layerMeta[layer].scale}</small></div><div className="day-grid" style={{gridTemplateColumns:`repeat(${dates.length}, minmax(0,1fr))`}}>{dates.map(date=>{const v=value(date,layer);const isSelected=date===activeDate;const isMonthStart=date.slice(-2)==='01';return <button key={date} className={`day ${v.height>0?'has-value':''} ${v.event?'event':''} ${isSelected?'is-selected':''} ${isMonthStart?'month-start':''}`} tabIndex={isSelected?0:-1} aria-current={isSelected?'date':undefined} aria-label={`${pretty(date)}, ${layer}: ${v.text}`} title={`${pretty(date)}: ${v.text}`} onClick={()=>setSelected(date)} onKeyDown={e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const next=addDays(date,e.key==='ArrowRight'?1:-1);if(next>=start&&next<=end){setSelected(next);const sibling=e.key==='ArrowRight'?e.currentTarget.nextElementSibling:e.currentTarget.previousElementSibling;(sibling as HTMLButtonElement)?.focus();}}}}><span style={{height:`${v.height}%`}}/>{v.event&&<b aria-hidden="true">◆</b>}</button>})}</div></div>) : <div className="timeline-empty">Choose a layer above to rebuild the view.</div>}
+      </div></div>
+      <div className="timeline-legend" aria-hidden="true"><span><i/>Recorded value</span><span><b>◆</b>Medication change</span><span><em/>Selected day</span></div>
+    </div>
+    <p className="chart-note">Blank space means no value was recorded—not that a symptom was absent. Select a date or use the arrow keys within any row.</p>
+    {!compact&&<div className="day-detail"><label>Explore a day<input name="timeline-date" autoComplete="off" type="date" min={start} max={end} value={activeDate} onChange={e=>{if(e.target.value>=start&&e.target.value<=end)setSelected(e.target.value);}}/></label><div className="day-summary" aria-live="polite"><strong>{pretty(activeDate)}</strong><ul>{visibleLayers.map(layer=><li key={layer}><span>{layer}</span>{value(activeDate,layer).text}</li>)}</ul></div></div>}
   </section>;
 }

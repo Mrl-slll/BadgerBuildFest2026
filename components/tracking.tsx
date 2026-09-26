@@ -7,7 +7,8 @@ import {
   Medication,
   Lab,
   dateKey,
-  symptoms,
+  quickSymptoms,
+  symptomGroups,
   validateLog,
   pretty,
   cycleHistory,
@@ -43,6 +44,45 @@ export function DailyLogForm({
     onDirty?.(true);
     setChanged(true);
   };
+  const toggleSymptom = (symptom: string) => {
+    const removing = log.symptoms.includes(symptom);
+    const medicationSymptoms = removing
+      ? Object.fromEntries(
+          Object.entries(log.medicationSymptoms ?? {}).map(
+            ([medicationId, linked]) => [
+              medicationId,
+              linked.filter((item) => item !== symptom),
+            ],
+          ),
+        )
+      : log.medicationSymptoms;
+    setLog({
+      ...log,
+      symptoms: removing
+        ? log.symptoms.filter((item) => item !== symptom)
+        : [...log.symptoms, symptom],
+      medicationSymptoms,
+    });
+    setStatus("");
+    onDirty?.(true);
+    setChanged(true);
+  };
+  const linkMedicationSymptom = (medicationId: string, symptom: string) => {
+    if (!symptom) return;
+    const linked = log.medicationSymptoms?.[medicationId] ?? [];
+    if (linked.includes(symptom)) return;
+    field("medicationSymptoms", {
+      ...log.medicationSymptoms,
+      [medicationId]: [...linked, symptom],
+    });
+  };
+  const unlinkMedicationSymptom = (medicationId: string, symptom: string) =>
+    field("medicationSymptoms", {
+      ...log.medicationSymptoms,
+      [medicationId]: (log.medicationSymptoms?.[medicationId] ?? []).filter(
+        (item) => item !== symptom,
+      ),
+    });
   return (
     <form
       autoComplete="off"
@@ -119,26 +159,68 @@ export function DailyLogForm({
       )}
       <fieldset>
         <legend>How are you feeling?</legend>
+        <p className="field-hint">Choose any that feel relevant today.</p>
         <div className="chips">
-          {symptoms.map((s) => (
+          {quickSymptoms.map((s) => (
             <button
               type="button"
               key={s}
               aria-pressed={log.symptoms.includes(s)}
-              onClick={() =>
-                field(
-                  "symptoms",
-                  log.symptoms.includes(s)
-                    ? log.symptoms.filter((x) => x !== s)
-                    : [...log.symptoms, s],
-                )
-              }
+              onClick={() => toggleSymptom(s)}
             >
               {log.symptoms.includes(s) ? "✓ " : ""}
               {s}
             </button>
           ))}
         </div>
+        <label className="symptom-picker">
+          Add another symptom
+          <select
+            name="additionalSymptom"
+            value=""
+            onChange={(event) => {
+              toggleSymptom(event.target.value);
+              event.target.value = "";
+            }}
+          >
+            <option value="">Choose from the full list…</option>
+            {symptomGroups.map((group) => (
+              <optgroup label={group.label} key={group.label}>
+                {group.symptoms.map((symptom) => (
+                  <option
+                    value={symptom}
+                    key={symptom}
+                    disabled={log.symptoms.includes(symptom)}
+                  >
+                    {symptom}
+                    {log.symptoms.includes(symptom) ? " — selected" : ""}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </label>
+        {log.symptoms.some(
+          (symptom) => !quickSymptoms.includes(symptom as (typeof quickSymptoms)[number]),
+        ) && (
+          <div className="selected-symptoms" aria-label="Other selected symptoms">
+            {log.symptoms
+              .filter(
+                (symptom) =>
+                  !quickSymptoms.includes(symptom as (typeof quickSymptoms)[number]),
+              )
+              .map((symptom) => (
+                <button
+                  type="button"
+                  key={symptom}
+                  onClick={() => toggleSymptom(symptom)}
+                  aria-label={`Remove ${symptom}`}
+                >
+                  {symptom} <span aria-hidden="true">×</span>
+                </button>
+              ))}
+          </div>
+        )}
       </fieldset>
       <fieldset>
         <legend>Cycle & bleeding</legend>
@@ -321,20 +403,77 @@ export function DailyLogForm({
                   <option>Missed</option>
                 </select>
               </label>
-              <label>
-                Side effects
-                <input
-                  maxLength={2000}
-                  placeholder="Optional note"
-                  value={log.sideEffects[m.id] || ""}
-                  onChange={(e) =>
-                    field("sideEffects", {
-                      ...log.sideEffects,
-                      [m.id]: e.target.value,
-                    })
-                  }
-                />
-              </label>
+              <div className="med-observations">
+                <label>
+                  Symptoms noticed after taking it
+                  <select
+                    name={`medicationSymptom-${m.id}`}
+                    value=""
+                    disabled={!log.symptoms.length}
+                    aria-describedby={`medication-symptom-help-${m.id}`}
+                    onChange={(event) => {
+                      linkMedicationSymptom(m.id, event.target.value);
+                      event.target.value = "";
+                    }}
+                  >
+                    <option value="">
+                      {log.symptoms.length
+                        ? "Link one of today’s symptoms…"
+                        : "Select a symptom above first"}
+                    </option>
+                    {log.symptoms.map((symptom) => (
+                      <option
+                        key={symptom}
+                        value={symptom}
+                        disabled={(log.medicationSymptoms?.[m.id] ?? []).includes(
+                          symptom,
+                        )}
+                      >
+                        {symptom}
+                        {(log.medicationSymptoms?.[m.id] ?? []).includes(symptom)
+                          ? " — linked"
+                          : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {(log.medicationSymptoms?.[m.id] ?? []).length > 0 && (
+                  <div
+                    className="medication-symptom-links"
+                    aria-label={`Symptoms linked to ${m.name}`}
+                  >
+                    {(log.medicationSymptoms?.[m.id] ?? []).map((symptom) => (
+                      <button
+                        type="button"
+                        key={symptom}
+                        onClick={() => unlinkMedicationSymptom(m.id, symptom)}
+                        aria-label={`Remove ${symptom} from ${m.name}`}
+                      >
+                        {symptom} <span aria-hidden="true">×</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <small id={`medication-symptom-help-${m.id}`}>
+                  This records a possible connection you noticed. Timing alone
+                  does not show that a medication caused a symptom.
+                </small>
+                <label>
+                  Other side-effect note
+                  <input
+                    name={`sideEffect-${m.id}`}
+                    maxLength={2000}
+                    placeholder="For example, began about an hour later…"
+                    value={log.sideEffects[m.id] || ""}
+                    onChange={(e) =>
+                      field("sideEffects", {
+                        ...log.sideEffects,
+                        [m.id]: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+              </div>
             </div>
           ))}
         {!data.medications.some(
