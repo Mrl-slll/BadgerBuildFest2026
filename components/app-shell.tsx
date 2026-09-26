@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "./ui";
 
 export const navigation: { href: string; label: string; icon: IconName }[] = [
@@ -11,57 +11,162 @@ export const navigation: { href: string; label: string; icon: IconName }[] = [
   { href: "/insights", label: "Insights", icon: "insights" },
   { href: "/ask", label: "Ask", icon: "ask" },
 ];
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const active = navigation.find((item) => item.href === pathname);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Handle ESC key and scroll lock
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    if (mobileMenuOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <aside className="sidebar">
-        <Link href="/" className="brand" aria-label="PCOS journal home">
-          <span className="brand-mark">
-            <Icon name="leaf" />
-          </span>
-          <span>
-            PCOS journal<small>Your health, in context</small>
-          </span>
-        </Link>
-        <nav aria-label="Primary navigation">
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={pathname === item.href ? "page" : undefined}
-            >
-              <Icon name={item.icon} />
-              <span>{item.label}</span>
+
+      {/* Top Navigation Bar */}
+      <header className="site-header">
+        <div className="site-header-inner">
+          <Link href="/" className="brand" aria-label="PCOS journal home">
+            <span className="brand-mark">
+              <Icon name="leaf" />
+            </span>
+            <span className="brand-text">
+              PCOS journal
+              <small>Your health, in context</small>
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="desktop-nav" aria-label="Primary navigation">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`nav-link ${isActive ? "is-active" : ""}`}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <Icon name={item.icon} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Header Action & Hamburger Button */}
+          <div className="header-actions">
+            <Link href="/track" className="header-cta-button">
+              <Icon name="track" />
+              <span>Log Today</span>
             </Link>
-          ))}
-        </nav>
-        <div className="sidebar-note">
-          <span className="note-rule" />
-          <p>
-            A little context today.
-            <br />A clearer history over time.
-          </p>
-          <small>Made for your whole experience.</small>
+
+            <button
+              type="button"
+              className="hamburger-btn"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-drawer"
+            >
+              <Icon name={mobileMenuOpen ? "close" : "menu"} />
+            </button>
+          </div>
         </div>
-      </aside>
-      <div className="app-body">
-        <header className="topbar">
-          <span>{active?.label ?? "PCOS journal"}</span>
-          <span className="preview-label">Preview workspace</span>
-        </header>
-        <main id="main-content" tabIndex={-1}>
-          {children}
-        </main>
-        <footer className="app-footer">
-          <span>Your experience is more than a single number.</span>
-          <span>A journal for reflection, not diagnosis.</span>
-        </footer>
-      </div>
+
+        {/* Mobile Backdrop & Drawer */}
+        {mobileMenuOpen && (
+          <div
+            className="mobile-nav-backdrop"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+        <div
+          id="mobile-nav-drawer"
+          className={`mobile-nav-drawer ${mobileMenuOpen ? "is-open" : ""}`}
+          aria-hidden={!mobileMenuOpen}
+        >
+          <div className="mobile-nav-content">
+            <nav className="mobile-nav-links" aria-label="Mobile primary navigation">
+              {navigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`mobile-nav-item ${isActive ? "is-active" : ""}`}
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Icon name={item.icon} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="mobile-nav-footer">
+              <Link
+                href="/track"
+                className="button button-primary mobile-cta-btn"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Icon name="track" />
+                <span>Log Today</span>
+              </Link>
+              <div className="mobile-note">
+                <span className="note-rule" />
+                <p>
+                  A little context today.
+                  <br />A clearer history over time.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Page Content */}
+      <main id="main-content" tabIndex={-1}>
+        {children}
+      </main>
+
+      {/* App Footer */}
+      <footer className="app-footer">
+        <div className="app-footer-inner">
+          <div className="footer-brand">
+            <span className="brand-mark">
+              <Icon name="leaf" />
+            </span>
+            <span>PCOS journal</span>
+          </div>
+          <div className="footer-copy">
+            <span>Your experience is more than a single number.</span>
+            <span>A private journal for reflection, not diagnosis.</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

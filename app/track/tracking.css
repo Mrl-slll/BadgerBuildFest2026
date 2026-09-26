@@ -8,10 +8,9 @@
   --pale: #c8dfdb;
   --blue: #3368a0;
   --sky: #66a3bf;
-  background: var(--paper);
+  background: transparent;
   color: var(--ink);
-  min-height: 100vh;
-  padding: 40px max(24px, calc((100vw - 1080px) / 2));
+  padding: 0;
   font-family: var(--font-geist-sans), Arial, sans-serif;
   line-height: 1.6;
 }

@@ -55,12 +55,10 @@ export default function Ask({ data }: { data?: HealthData }) {
   }
 
   return <div className={styles.page}>
-    <a className={styles.skip} href="#ask-content">Skip to questions</a>
-    <header className={styles.masthead}><span>PCOS health companion</span><span className={styles.mode}>Development preview</span></header>
-    <main className={styles.layout} id="ask-content">
+    <div className={styles.layout} id="ask-content">
       <div className={styles.workspace}>
         <header className={styles.intro}>
-          <p className={styles.sectionLabel}>Ask</p>
+          <p className="hero-badge">Clinical conversation & questions</p>
           <h1>Make sense of<br />your health history.</h1>
           <p>A place to explore what you’ve recorded and find questions to bring to your care team.</p>
         </header>
@@ -105,6 +103,6 @@ export default function Ask({ data }: { data?: HealthData }) {
         <section><h3>Research & community</h3><p>Not connected in this preview. Responses do not include live medical research or community experiences.</p></section>
         <section><h3>You choose what to include</h3><p>Questions and any included records are sent to this app’s server. The development provider makes no external AI requests.</p><p className={styles.small}>This page keeps questions and responses in memory. Reloading clears them. Each question is answered independently.</p></section>
       </aside>
-    </main>
+    </div>
   </div>;
 }

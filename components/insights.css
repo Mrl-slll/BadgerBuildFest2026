@@ -8,7 +8,7 @@
   --chart-scroll:#9fb4ae; --chart-row-fill:rgba(255,255,255,.45); --chart-shadow:rgba(32,62,67,.035);
   --chart-grid:rgba(51,104,160,.035); --chart-hover:rgba(200,223,219,.55); --chart-selected:rgba(102,163,191,.13); --chart-rule:rgba(255,255,255,.8);
   --heading:Georgia,'Times New Roman',serif; --body:var(--font-geist-sans),Arial,sans-serif;
-  background:var(--paper); color:var(--ink); font:15px/1.6 var(--body); min-height:100vh;
+  background:transparent; color:var(--ink); font:15px/1.6 var(--body);
   font-variant-numeric:tabular-nums; overflow-wrap:anywhere;
 }
 .insights-app *{box-sizing:border-box}
@@ -31,6 +31,8 @@
 .sample-notice{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;padding:16px 0;border-bottom:1px solid var(--line)}.sample-notice button{font-size:13px;white-space:nowrap}
 .page-heading{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:48px 0 32px}.page-heading p{margin-top:16px;font-size:17px}
 .range-bar{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:24px}.range-bar p{font-size:13px;margin-top:4px}.range-bar label{display:flex;gap:12px;align-items:center;white-space:nowrap}
+.range-selector-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:13px;color:var(--muted)}
+.range-selector-pill select{border:none;background:transparent;font-size:13px;font-weight:500;color:var(--ink);padding:4px;cursor:pointer}
 .history-panel{background:var(--surface);border:1px solid var(--chart-border);border-radius:10px;padding:0;overflow:hidden}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px}
 .timeline-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;padding:28px 30px 22px}.timeline-heading h2{margin:0 0 6px}.timeline-heading p{font-size:14px}
 .layer-controls{display:flex;flex-wrap:wrap;gap:0;padding:0 30px 22px}.layer-controls button{display:grid;grid-template-columns:10px auto auto;align-items:center;gap:8px;min-height:36px;margin:-1px 0 0 -1px;padding:6px 10px;border-radius:0;background:transparent;font-size:12px}.layer-controls button:first-child{border-radius:5px 0 0 5px}.layer-controls button:last-child{border-radius:0 5px 5px 0}.layer-controls button[aria-pressed=true]{position:relative;background:var(--chart-control);border-color:var(--chart-control-border);color:var(--ink)}.layer-controls button[aria-pressed=false]{color:var(--muted);background:var(--chart-canvas)}.layer-controls button small{font-size:10px;color:var(--muted)}.layer-swatch{width:8px;height:8px;border-radius:2px;background:var(--teal)}.layer-swatch.bleeding,.layer-swatch.pain{background:var(--blue)}.layer-swatch.sleep{background:var(--sky)}.layer-swatch.acne{border-radius:50%;background:var(--teal)}.layer-swatch.medications{height:4px;background:var(--mint);border-top:1px solid var(--teal)}

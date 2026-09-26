@@ -28,12 +28,12 @@ export default async function SectionPage({
   if (!content) notFound();
   return (
     <>
-      <div className="page-intro">
-        <div>
-          <p className="date-label">Your personal health journal</p>
+      <section className="page-hero">
+        <div className="hero-content">
+          <p className="hero-badge">Your personal health journal</p>
           <h1>{content.title}</h1>
         </div>
-      </div>
+      </section>
       <section className="history-surface">
         <EmptyState title="This part of your journal is on its way">
           {content.description} Return Home to continue with your journal.

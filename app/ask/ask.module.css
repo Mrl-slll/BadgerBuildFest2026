@@ -26,30 +26,31 @@
 .skip:focus { top: 12px; }
 .masthead { max-width: 1320px; margin: auto; padding: 28px 48px; display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); font-size: 15px; font-weight: 600; }
 .mode { font-size: 13px; font-weight: 400; color: var(--muted); }
-.layout { max-width: 1240px; margin: auto; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 76px; padding: 52px 48px 72px; }
+.layout { max-width: 1240px; margin: auto; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); gap: 36px; padding: 0; }
 .workspace { min-width: 0; }
 .sectionLabel { font-weight: 600; color: var(--teal); font-size: 14px; margin: 0 0 12px; }
-.intro h1 { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(36px, 4vw, 52px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; margin: 0 0 20px; text-wrap: balance; }
-.intro > p:last-child { max-width: 48ch; font-size: 17px; line-height: 1.7; color: var(--muted); margin: 0; }
-.suggestions { margin-top: 34px; }
+.intro { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 32px 36px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(36, 63, 64, 0.03); }
+.intro h1 { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(30px, 3.5vw, 42px); font-weight: 400; line-height: 1.15; letter-spacing: -.03em; margin: 0 0 14px; text-wrap: balance; }
+.intro > p:last-child { max-width: 52ch; font-size: 16px; line-height: 1.6; color: var(--muted); margin: 0; }
+.suggestions { margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(36, 63, 64, 0.03); }
 .page h2 { font-size: 18px; font-weight: 600; line-height: 1.4; }
-.suggestions h2 { margin: 0 0 14px; font-size: 14px; }
-.suggestions button { display: grid; grid-template-columns: 116px minmax(0, 1fr) 16px; gap: 12px; width: 100%; padding: 17px 0; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; line-height: 1.5; font-size: 14px; }
+.suggestions h2 { margin: 0 0 14px; font-size: 14px; color: var(--teal); }
+.suggestions button { display: grid; grid-template-columns: 116px minmax(0, 1fr) 16px; gap: 12px; width: 100%; padding: 14px 10px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; line-height: 1.5; font-size: 14px; border-radius: 4px; }
 .suggestions button > span:first-child { color: var(--teal); font-size: 12px; font-weight: 600; }
 .suggestions button:hover { background: var(--wash); }
-.composer { margin-top: 32px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.composer { margin-top: 28px; padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 1px 3px rgba(36, 63, 64, 0.03); }
 .composer label { display: block; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
-.composer textarea { width: 100%; display: block; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 5px; padding: 12px; resize: vertical; min-height: 112px; line-height: 1.6; font-size: 16px; }
+.composer textarea { width: 100%; display: block; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 5px; padding: 12px; resize: vertical; min-height: 112px; line-height: 1.6; font-size: 15px; }
 .composer textarea::placeholder { color: var(--muted); }
 .composerFooter { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
 .composerFooter span { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.composerFooter button { min-height: 44px; padding: 10px 20px; background: var(--teal); color: var(--surface); border: 0; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+.composerFooter button { min-height: 42px; padding: 10px 22px; background: var(--teal); color: #ffffff; border: 0; border-radius: 6px; font-weight: 600; white-space: nowrap; transition: background 150ms ease; }
 .composerFooter button:hover { background: var(--ink); }
 .status:empty { display: none; }
 .status, .error { font-size: 14px; line-height: 1.5; margin: 14px 0 0; }
 .error { color: var(--error); }
 .footnote { font-size: 12px; line-height: 1.65; color: var(--muted); margin: 16px 4px; max-width: 75ch; }
-.context { align-self: start; border-top: 3px solid var(--sky); padding-top: 20px; }
+.context { align-self: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 28px; box-shadow: 0 1px 3px rgba(36, 63, 64, 0.03); }
 .context > h2 { margin: 0 0 24px; font-family: Georgia, 'Times New Roman', serif; font-size: 24px; font-weight: 400; }
 .context section { padding: 20px 0; border-top: 1px solid var(--line); }
 .context h3 { font-size: 14px; font-weight: 600; margin: 0 0 10px; }
