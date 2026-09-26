@@ -1,6 +1,6 @@
 # Insights implementation
 
-The home route and `/insights` render a descriptive history workspace. The route supplies explicitly labeled fictional sample data; `components/insights.tsx` accepts the shared `HealthData` contract and an inclusive end date for integration with a future data provider. No personal-data storage or external requests are added. Question selections last only while the page is mounted.
+The home route and `/insights` render a descriptive history workspace. Both routes begin with an empty `HealthData` record; `components/insights.tsx` accepts the shared contract and an inclusive end date for integration with a future data provider. No external requests are made. Question selections last only while the page is mounted.
 
 Implemented: synchronized 30/90/180-day ranges, toggleable timeline layers, keyboard/date exploration, medication start/end markers, overlapping cycle history, symptom frequencies and split-period comparisons, weekly sleep/energy averages, descriptive observations, medication side-effect context, clinician question selection, and a dedicated print summary.
 

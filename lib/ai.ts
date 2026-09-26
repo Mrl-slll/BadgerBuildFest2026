@@ -12,7 +12,7 @@ export interface AIService {
 export function describeContext(context?: HealthContext): string {
   if (!context) return 'Personalization is off. Your health records were not included.';
   const symptoms = context.symptoms.slice(0, 5).map(s => `${s.name}: ${s.days} logged ${s.days === 1 ? 'day' : 'days'}`).join('; ');
-  return `${context.demo ? 'Fictional example history. ' : ''}${context.loggedDays} distinct ${context.loggedDays === 1 ? 'day' : 'days'} logged from ${context.start} to ${context.end}. ${symptoms ? `${symptoms}.` : 'No symptoms recorded in this period.'} Recorded in this period: ${context.periodStarts.length} period starts, ${context.medications.length} overlapping medications, and ${context.labs.length} lab results. Unlogged days do not mean symptom-free days.`;
+  return `${context.loggedDays} distinct ${context.loggedDays === 1 ? 'day' : 'days'} logged from ${context.start} to ${context.end}. ${symptoms ? `${symptoms}.` : 'No symptoms recorded in this period.'} Recorded in this period: ${context.periodStarts.length} period starts, ${context.medications.length} overlapping medications, and ${context.labs.length} lab results. Unlogged days do not mean symptom-free days.`;
 }
 export class DevelopmentAIService implements AIService {
   private readonly research: ResearchRetriever;

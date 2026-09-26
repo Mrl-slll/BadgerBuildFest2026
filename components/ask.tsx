@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from 'react';
 import type { Answer } from '../lib/ai';
-import { seedData, type HealthData } from '../lib/health';
+import type { HealthData } from '../lib/health';
 import styles from '../app/ask/ask.module.css';
 
 const prompts = [
@@ -13,7 +13,6 @@ const prompts = [
 ];
 type Entry = { question: string; answer: Answer };
 export default function Ask({ data }: { data?: HealthData }) {
-  const [example, setExample] = useState<HealthData>();
   const [personalize, setPersonalize] = useState(false);
   const [question, setQuestion] = useState('');
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -21,7 +20,7 @@ export default function Ask({ data }: { data?: HealthData }) {
   const [error, setError] = useState('');
   const input = useRef<HTMLTextAreaElement>(null);
   const busy = useRef(false);
-  const history = data ?? example;
+  const history = data;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -99,9 +98,8 @@ export default function Ask({ data }: { data?: HealthData }) {
         <h2 id="context-title">What informs your answer</h2>
         <section>
           <h3>Your recorded history</h3>
-          <p>{history ? history.demo ? 'Fictional example records are available to explore.' : 'Your health records are available to include.' : 'No health records are connected to this page yet.'}</p>
-          {history ? <label className={styles.toggle}><input type="checkbox" checked={personalize} disabled={pending} onChange={event => setPersonalize(event.target.checked)} /><span>Include {history.demo ? 'example' : 'my'} records</span></label> :
-            <button className={styles.secondary} disabled={pending} onClick={() => setExample(seedData())}>Load example history</button>}
+          <p>{history ? 'Your health records are available to include.' : 'No health records are connected to this page yet.'}</p>
+          {history && <label className={styles.toggle}><input type="checkbox" checked={personalize} disabled={pending} onChange={event => setPersonalize(event.target.checked)} /><span>Include my records</span></label>}
           <p className={styles.small}>{personalize ? 'The last 90 days of symptoms, cycle starts, medications, and labs inform the response.' : 'Personalization is off. Only your question is sent.'}</p>
         </section>
         <section><h3>Research & community</h3><p>Not connected in this preview. Responses do not include live medical research or community experiences.</p></section>

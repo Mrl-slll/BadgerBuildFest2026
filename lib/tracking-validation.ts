@@ -29,6 +29,12 @@ export function validateDaily(log: Log) {
   }
   if (log.symptoms.some((s) => !symptoms.includes(s)))
     return "Choose symptoms from the available options.";
+  if (Object.values(log.medicationSymptoms ?? {}).some((values) =>
+    !Array.isArray(values) || values.some(
+      (symptom) =>
+        !symptoms.includes(symptom) || !log.symptoms.includes(symptom),
+    )))
+    return "Choose medication-related symptoms from the available options.";
   if (
     log.bleeding &&
     !["None", "Spotting", "Light", "Medium", "Heavy"].includes(log.bleeding)

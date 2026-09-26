@@ -11,6 +11,7 @@ execFileSync(process.execPath, [
   "node_modules/typescript/bin/tsc",
   "lib/health.ts",
   "lib/tracking-validation.ts",
+  "lib/health-storage.ts",
   "--module",
   "commonjs",
   "--target",
@@ -23,6 +24,7 @@ const { validateDaily, validateMedication, validateLab, validDate } = require(
   join(output, "tracking-validation.js"),
 );
 const { cycleHistory, dateKey, addDays } = require(join(output, "health.js"));
+const { parseStoredHealthData } = require(join(output, "health-storage.js"));
 after(() => rmSync(output, { recursive: true, force: true }));
 const log = {
   id: "entry",
@@ -98,13 +100,21 @@ test("rejects nonfinite, fractional and out-of-range measurements", () => {
 });
 test("validates symptoms, doses and side-effect length", () => {
   assert.ok(validateDaily({ ...log, symptoms: ["invalid"] }));
+  assert.ok(
+    validateDaily({
+      ...log,
+      medicationSymptoms: { med: ["invalid"] },
+    }),
+  );
   assert.ok(validateDaily({ ...log, doses: { med: "Maybe" } }));
   assert.ok(validateDaily({ ...log, sideEffects: { med: "x".repeat(2001) } }));
   assert.equal(
     validateDaily({
       ...log,
+      symptoms: ["Nausea"],
       doses: { med: "Missed" },
       sideEffects: { med: "Nausea" },
+      medicationSymptoms: { med: ["Nausea"] },
     }),
     "",
   );
@@ -147,4 +157,23 @@ test("cycle lengths use calendar days and ends stay within their cycle", () => {
     { start: "2024-03-01", end: "2024-03-10", length: 31 },
     { start: "2024-04-01", end: undefined, length: null },
   ]);
+});
+test("stored journal data is validated and scoped before Home uses it", () => {
+  const stored = {
+    version: 1,
+    user: { id: "local-user", name: "" },
+    logs: [
+      { ...log, date: "2024-03-01", periodStart: true },
+      { ...log, id: "foreign", userId: "another-user" },
+    ],
+    medications: [],
+    labs: [],
+    questions: [],
+    appointments: [],
+    personalize: false,
+  };
+  const result = parseStoredHealthData(JSON.stringify(stored));
+  assert.equal(result.invalid, false);
+  assert.deepEqual(result.data.logs.map((entry) => entry.date), ["2024-03-01"]);
+  assert.equal(parseStoredHealthData("not json").invalid, true);
 });
