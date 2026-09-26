@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/*.test.cjs tests/*.test.mjs"
+    "test": "node --experimental-strip-types --test tests/*.test.cjs tests/*.test.mjs",
+    "test:ask": "node --test tests/ask.test.cjs"
   },
   "dependencies": {
     "next": "16.3.6",
