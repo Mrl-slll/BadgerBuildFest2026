@@ -15,24 +15,393 @@ export default function Insights({ data, end }: {data:HealthData; end:string}) {
   const [excluded,setExcluded]=useState<string[]>([]);
   const questions=[...new Set([...data.questions,'What additional details would be useful to record before our next visit?'])];
   const selectedQuestions=questions.filter(q=>!excluded.includes(q));
-  return <div className="insights-app">
-    <a className="skip-link" href="#main">Skip to health insights</a>
-    <header className="app-header"><Link className="wordmark" href="/">PCOS <span>insights</span></Link><nav aria-label="On this page"><a href="#history">History</a><a href="#patterns">Patterns</a><a href="#visit">Visit summary</a></nav></header>
-    <main id="main">
-      <div className="sample-notice"><span>No records are connected to this view yet. No data is sent from this page.</span></div>
-      <div className="page-heading"><div><h1>A clearer view of your history.</h1><p>Your cycles, symptoms, and daily rhythms, in context.</p></div><a className="primary" href="#visit">Prepare for a visit</a></div>
-      <div className="range-bar"><div><strong>{pretty(start)} – {pretty(end)}, {end.slice(0,4)}</strong><p>{report.logs.length} of {report.totalDays} days have entries. Unlogged days are not counted as symptom-free.</p></div><label>Time range<select value={days} onChange={e=>setDays(Number(e.target.value))}><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option><option value={180}>Last 180 days</option></select></label></div>
-      <div id="history"><HealthTimeline data={data} start={start} end={end}/></div>
-      <section className="cycle-section" aria-labelledby="cycles-title"><div><h2 id="cycles-title">Cycle history</h2><p>Days between recorded period starts. No predicted dates.</p></div><div>{report.cycles.length?report.cycles.map(c=><div className="cycle-row" key={c.start}><span>{pretty(c.start)}<small>{c.next?`to ${pretty(c.next)}`:'No later start recorded'}</small></span><div className="cycle-track" aria-hidden="true"><span className={c.length===null?'incomplete':''} style={{width:`${(c.length??0)/Math.max(60,...report.cycles.map(x=>x.length??0))*100}%`}}/></div><strong>{c.length===null?'Incomplete':`${c.length} days`}</strong></div>):<p>No period starts recorded by the end of this range.</p>}<p className="chart-note">Includes cycles overlapping this range. An incomplete cycle has no calculated length.</p></div></section>
-      <section id="patterns" className="patterns-section"><div className="section-heading"><div><h2>What your entries show</h2><p>Descriptive observations from your records, not medical conclusions.</p></div></div><div className="observations">{report.insights.map((text,i)=><p key={text}><span aria-hidden="true">{i===0?'◯':i===1?'∩':'—'}</span>{text}</p>)}</div></section>
-      <div className="trend-columns"><section><h2>Symptom frequency</h2><p>Days selected, out of {report.logs.length} logged days.</p>{report.frequency.length?report.frequency.map(([name,count])=><div className="frequency-row" key={name}><div><span>{name}</span><strong>{count} / {report.logs.length}</strong></div><div className="frequency-track" aria-hidden="true"><span style={{width:`${count/report.logs.length*100}%`}}/></div></div>):<p className="empty-note">No symptoms selected in this range.</p>}</section>
-      <section><h2>Sleep & energy</h2><p>Weekly averages, with separate scales. Gaps mean no entries.</p><div className="average-line"><span><strong>{duration(report.sleep.value===null?null:Math.round(report.sleep.value))}</strong> average sleep · {report.sleep.count} entries</span><span><strong>{report.energy.value?.toFixed(1)??'—'} / 5</strong> average energy · {report.energy.count} entries</span></div><div className="weekly-chart"><div className="weekly-header"><span>Week of</span><span>Sleep · 0–24 h</span><span>Energy · 1–5</span></div>{report.weeks.map(w=><div className="weekly-row" key={w.start}><span>{pretty(w.start)}</span>{(['sleep','energy'] as const).map(key=><div key={key} className={`weekly-value ${key}`}><span aria-hidden="true" style={{width:`${w[key].value===null?0:w[key].value!/(key==='sleep'?1440:5)*100}%`}}/><b title={`${w[key].count} entries`}>{w[key].value===null?'—':`${(w[key].value!/(key==='sleep'?60:1)).toFixed(1)}${key==='sleep'?' h':''}`}</b></div>)}</div>)}</div><details><summary>View weekly counts and values</summary><div className="table-scroll"><table><caption>Only recorded values contribute to each average.</caption><thead><tr><th>Week of</th><th>Sleep</th><th>Energy</th></tr></thead><tbody>{report.weeks.map(w=><tr key={w.start}><th>{pretty(w.start)}</th><td>{w.sleep.value===null?'—':duration(Math.round(w.sleep.value))} ({w.sleep.count} entries)</td><td>{w.energy.value?.toFixed(1)??'—'} / 5 ({w.energy.count} entries)</td></tr>)}</tbody></table></div></details></section></div>
-      <section className="symptom-trends"><h2>Symptom trends</h2><p>Compare the earlier and later halves of this range. Counts use logged days, so different logging coverage can affect the comparison.</p>{report.symptomTrends.length?<div className="table-scroll"><table><caption>Earlier: {pretty(start)}–{pretty(addDays(report.midpoint,-1))}. Later: {pretty(report.midpoint)}–{pretty(end)}.</caption><thead><tr><th scope="col">Symptom</th><th scope="col">Earlier · {report.earlierDays} logged days</th><th scope="col">Later · {report.recentDays} logged days</th></tr></thead><tbody>{report.symptomTrends.map(t=><tr key={t.name}><th scope="row">{t.name}</th><td>{report.earlierDays?`${t.earlier} / ${report.earlierDays} (${Math.round(t.earlier/report.earlierDays*100)}%)`:'No entries'}</td><td>{report.recentDays?`${t.recent} / ${report.recentDays} (${Math.round(t.recent/report.recentDays*100)}%)`:'No entries'}</td></tr>)}</tbody></table></div>:<p className="empty-note">No symptom entries to compare.</p>}</section>
-      <section className="medication-section"><h2>Medication context</h2><p>These are connections you recorded yourself. Timing does not show that a medication caused a symptom.</p>{report.medications.length?report.medications.map(m=>{const linked=report.medicationSymptoms.get(m.id)??[];return <article className="medication-row" key={m.id}><div><h3>{m.name}</h3><p>{m.dosage} {m.unit} · {m.frequency}</p></div><div><p>Started {pretty(m.startedAt)}{m.endedAt?` · Ended ${pretty(m.endedAt)}`:' · No end recorded'}</p><p>{report.logs.filter(l=>l.sideEffects[m.id]?.trim()).length} days with side-effect notes in this range</p>{linked.length>0?<p><strong>Symptoms you linked:</strong> {linked.map(([symptom,count])=>`${symptom} (${count} ${count===1?'day':'days'})`).join(', ')}</p>:<p>No symptoms linked to this medication in this range.</p>}</div></article>}):<p>No medication periods overlap this range.</p>}{report.events.length>0&&<ul className="event-list">{report.events.map(e=><li key={e.date+e.text}><strong>{pretty(e.date)}</strong> {e.text}</li>)}</ul>}</section>
-      <section id="visit" className="visit-section"><div className="section-heading"><div><h2>Your next visit, prepared.</h2><p>Review the summary and choose the questions you want to bring.</p></div><button className="primary" onClick={()=>window.print()}>Print summary</button></div>
-        <div className="visit-layout"><article className="visit-summary"><h3>Visit summary</h3><p>Recorded history · {start} to {end}</p><p>{report.logs.length} of {report.totalDays} days logged. Missing entries are unknown.</p><dl><dt>Cycles</dt><dd>{report.cycles.filter(c=>c.length!==null).map(c=>`${c.length} days (${pretty(c.start)})`).join('; ')||'No completed cycles recorded.'} {report.cycles.some(c=>c.length===null)?'Latest recorded cycle is incomplete.':''}</dd><dt>Most selected symptoms</dt><dd>{report.frequency.slice(0,4).map(([s,n])=>`${s}: ${n}/${report.logs.length} logged days`).join('; ')||'None selected.'}</dd><dt>Symptom trends</dt><dd>{report.symptomTrends.slice(0,4).map(t=>`${t.name}: ${t.earlier}/${report.earlierDays} earlier logged days; ${t.recent}/${report.recentDays} later logged days`).join('; ')||'No symptom entries to compare.'} Earlier: {start} to {addDays(report.midpoint,-1)}. Later: {report.midpoint} to {end}. A zero denominator means no entries.</dd><dt>Sleep & energy</dt><dd>{duration(report.sleep.value===null?null:Math.round(report.sleep.value))} average sleep ({report.sleep.count} entries); energy {report.energy.value?.toFixed(1)??'not recorded'} / 5 ({report.energy.count} entries).</dd><dt>Medications & reported side effects</dt><dd>{report.medications.length?report.medications.map(m=>{const linked=report.medicationSymptoms.get(m.id)??[];return <p key={m.id}>{m.name}, {m.dosage} {m.unit}, {m.frequency}. Started {m.startedAt}{m.endedAt?`, ended ${m.endedAt}`:''}. Symptoms linked by you: {linked.map(([symptom,count])=>`${symptom} (${count} ${count===1?'day':'days'})`).join(', ')||'none in this range'}. Side-effect notes: {report.logs.filter(l=>l.sideEffects[m.id]?.trim()).map(l=>`${pretty(l.date)}: ${l.sideEffects[m.id]}`).join('; ')||'none in this range'}.</p>}):'No medication periods recorded.'}</dd></dl><div className="print-questions"><h3>Questions for my clinician</h3>{selectedQuestions.length?<ul>{selectedQuestions.map(q=><li key={q}>{q}</li>)}</ul>:<p>No questions selected.</p>}</div><p className="chart-note">Descriptive summary of recorded data. No diagnosis, treatment recommendation, or causal conclusion is inferred.</p></article>
-        <div className="question-selector"><h3>Questions for your clinician</h3><p>Selected questions appear in your printout.</p>{questions.map(q=><label key={q}><input type="checkbox" checked={!excluded.includes(q)} onChange={()=>setExcluded(v=>v.includes(q)?v.filter(x=>x!==q):[...v,q])}/><span>{q}</span></label>)}<p className="chart-note">Selections last for this visit to the page. Printing opens your browser’s print dialog; you choose whether to save or share it.</p></div></div>
-      </section><footer>PCOS insights · A history to help you communicate your experience.</footer>
-    </main>
-  </div>;
+  return (
+    <div className="insights-app">
+      <section className="page-hero" aria-labelledby="insights-hero-title">
+        <div className="hero-content">
+          <p className="hero-badge">Longitudinal health patterns</p>
+          <h1 id="insights-hero-title">A clearer view of your history.</h1>
+          <p className="hero-subtitle">Your cycles, symptoms, and daily rhythms, in context.</p>
+          <div className="hero-actions">
+            <a className="button button-primary" href="#visit">
+              <span>Prepare for a visit</span>
+            </a>
+            <div className="range-selector-pill">
+              <span>Time range:</span>
+              <select
+                aria-label="Time range"
+                value={days}
+                onChange={(e) => setDays(Number(e.target.value))}
+              >
+                <option value={30}>Last 30 days</option>
+                <option value={90}>Last 90 days</option>
+                <option value={180}>Last 180 days</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="range-bar">
+        <div>
+          <strong>
+            {pretty(start)} – {pretty(end)}, {end.slice(0, 4)}
+          </strong>
+          <p>
+            {report.logs.length} of {report.totalDays} days have entries. Unlogged days are not counted as symptom-free.
+          </p>
+        </div>
+      </div>
+
+      <div id="history">
+        <HealthTimeline data={data} start={start} end={end} />
+      </div>
+
+      <div className="insights-two-col">
+        <section id="patterns" className="patterns-section card-surface">
+          <div className="section-heading">
+            <div>
+              <h2>What your entries show</h2>
+              <p>Descriptive observations from your records, not medical conclusions.</p>
+            </div>
+          </div>
+          <div className="observations">
+            {report.insights.map((text, i) => (
+              <p key={text}>
+                <span aria-hidden="true">{i === 0 ? "◯" : i === 1 ? "∩" : "—"}</span>
+                {text}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        <section className="cycle-section card-surface" aria-labelledby="cycles-title">
+          <div className="section-heading">
+            <div>
+              <h2 id="cycles-title">Cycle history</h2>
+              <p>Days between recorded period starts. No predicted dates.</p>
+            </div>
+          </div>
+          <div>
+            {report.cycles.length ? (
+              report.cycles.map((c) => (
+                <div className="cycle-row" key={c.start}>
+                  <span>
+                    {pretty(c.start)}
+                    <small>{c.next ? `to ${pretty(c.next)}` : "No later start recorded"}</small>
+                  </span>
+                  <div className="cycle-track" aria-hidden="true">
+                    <span
+                      className={c.length === null ? "incomplete" : ""}
+                      style={{
+                        width: `${((c.length ?? 0) / Math.max(60, ...report.cycles.map((x) => x.length ?? 0))) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <strong>{c.length === null ? "Incomplete" : `${c.length} days`}</strong>
+                </div>
+              ))
+            ) : (
+              <p>No period starts recorded by the end of this range.</p>
+            )}
+            <p className="chart-note">Includes cycles overlapping this range. An incomplete cycle has no calculated length.</p>
+          </div>
+        </section>
+      </div>
+
+      <div className="trend-columns">
+        <section className="card-surface">
+          <h2>Symptom frequency</h2>
+          <p>Days selected, out of {report.logs.length} logged days.</p>
+          {report.frequency.length ? (
+            report.frequency.map(([name, count]) => (
+              <div className="frequency-row" key={name}>
+                <div>
+                  <span>{name}</span>
+                  <strong>
+                    {count} / {report.logs.length}
+                  </strong>
+                </div>
+                <div className="frequency-track" aria-hidden="true">
+                  <span style={{ width: `${(count / report.logs.length) * 100}%` }} />
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="empty-note">No symptoms selected in this range.</p>
+          )}
+        </section>
+
+        <section className="card-surface">
+          <h2>Sleep & energy</h2>
+          <p>Weekly averages, with separate scales. Gaps mean no entries.</p>
+          <div className="average-line">
+            <span>
+              <strong>{duration(report.sleep.value === null ? null : Math.round(report.sleep.value))}</strong> average sleep · {report.sleep.count} entries
+            </span>
+            <span>
+              <strong>{report.energy.value?.toFixed(1) ?? "—"} / 5</strong> average energy · {report.energy.count} entries
+            </span>
+          </div>
+          <div className="weekly-chart">
+            <div className="weekly-header">
+              <span>Week of</span>
+              <span>Sleep · 0–24 h</span>
+              <span>Energy · 1–5</span>
+            </div>
+            {report.weeks.map((w) => (
+              <div className="weekly-row" key={w.start}>
+                <span>{pretty(w.start)}</span>
+                {(["sleep", "energy"] as const).map((key) => (
+                  <div key={key} className={`weekly-value ${key}`}>
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: `${w[key].value === null ? 0 : (w[key].value! / (key === "sleep" ? 1440 : 5)) * 100}%`,
+                      }}
+                    />
+                    <b title={`${w[key].count} entries`}>
+                      {w[key].value === null
+                        ? "—"
+                        : `${(w[key].value! / (key === "sleep" ? 60 : 1)).toFixed(1)}${key === "sleep" ? " h" : ""}`}
+                    </b>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <details>
+            <summary>View weekly counts and values</summary>
+            <div className="table-scroll">
+              <table>
+                <caption>Only recorded values contribute to each average.</caption>
+                <thead>
+                  <tr>
+                    <th>Week of</th>
+                    <th>Sleep</th>
+                    <th>Energy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {report.weeks.map((w) => (
+                    <tr key={w.start}>
+                      <th>{pretty(w.start)}</th>
+                      <td>
+                        {w.sleep.value === null ? "—" : duration(Math.round(w.sleep.value))} ({w.sleep.count} entries)
+                      </td>
+                      <td>
+                        {w.energy.value?.toFixed(1) ?? "—"} / 5 ({w.energy.count} entries)
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </section>
+      </div>
+
+      <div className="insights-two-col">
+        <section className="symptom-trends card-surface">
+          <h2>Symptom trends</h2>
+          <p>
+            Compare the earlier and later halves of this range. Counts use logged days, so different logging coverage can affect the comparison.
+          </p>
+          {report.symptomTrends.length ? (
+            <div className="table-scroll">
+              <table>
+                <caption>
+                  Earlier: {pretty(start)}–{pretty(addDays(report.midpoint, -1))}. Later: {pretty(report.midpoint)}–{pretty(end)}.
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Symptom</th>
+                    <th scope="col">Earlier · {report.earlierDays} logged days</th>
+                    <th scope="col">Later · {report.recentDays} logged days</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {report.symptomTrends.map((t) => (
+                    <tr key={t.name}>
+                      <th scope="row">{t.name}</th>
+                      <td>
+                        {report.earlierDays
+                          ? `${t.earlier} / ${report.earlierDays} (${Math.round((t.earlier / report.earlierDays) * 100)}%)`
+                          : "No entries"}
+                      </td>
+                      <td>
+                        {report.recentDays
+                          ? `${t.recent} / ${report.recentDays} (${Math.round((t.recent / report.recentDays) * 100)}%)`
+                          : "No entries"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="empty-note">No symptom entries to compare.</p>
+          )}
+        </section>
+
+        <section className="medication-section card-surface">
+          <h2>Medication context</h2>
+          <p>These are connections you recorded yourself. Timing does not show that a medication caused a symptom.</p>
+          {report.medications.length ? (
+            report.medications.map((m) => {
+              const linked = report.medicationSymptoms.get(m.id) ?? [];
+              return (
+                <article className="medication-row" key={m.id}>
+                  <div>
+                    <h3>{m.name}</h3>
+                    <p>
+                      {m.dosage} {m.unit} · {m.frequency}
+                    </p>
+                  </div>
+                  <div>
+                    <p>
+                      Started {pretty(m.startedAt)}
+                      {m.endedAt ? ` · Ended ${pretty(m.endedAt)}` : " · No end recorded"}
+                    </p>
+                    <p>{report.logs.filter((l) => l.sideEffects[m.id]?.trim()).length} days with side-effect notes in this range</p>
+                    {linked.length > 0 ? (
+                      <p>
+                        <strong>Symptoms you linked:</strong>{" "}
+                        {linked.map(([symptom, count]) => `${symptom} (${count} ${count === 1 ? "day" : "days"})`).join(", ")}
+                      </p>
+                    ) : (
+                      <p>No symptoms linked to this medication in this range.</p>
+                    )}
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <p>No medication periods overlap this range.</p>
+          )}
+          {report.events.length > 0 && (
+            <ul className="event-list">
+              {report.events.map((e) => (
+                <li key={e.date + e.text}>
+                  <strong>{pretty(e.date)}</strong> {e.text}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <section id="visit" className="visit-section">
+        <div className="section-heading">
+          <div>
+            <h2>Your next visit, prepared.</h2>
+            <p>Review the summary and choose the questions you want to bring.</p>
+          </div>
+          <button className="primary" onClick={() => window.print()}>
+            Print summary
+          </button>
+        </div>
+        <div className="visit-layout">
+          <article className="visit-summary">
+            <h3>Visit summary</h3>
+            <p>
+              Recorded history · {start} to {end}
+            </p>
+            <p>
+              {report.logs.length} of {report.totalDays} days logged. Missing entries are unknown.
+            </p>
+            <dl>
+              <dt>Cycles</dt>
+              <dd>
+                {report.cycles
+                  .filter((c) => c.length !== null)
+                  .map((c) => `${c.length} days (${pretty(c.start)})`)
+                  .join("; ") || "No completed cycles recorded."}{" "}
+                {report.cycles.some((c) => c.length === null) ? "Latest recorded cycle is incomplete." : ""}
+              </dd>
+              <dt>Most selected symptoms</dt>
+              <dd>
+                {report.frequency.slice(0, 4).map(([s, n]) => `${s}: ${n}/${report.logs.length} logged days`).join("; ") ||
+                  "None selected."}
+              </dd>
+              <dt>Symptom trends</dt>
+              <dd>
+                {report.symptomTrends
+                  .slice(0, 4)
+                  .map(
+                    (t) =>
+                      `${t.name}: ${t.earlier}/${report.earlierDays} earlier logged days; ${t.recent}/${report.recentDays} later logged days`,
+                  )
+                  .join("; ") || "No symptom entries to compare."}{" "}
+                Earlier: {start} to {addDays(report.midpoint, -1)}. Later: {report.midpoint} to {end}. A zero denominator means no entries.
+              </dd>
+              <dt>Sleep & energy</dt>
+              <dd>
+                {duration(report.sleep.value === null ? null : Math.round(report.sleep.value))} average sleep ({report.sleep.count} entries);
+                energy {report.energy.value?.toFixed(1) ?? "not recorded"} / 5 ({report.energy.count} entries).
+              </dd>
+              <dt>Medications & reported side effects</dt>
+              <dd>
+                {report.medications.length
+                  ? report.medications.map((m) => {
+                      const linked = report.medicationSymptoms.get(m.id) ?? [];
+                      return (
+                        <p key={m.id}>
+                          {m.name}, {m.dosage} {m.unit}, {m.frequency}. Started {m.startedAt}
+                          {m.endedAt ? `, ended ${m.endedAt}` : ""}. Symptoms linked by you:{" "}
+                          {linked.map(([symptom, count]) => `${symptom} (${count} ${count === 1 ? "day" : "days"})`).join(", ") ||
+                            "none in this range"}
+                          . Side-effect notes:{" "}
+                          {report.logs
+                            .filter((l) => l.sideEffects[m.id]?.trim())
+                            .map((l) => `${pretty(l.date)}: ${l.sideEffects[m.id]}`)
+                            .join("; ") || "none in this range"}
+                          .
+                        </p>
+                      );
+                    })
+                  : "No medication periods recorded."}
+              </dd>
+            </dl>
+            <div className="print-questions">
+              <h3>Questions for my clinician</h3>
+              {selectedQuestions.length ? (
+                <ul>
+                  {selectedQuestions.map((q) => (
+                    <li key={q}>{q}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No questions selected.</p>
+              )}
+            </div>
+            <p className="chart-note">
+              Descriptive summary of recorded data. No diagnosis, treatment recommendation, or causal conclusion is inferred.
+            </p>
+          </article>
+          <div className="question-selector">
+            <h3>Questions for your clinician</h3>
+            <p>Selected questions appear in your printout.</p>
+            {questions.map((q) => (
+              <label key={q}>
+                <input
+                  type="checkbox"
+                  checked={!excluded.includes(q)}
+                  onChange={() =>
+                    setExcluded((v) =>
+                      v.includes(q) ? v.filter((x) => x !== q) : [...v, q],
+                    )
+                  }
+                />
+                <span>{q}</span>
+              </label>
+            ))}
+            <p className="chart-note">
+              Selections last for this visit to the page. Printing opens your browser’s print dialog; you choose whether to save or share it.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }

@@ -65,32 +65,29 @@ function HomeOverviewContent({
   const recent = logs.slice(0, 4);
   return (
     <>
-      <div className="page-intro">
-        <div>
-          <p className="date-label">Your personal health journal</p>
-          <h1>
+      <section className="page-hero" aria-labelledby="home-hero-title">
+        <div className="hero-content">
+          <p className="hero-badge">Your personal health journal</p>
+          <h1 id="home-hero-title">
             A little more context.
             <br />A clearer picture of you.
           </h1>
-          <p>Bring the small details together, one day at a time.</p>
-        </div>
-        <Link className="button button-primary" href="/track">
-          <Icon name="track" />
-          Go to Track
-          <Icon name="arrow" />
-        </Link>
-      </div>
-      <div className="sample-notice">
-        <div>
-          <strong>{personalData ? "Your saved journal" : "Your journal starts here"}</strong>
-          <p>
-            {personalData
-              ? "Showing health information stored in this browser."
-              : "No health history has been added yet."}
+          <p className="hero-subtitle">
+            Bring the small details together, one day at a time, to understand your patterns and cycles.
           </p>
+          <div className="hero-actions">
+            <Link className="button button-primary" href="/track">
+              <Icon name="track" />
+              <span>Go to Track</span>
+              <Icon name="arrow" />
+            </Link>
+            <Link className="button button-quiet" href="/insights">
+              <Icon name="insights" />
+              <span>View Insights</span>
+            </Link>
+          </div>
         </div>
-        <span>Records stay on this device.</span>
-      </div>
+      </section>
       {personalData ? (
         <>
           <section
