@@ -1,0 +1,19 @@
+{
+  "name": "PHASE | Your health, in context",
+  "short_name": "PHASE",
+  "icons": [
+    {
+      "src": "/phase_icon/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/phase_icon/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#246563",
+  "background_color": "#f7f6f1",
+  "display": "standalone"
+}

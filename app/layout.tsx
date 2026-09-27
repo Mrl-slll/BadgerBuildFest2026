@@ -18,6 +18,19 @@ export const metadata: Metadata = {
   title: "PHASE | Your health, in context",
   description:
     "A calm space to explore your health history, one day at a time.",
+  icons: {
+    icon: [
+      { url: "/phase_icon/favicon.ico" },
+      { url: "/phase_icon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/phase_icon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/phase_icon/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/phase_icon/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/phase_icon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/phase_icon/site.webmanifest",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

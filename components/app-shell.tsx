@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { SignInButton, SignUpButton, Show, UserButton, useUser } from "@clerk/nextjs";
@@ -61,7 +62,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="site-header-inner">
           <Link href="/" className="brand" aria-label="PHASE home">
             <span className="brand-mark">
-              <Icon name="leaf" />
+              <Image
+                src="/phase_icon/phase-logo-mark.png"
+                alt="PHASE logo"
+                width={24}
+                height={24}
+                className="brand-logo-img"
+                priority
+              />
             </span>
             <span className="brand-text">PHASE</span>
           </Link>
@@ -213,7 +221,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="footer-brand-col">
               <Link href="/" className="footer-brand" aria-label="PHASE home">
                 <span className="brand-mark">
-                  <Icon name="leaf" />
+                  <Image
+                    src="/phase_icon/phase-logo-mark.png"
+                    alt="PHASE logo"
+                    width={22}
+                    height={22}
+                    className="brand-logo-img"
+                  />
                 </span>
                 <span className="brand-text">
                   PHASE
