@@ -24,15 +24,15 @@ export function TracingDivider({
 
   // Wave path: a gentle, calm organic wave reflecting health cycle rhythm
   const waveD =
-    "M0,15 C200,32 400,-2 600,15 C800,32 1000,-2 1200,15";
+    "M0,15 C200,25 400,5 600,15 C800,25 1000,5 1200,15";
 
   // Geometric path: a crisp architectural medical journal divider with subtle rhythm
   const geometricD =
-    "M0,15 L350,15 L390,26 L430,4 L470,26 L510,15 L1200,15";
+    "M0,15 L520,15 L560,25 L600,5 L640,25 L680,15 L1200,15";
 
-  // Pulse path: a gentle longitudinal rhythm line
+  // Pulse path: a gentle longitudinal rhythm line, centered and smoothly bounded
   const pulseD =
-    "M0,15 L280,15 Q340,15 360,5 T400,25 T440,15 L1200,15";
+    "M0,15 L480,15 C510,15 530,6 555,6 C575,6 585,24 610,24 C635,24 650,15 680,15 L1200,15";
 
   const pathD =
     variant === "geometric"
@@ -90,17 +90,6 @@ export function TracingDivider({
             },
             opacity: { duration: 0.4 },
           }}
-        />
-        {/* Subtle accent glow follower at key nodal points */}
-        <motion.circle
-          cx="430"
-          cy="4"
-          r="3"
-          fill={color}
-          initial={{ scale: 0, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 0.8 }}
-          viewport={{ once: true }}
-          transition={{ delay: duration * 0.45, duration: 0.4 }}
         />
       </svg>
     </div>
