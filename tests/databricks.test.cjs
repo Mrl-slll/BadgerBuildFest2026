@@ -14,6 +14,7 @@ execFileSync(tscBin, [
   'lib/server/databricks-research.ts',
   'lib/server/databricks-lakehouse.ts',
   'lib/server/databricks-ai.ts',
+  'lib/server/services.ts',
   '--outDir', output,
   '--module', 'commonjs',
   '--target', 'es2020',
@@ -41,6 +42,7 @@ try {
 const { DatabricksVectorSearchRetriever } = require(join(output, 'server/databricks-research.js'));
 const { DatabricksLakehouseAnalytics } = require(join(output, 'server/databricks-lakehouse.js'));
 const { DatabricksAIService } = require(join(output, 'server/databricks-ai.js'));
+const { getAIService } = require(join(output, 'server/services.js'));
 
 after(() => rmSync(output, { recursive: true, force: true }));
 

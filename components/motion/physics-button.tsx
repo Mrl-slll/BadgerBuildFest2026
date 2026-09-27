@@ -1,94 +1,30 @@
 "use client";
 
-import React, { useRef, useState, useCallback } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-
-export const springConfig = {
-  type: "spring" as const,
-  stiffness: 400,
-  damping: 10,
-};
-
-export const snappyTransition = {
-  duration: 0.15,
-  ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-};
+import type React from "react";
 
 interface MagneticButtonProps {
   children: React.ReactNode;
   className?: string;
   magneticStrength?: number;
   innerStrength?: number;
-  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
   asChild?: boolean;
 }
 
 /**
- * Magnetic Button with Spring Physics
- * Uses stiffness: 400, damping: 10 with magnetic cursor tracking and 0.95 tap scale.
+ * Compatibility wrapper for existing call sites.
+ * Cursor tracking and spring scaling were intentionally removed so buttons
+ * remain spatially stable and rely on color, border, and focus feedback.
  */
 export function MagneticButton({
   children,
   className = "",
-  magneticStrength = 0.32,
-  innerStrength = 0.18,
   onClick,
 }: MagneticButtonProps) {
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [innerPosition, setInnerPosition] = useState({ x: 0, y: 0 });
-  const shouldReduceMotion = useReducedMotion();
-
-  const handleMouseMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (shouldReduceMotion || !buttonRef.current) return;
-      const { clientX, clientY } = e;
-      const { left, top, width, height } =
-        buttonRef.current.getBoundingClientRect();
-      const middleX = clientX - (left + width / 2);
-      const middleY = clientY - (top + height / 2);
-
-      setPosition({
-        x: middleX * magneticStrength,
-        y: middleY * magneticStrength,
-      });
-
-      setInnerPosition({
-        x: middleX * innerStrength,
-        y: middleY * innerStrength,
-      });
-    },
-    [magneticStrength, innerStrength, shouldReduceMotion],
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setPosition({ x: 0, y: 0 });
-    setInnerPosition({ x: 0, y: 0 });
-  }, []);
-
   return (
-    <motion.div
-      ref={buttonRef}
-      className={`inline-block relative ${className}`}
-      onPointerMove={handleMouseMove}
-      onPointerLeave={handleMouseLeave}
-      onClick={onClick}
-      animate={shouldReduceMotion ? {} : { x: position.x, y: position.y }}
-      whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-      whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
-      transition={springConfig}
-      style={{ touchAction: "manipulation" }}
-    >
-      <motion.div
-        animate={
-          shouldReduceMotion ? {} : { x: innerPosition.x, y: innerPosition.y }
-        }
-        transition={springConfig}
-        className="w-full h-full flex items-center justify-center"
-      >
-        {children}
-      </motion.div>
-    </motion.div>
+    <div className={`inline-block relative ${className}`} onClick={onClick}>
+      {children}
+    </div>
   );
 }
 
@@ -98,29 +34,21 @@ interface PhysicsInteractiveProps {
   onClick?: () => void;
   scaleOnTap?: number;
   scaleOnHover?: number;
+  yOnHover?: number;
 }
 
 /**
- * Lightweight spring physics wrapper for cards, chips, and list items.
+ * Stable wrapper retained for cards and chips that previously used spring
+ * transforms. Interaction feedback now comes from each control's CSS.
  */
 export function PhysicsInteractive({
   children,
   className = "",
   onClick,
-  scaleOnTap = 0.95,
-  scaleOnHover = 1.015,
 }: PhysicsInteractiveProps) {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
-    <motion.div
-      className={className}
-      onClick={onClick}
-      whileTap={shouldReduceMotion ? {} : { scale: scaleOnTap }}
-      whileHover={shouldReduceMotion ? {} : { scale: scaleOnHover }}
-      transition={springConfig}
-    >
+    <div className={className} onClick={onClick}>
       {children}
-    </motion.div>
+    </div>
   );
 }
