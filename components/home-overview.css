@@ -5,18 +5,11 @@
 /* Hero Grid on Home */
 .page-hero-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.75fr);
   align-items: center;
-  gap: 28px;
+  gap: 32px;
   position: relative;
   z-index: 1;
-}
-
-@media (min-width: 900px) {
-  .page-hero-grid {
-    grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
-    gap: 36px;
-  }
 }
 
 .hero-content {
@@ -38,26 +31,36 @@
   position: relative;
 }
 
-.hero-3d-wrapper,
 .hero-visual-wrapper {
   position: relative;
   width: 100%;
-  min-height: 320px;
+  max-width: 300px;
   height: auto;
   display: grid;
   place-items: center;
   margin-inline: auto;
 }
 
-@media (min-width: 640px) and (max-width: 899px) {
+@media (max-width: 960px) and (min-width: 580px) {
+  .page-hero-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(20px, 3.5vw, 32px);
+  }
+
   .hero-visual-wrapper {
-    min-height: 280px;
+    width: clamp(150px, 24vw, 220px);
+    max-width: 220px;
   }
 }
 
-@media (max-width: 639px) {
+@media (max-width: 579px) {
+  .page-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
   .hero-visual-wrapper {
-    min-height: 240px;
+    max-width: 200px;
   }
 }
 
