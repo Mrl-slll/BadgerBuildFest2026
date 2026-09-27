@@ -7,7 +7,10 @@ const { execFileSync } = require('node:child_process');
 
 const output = join(__dirname, '../.test-cache-databricks');
 mkdirSync(output, { recursive: true });
-execFileSync(join(process.cwd(), 'node_modules/.bin/tsc'), [
+const tscBin = process.platform === 'win32'
+  ? join(process.cwd(), 'node_modules/.bin/tsc.cmd')
+  : join(process.cwd(), 'node_modules/.bin/tsc');
+execFileSync(tscBin, [
   'lib/server/databricks-research.ts',
   'lib/server/databricks-lakehouse.ts',
   'lib/server/databricks-ai.ts',
@@ -16,16 +19,25 @@ execFileSync(join(process.cwd(), 'node_modules/.bin/tsc'), [
   '--module', 'commonjs',
   '--target', 'es2020',
   '--skipLibCheck'
-]);
+], { shell: process.platform === 'win32' });
 
 // Mock server-only in Node test environment (Next.js bundler maps it to empty in react-server)
-const serverOnlyPath = require.resolve('server-only');
-require.cache[serverOnlyPath] = {
-  id: serverOnlyPath,
-  filename: serverOnlyPath,
-  loaded: true,
-  exports: {},
-};
+try {
+  const serverOnlyPath = require.resolve('server-only');
+  require.cache[serverOnlyPath] = {
+    id: serverOnlyPath,
+    filename: serverOnlyPath,
+    loaded: true,
+    exports: {},
+  };
+} catch {
+  const Module = require('node:module');
+  const originalLoad = Module._load;
+  Module._load = function (request) {
+    if (request === 'server-only') return {};
+    return originalLoad.apply(this, arguments);
+  };
+}
 
 const { DatabricksVectorSearchRetriever } = require(join(output, 'server/databricks-research.js'));
 const { DatabricksLakehouseAnalytics } = require(join(output, 'server/databricks-lakehouse.js'));

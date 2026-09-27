@@ -4,6 +4,7 @@ import {
   validateLab,
   validateMedication,
 } from "./tracking-validation";
+import { sampleHealthData } from "./sample-data";
 
 export const healthStorageKey = "pcos-tracking:v1";
 
@@ -33,3 +34,21 @@ export function parseStoredHealthData(raw: string | null): {
     return { data: null, invalid: true };
   }
 }
+
+export function getInitialOrStoredHealthData(): HealthData {
+  if (typeof window === "undefined") {
+    return sampleHealthData;
+  }
+  try {
+    const raw = localStorage.getItem(healthStorageKey);
+    if (!raw) {
+      localStorage.setItem(healthStorageKey, JSON.stringify(sampleHealthData));
+      return sampleHealthData;
+    }
+    const parsed = parseStoredHealthData(raw);
+    return parsed.data ?? sampleHealthData;
+  } catch {
+    return sampleHealthData;
+  }
+}
+

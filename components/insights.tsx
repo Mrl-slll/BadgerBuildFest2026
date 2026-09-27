@@ -1,15 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { addDays, duration, pretty } from '../lib/health';
 import type { HealthData } from '../lib/health';
 import { summarize } from '../lib/insights';
+import { getInitialOrStoredHealthData } from '../lib/health-storage';
 import HealthTimeline from './timeline';
 import './insights.css';
 import { ScrollReveal, MagneticButton, TracingDivider } from './motion';
 
-export default function Insights({ data, end }: {data:HealthData; end:string}) {
+export default function Insights({ data: propData, end }: {data:HealthData; end:string}) {
+  const [data] = useState<HealthData>(() => {
+    if (typeof window !== 'undefined') {
+      return getInitialOrStoredHealthData();
+    }
+    return propData;
+  });
   const [days,setDays]=useState(90);
   const start=addDays(end,1-days);
   const report=summarize(data,start,end);
