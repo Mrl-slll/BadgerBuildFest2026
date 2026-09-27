@@ -5,3 +5,4 @@ export * from "./svg-path-tracer";
 export * from "./page-transition";
 export * from "./ambient-background";
 export * from "./interactive-hero-3d";
+export * from "./animated-fingerprint-cycle";

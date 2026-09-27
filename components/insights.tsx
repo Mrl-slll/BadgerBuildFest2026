@@ -7,6 +7,7 @@ import type { HealthData } from '../lib/health';
 import { summarize } from '../lib/insights';
 import HealthTimeline from './timeline';
 import './insights.css';
+import { ScrollReveal, MagneticButton, TracingDivider } from './motion';
 
 export default function Insights({ data, end }: {data:HealthData; end:string}) {
   const [days,setDays]=useState(90);
@@ -17,30 +18,36 @@ export default function Insights({ data, end }: {data:HealthData; end:string}) {
   const selectedQuestions=questions.filter(q=>!excluded.includes(q));
   return (
     <div className="insights-app">
-      <section className="page-hero" aria-labelledby="insights-hero-title">
-        <div className="hero-content">
-          <p className="hero-badge">Longitudinal health patterns</p>
-          <h1 id="insights-hero-title">A clearer view of your history.</h1>
-          <p className="hero-subtitle">Your cycles, symptoms, and daily rhythms, in context.</p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="#visit">
-              <span>Prepare for a visit</span>
-            </a>
-            <div className="range-selector-pill">
-              <span>Time range:</span>
-              <select
-                aria-label="Time range"
-                value={days}
-                onChange={(e) => setDays(Number(e.target.value))}
-              >
-                <option value={30}>Last 30 days</option>
-                <option value={90}>Last 90 days</option>
-                <option value={180}>Last 180 days</option>
-              </select>
+      <ScrollReveal yOffset={24}>
+        <section className="page-hero" aria-labelledby="insights-hero-title">
+          <div className="hero-content">
+            <p className="hero-badge">Longitudinal health patterns</p>
+            <h1 id="insights-hero-title">A clearer view of your history.</h1>
+            <p className="hero-subtitle">Your cycles, symptoms, and daily rhythms, in context.</p>
+            <div className="hero-actions">
+              <MagneticButton magneticStrength={0.25} innerStrength={0.12}>
+                <a className="button button-primary" href="#visit">
+                  <span>Prepare for a visit</span>
+                </a>
+              </MagneticButton>
+              <div className="range-selector-pill">
+                <span>Time range:</span>
+                <select
+                  aria-label="Time range"
+                  value={days}
+                  onChange={(e) => setDays(Number(e.target.value))}
+                >
+                  <option value={30}>Last 30 days</option>
+                  <option value={90}>Last 90 days</option>
+                  <option value={180}>Last 180 days</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
+
+      <TracingDivider variant="pulse" color="#66A3BF" />
 
       <div className="range-bar">
         <div>

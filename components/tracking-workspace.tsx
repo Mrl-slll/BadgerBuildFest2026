@@ -6,6 +6,7 @@ import {
   healthStorageKey,
   parseStoredHealthData,
 } from "../lib/health-storage";
+import { ScrollReveal, PhysicsInteractive } from "./motion";
 
 const sections = [
   "Daily log",
@@ -87,26 +88,29 @@ function LoadedTrackingWorkspace() {
       <a className="skip-link" href="#tracking-content">
         Skip to tracking form
       </a>
-      <section className="page-hero" aria-labelledby="track-hero-title">
-        <div className="hero-content">
-          <p className="hero-badge">Your personal health journal</p>
-          <h1 id="track-hero-title">Make room for how you feel.</h1>
-          <p className="hero-subtitle">A few details today. A clearer record over time.</p>
-          <div className="privacy-pill">
-            <span className="privacy-dot" aria-hidden="true" />
-            <span>Stored in this browser only · Private & local</span>
+      <ScrollReveal yOffset={20}>
+        <section className="page-hero" aria-labelledby="track-hero-title">
+          <div className="hero-content">
+            <p className="hero-badge">Your personal health journal</p>
+            <h1 id="track-hero-title">Make room for how you feel.</h1>
+            <p className="hero-subtitle">A few details today. A clearer record over time.</p>
+            <div className="privacy-pill">
+              <span className="privacy-dot" aria-hidden="true" />
+              <span>Stored in this browser only · Private & local</span>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
       <nav className="track-nav" aria-label="Tracking sections">
         {sections.map((s) => (
-          <button
-            key={s}
-            aria-current={section === s ? "page" : undefined}
-            onClick={() => navigate(s)}
-          >
-            {s}
-          </button>
+          <PhysicsInteractive key={s} className="inline-block" scaleOnTap={0.96}>
+            <button
+              aria-current={section === s ? "page" : undefined}
+              onClick={() => navigate(s)}
+            >
+              {s}
+            </button>
+          </PhysicsInteractive>
         ))}
       </nav>
       {pending && (

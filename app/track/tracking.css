@@ -80,36 +80,65 @@
   font-weight: 550;
   background: #fffdf8;
   color: var(--ink);
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 180ms ease,
+              border-color 180ms ease,
+              color 180ms ease;
 }
-.tracking button:hover {
+.tracking button:hover:not(:disabled) {
   background: #e2ece7;
+  transform: translateY(-1.5px);
+  border-color: var(--teal);
+  box-shadow: 0 3px 10px rgba(36, 100, 95, 0.12);
+}
+.tracking button:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+  box-shadow: inset 0 0 0 2px var(--teal);
 }
 .tracking button:disabled {
   opacity: 0.5;
   cursor: default;
+  transform: none;
+  box-shadow: none;
 }
 .tracking .track-nav button {
   white-space: nowrap;
   border-color: transparent;
   background: transparent;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tracking .track-nav button:hover:not([aria-current]) {
+  background: #e2ece7;
+  transform: translateY(-1.5px);
 }
 .tracking .track-nav button[aria-current] {
   background: var(--teal);
   color: white;
+  box-shadow: 0 2px 8px rgba(36, 100, 95, 0.22);
 }
 .tracking .primary {
   background: var(--teal);
   border-color: var(--teal);
   color: white;
+  box-shadow: 0 2px 6px rgba(36, 100, 95, 0.2);
 }
-.tracking .primary:hover {
-  background: #194a47;
+.tracking .primary:hover:not(:disabled) {
+  background: var(--teal-dark);
+  border-color: var(--teal-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(36, 100, 95, 0.28);
 }
 .tracking .track-content {
   background: #fffdf8;
   border: 1px solid #d1d9d1;
   border-radius: 12px;
   padding: 32px;
+  box-shadow: 0 1px 3px rgba(36, 63, 64, 0.03);
+  transition: box-shadow 240ms ease, border-color 200ms ease;
+}
+.tracking .track-content:hover {
+  box-shadow: 0 8px 24px rgba(36, 63, 64, 0.06);
 }
 .tracking .section-head {
   display: flex;
@@ -168,11 +197,25 @@
   margin: 2px 0 12px;
   font-size: 14px;
 }
+.tracking .chips button {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 160ms ease,
+              border-color 160ms ease,
+              box-shadow 180ms ease;
+}
+.tracking .chips button:hover:not(:disabled) {
+  transform: translateY(-1.5px) scale(1.02);
+  border-color: var(--teal);
+  box-shadow: 0 3px 8px rgba(36, 100, 95, 0.12);
+}
 .tracking .chips button[aria-pressed="true"] {
   background: var(--pale);
   border-color: var(--teal);
   color: var(--teal-dark);
   box-shadow: inset 0 0 0 1px var(--teal);
+}
+.tracking .chips button[aria-pressed="true"]:hover {
+  background: #b5d5ce;
 }
 .tracking .symptom-picker {
   max-width: 390px;
@@ -198,6 +241,10 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  transition: transform 180ms ease;
+}
+.tracking .pain-scale-option:hover {
+  transform: translateY(-2px);
 }
 .tracking .pain-scale-caption {
   color: var(--muted);
@@ -215,6 +262,17 @@
   min-width: 44px;
   padding-inline: 12px;
   font-variant-numeric: tabular-nums;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 160ms ease,
+              border-color 160ms ease,
+              color 160ms ease,
+              box-shadow 180ms ease;
+}
+.tracking .pain-scale button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.08);
+  border-color: var(--blue);
+  color: var(--blue);
+  box-shadow: 0 4px 10px rgba(51, 104, 160, 0.18);
 }
 .tracking .selected-symptoms,
 .tracking .medication-symptom-links {
@@ -230,6 +288,15 @@
   border-color: var(--teal);
   color: var(--teal-dark);
   white-space: nowrap;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 160ms ease,
+              box-shadow 180ms ease;
+}
+.tracking :is(.selected-symptoms, .medication-symptom-links) button:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  background: #b5d5ce;
+  border-color: var(--teal-dark);
+  box-shadow: 0 3px 8px rgba(36, 100, 95, 0.15);
 }
 .tracking .inline-fields,
 .tracking .actions {
@@ -256,12 +323,22 @@
 }
 .tracking details {
   border-block: 1px solid #dbe1d9;
-  padding: 16px 0;
+  padding: 16px 8px;
+  margin-inline: -8px;
+  border-radius: 8px;
+  transition: background-color 160ms ease;
+}
+.tracking details:hover {
+  background: rgba(200, 223, 219, 0.12);
 }
 .tracking summary {
   cursor: pointer;
   min-height: 44px;
   font-weight: 600;
+  transition: color 150ms ease;
+}
+.tracking summary:hover {
+  color: var(--teal);
 }
 .tracking summary span {
   display: block;
@@ -276,8 +353,14 @@
   gap: 20px;
   align-items: start;
   margin: 18px 0;
-  padding-bottom: 20px;
+  padding: 14px 10px;
+  margin-inline: -10px;
+  border-radius: 8px;
   border-bottom: 1px solid #dbe1d9;
+  transition: background-color 160ms ease;
+}
+.tracking .med-log:hover {
+  background: rgba(200, 223, 219, 0.16);
 }
 .tracking .med-log:last-of-type {
   border-bottom: 0;
@@ -324,9 +407,17 @@
   gap: 20px;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 0;
+  padding: 20px 14px;
+  margin-inline: -14px;
+  border-radius: 8px;
   border-bottom: 1px solid #dbe1d9;
   overflow-wrap: anywhere;
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+.tracking .record:hover {
+  background: rgba(200, 223, 219, 0.22);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(36, 63, 64, 0.04);
 }
 .tracking .record > div {
   flex: 1;
@@ -343,12 +434,22 @@
   background: var(--pale);
   border-radius: 4px;
   vertical-align: middle;
+  transition: transform 160ms ease;
+}
+.tracking .badge:hover {
+  transform: scale(1.06);
 }
 .tracking .panel {
   padding: 20px;
   background: #f3f5ee;
   border: 1px solid #d1d9d1;
   border-radius: 8px;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms ease, border-color 200ms ease;
+}
+.tracking .panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(36, 63, 64, 0.06);
+  border-color: var(--teal);
 }
 .tracking .empty-state {
   padding: 32px 0;
@@ -369,6 +470,10 @@
   background: #f3ebd7;
   border: 1px solid #9a8250;
   border-radius: 6px;
+  transition: box-shadow 200ms ease;
+}
+.tracking .unsaved:hover {
+  box-shadow: 0 4px 14px rgba(154, 130, 80, 0.15);
 }
 @media (max-width: 700px) {
   .tracking {
@@ -457,3 +562,21 @@
 .tracking .skip-link:focus {
   top: 12px;
 }
+
+.tracking :is(input, select, textarea) {
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.tracking :is(input:not([type="checkbox"]), select, textarea):hover {
+  border-color: var(--teal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tracking *,
+  .tracking *::before,
+  .tracking *::after {
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+

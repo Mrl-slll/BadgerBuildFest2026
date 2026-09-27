@@ -105,18 +105,31 @@ export class DatabricksVectorSearchRetriever implements DatabricksResearchRetrie
         if (res.ok) {
           const json = await res.json();
           const rows: unknown[][] = json.result?.data_array ?? [];
+          const manifestColumns: { name: string }[] = json.manifest?.columns ?? [];
+
+          // Map column indices dynamically if manifest is returned, else use default order
+          const idIdx = manifestColumns.findIndex((c) => c.name === 'id');
+          const titleIdx = manifestColumns.findIndex((c) => c.name === 'title');
+          const urlIdx = manifestColumns.findIndex((c) => c.name === 'url');
+          const pubIdx = manifestColumns.findIndex((c) => c.name === 'publisher');
+          const dateIdx = manifestColumns.findIndex((c) => c.name === 'published_at' || c.name === 'date');
+          const textIdx = manifestColumns.findIndex((c) => c.name === 'excerpt' || c.name === 'content' || c.name === 'text');
+
           const sources: ResearchSource[] = rows.map((row) => ({
-            id: String(row[0] ?? ''),
-            title: String(row[1] ?? 'Untitled Study'),
-            url: String(row[2] ?? ''),
-            publisher: String(row[3] ?? 'Databricks Vector Search'),
-            publishedAt: row[4] ? String(row[4]) : undefined,
-            excerpt: String(row[5] ?? ''),
+            id: String(row[idIdx !== -1 ? idIdx : 0] ?? ''),
+            title: String(row[titleIdx !== -1 ? titleIdx : 1] ?? 'Untitled Study'),
+            url: String(row[urlIdx !== -1 ? urlIdx : 2] ?? ''),
+            publisher: String(row[pubIdx !== -1 ? pubIdx : 3] ?? 'Databricks Vector Search'),
+            publishedAt: row[dateIdx !== -1 ? dateIdx : 4] ? String(row[dateIdx !== -1 ? dateIdx : 4]) : undefined,
+            excerpt: String(row[textIdx !== -1 ? textIdx : 5] ?? ''),
           })).filter((s) => s.id && s.title);
 
           if (sources.length > 0) {
             return { status: 'available', sources };
           }
+        } else {
+          const errorText = await res.text().catch(() => '');
+          console.warn(`[Databricks Vector Search] API returned HTTP ${res.status}: ${errorText}. Falling back to mock vectors.`);
         }
       } catch (err) {
         console.warn('[Databricks Vector Search] Live query failed or timed out, falling back to mock vectors:', err);

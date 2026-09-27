@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background: #f8f8f8;
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="340" height="340" fill="none" stroke="#246563" stroke-width="17" stroke-linecap="round" stroke-linejoin="round">
+      <!-- 1. Central Core Vertical Bar -->
+      <path d="M 200 168 L 200 228" />
+
+      <!-- 2. Arch 1 (Innermost) -->
+      <!-- Left leg straight up, semicircle over top, right leg straight down -->
+      <path d="M 174 238 L 174 165 A 26 26 0 0 1 226 165 L 226 230" />
+
+      <!-- 3. Arch 2 (Loops around Arch 1, right leg hooks under to the left) -->
+      <!-- Right leg comes down, loops around the bottom in a U-turn (hook) -->
+      <path d="M 148 248 L 148 165 A 52 52 0 0 1 252 165 L 252 238 C 252 272 208 288 190 270 C 182 262 184 250 190 242" />
+
+      <!-- 4. Arch 3 -->
+      <path d="M 122 238 L 122 165 A 78 78 0 0 1 278 165 L 278 238 C 278 266 260 292 234 306" />
+
+      <!-- 5. Arch 4 -->
+      <path d="M 96 216 L 96 165 A 104 104 0 0 1 304 165 L 304 236 C 304 278 284 308 252 324" />
+
+      <!-- 6. Outermost Circle Arch 5 (Forms the circular outline on top and right) -->
+      <!-- Radius 130 centered at (200, 195) -->
+      <path d="M 70 195 L 70 165 A 130 130 0 0 1 330 165 C 330 250 295 315 240 334" />
+
+      <!-- 7. Bottom Arc of the Circle Perimeter -->
+      <path d="M 166 336 C 188 340 216 338 242 328" />
+
+      <!-- 8. Three diagonal dashes at lower-left along concentric paths -->
+      <!-- Dash 3 (inside) -->
+      <path d="M 112 255 L 124 243" />
+      <!-- Dash 2 (middle) -->
+      <path d="M 124 286 L 142 268" />
+      <!-- Dash 1 (outer) -->
+      <path d="M 136 316 L 156 296" />
+    </svg>
+  </div>
+</body>
+</html>

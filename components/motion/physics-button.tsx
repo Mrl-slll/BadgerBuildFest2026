@@ -98,6 +98,7 @@ interface PhysicsInteractiveProps {
   onClick?: () => void;
   scaleOnTap?: number;
   scaleOnHover?: number;
+  yOnHover?: number;
 }
 
 /**
@@ -109,6 +110,7 @@ export function PhysicsInteractive({
   onClick,
   scaleOnTap = 0.95,
   scaleOnHover = 1.015,
+  yOnHover = -2,
 }: PhysicsInteractiveProps) {
   const shouldReduceMotion = useReducedMotion();
 
@@ -117,7 +119,9 @@ export function PhysicsInteractive({
       className={className}
       onClick={onClick}
       whileTap={shouldReduceMotion ? {} : { scale: scaleOnTap }}
-      whileHover={shouldReduceMotion ? {} : { scale: scaleOnHover }}
+      whileHover={
+        shouldReduceMotion ? {} : { scale: scaleOnHover, y: yOnHover }
+      }
       transition={springConfig}
     >
       {children}

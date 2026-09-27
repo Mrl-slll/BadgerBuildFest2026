@@ -5,6 +5,7 @@ import type { Answer } from '../lib/ai';
 import { emptyData, type HealthData } from '../lib/health';
 import { healthStorageKey, parseStoredHealthData } from '../lib/health-storage';
 import styles from '../app/ask/ask.module.css';
+import { ScrollReveal, PhysicsInteractive, MagneticButton } from './motion';
 
 const starterSuggestions = [
   'What symptoms have I logged most frequently?',
@@ -153,21 +154,23 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
     <div className={styles.page}>
       <div className={styles.chatContainer}>
         {/* Top Header */}
-        <header className={styles.header}>
-          <div className={styles.headerContent}>
-            <div>
-              <p className="hero-badge">AI Clinical Companion</p>
-              <h1 className={styles.headerTitle}>Make sense of your health history.</h1>
-              <p className={styles.headerSubtitle}>
-                A Gemini-style conversational space to explore your symptoms, cycles, and doctor-ready questions.
-              </p>
+        <ScrollReveal yOffset={20}>
+          <header className={styles.header}>
+            <div className={styles.headerContent}>
+              <div>
+                <p className="hero-badge">AI Clinical Companion</p>
+                <h1 className={styles.headerTitle}>Make sense of your health history.</h1>
+                <p className={styles.headerSubtitle}>
+                  A Gemini-style conversational space to explore your symptoms, cycles, and doctor-ready questions.
+                </p>
+              </div>
+              <div className={styles.statusPill}>
+                <span className={styles.statusDot} aria-hidden="true" />
+                <span>Personalized with your journal</span>
+              </div>
             </div>
-            <div className={styles.statusPill}>
-              <span className={styles.statusDot} aria-hidden="true" />
-              <span>Personalized with your journal</span>
-            </div>
-          </div>
-        </header>
+          </header>
+        </ScrollReveal>
 
         {/* Message History (Scrollable Conversation Area) */}
         <main className={styles.conversation} aria-live="polite" aria-relevant="additions">
@@ -186,18 +189,19 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
               <div className={styles.suggestionsHeader}>Suggested questions:</div>
               <div className={styles.suggestionsGrid}>
                 {starterSuggestions.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    className={styles.suggestionChip}
-                    onClick={() => handleSend(suggestion)}
-                    disabled={pending}
-                  >
-                    <span>{suggestion}</span>
-                    <svg className={styles.chipArrow} viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </button>
+                  <PhysicsInteractive key={suggestion} scaleOnTap={0.96} scaleOnHover={1.02}>
+                    <button
+                      type="button"
+                      className={styles.suggestionChip}
+                      onClick={() => handleSend(suggestion)}
+                      disabled={pending}
+                    >
+                      <span>{suggestion}</span>
+                      <svg className={styles.chipArrow} viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </PhysicsInteractive>
                 ))}
               </div>
             </div>
@@ -367,18 +371,20 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
                   {question.length > 0 ? `${question.length}/2000` : ''}
                 </span>
 
-                <button
-                  type="submit"
-                  disabled={pending || !question.trim()}
-                  className={styles.sendButton}
-                  aria-label="Send question"
-                  title="Send (Enter)"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={styles.sendIcon}>
-                    <line x1="12" y1="19" x2="12" y2="5" />
-                    <polyline points="5 12 12 5 19 12" />
-                  </svg>
-                </button>
+                <MagneticButton magneticStrength={0.22} innerStrength={0.12}>
+                  <button
+                    type="submit"
+                    disabled={pending || !question.trim()}
+                    className={styles.sendButton}
+                    aria-label="Send question"
+                    title="Send (Enter)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={styles.sendIcon}>
+                      <line x1="12" y1="19" x2="12" y2="5" />
+                      <polyline points="5 12 12 5 19 12" />
+                    </svg>
+                  </button>
+                </MagneticButton>
               </div>
             </div>
 
