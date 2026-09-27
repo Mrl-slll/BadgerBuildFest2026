@@ -1,5 +1,8 @@
 "use client";
 import { useEffect, useState, useMemo, useSyncExternalStore } from "react";
+import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
+import { SymptomInsights } from "./symptom-insights";
+import { dateKey, HealthData, pretty } from "../lib/health";
 import { DailyLogForm, Medications, Labs, Cycles, WeightManager } from "./tracking";
 import { dateKey, HealthData, pretty, addDays } from "../lib/health";
 import { useUser } from "@clerk/nextjs";
@@ -12,6 +15,7 @@ import { ScrollReveal, PhysicsInteractive } from "./motion";
 
 const sections = [
   "Daily log",
+  "Suggestions",
   "Weight",
   "Cycles",
   "Medications",
@@ -380,8 +384,24 @@ function LoadedTrackingWorkspace() {
               save={save}
               date={date}
               onDirty={setDirty}
+              onSave={() => navigate("Suggestions")}
             />
           )}
+          {section === "Suggestions" && (
+            <>
+              <h2>Personalized Suggestions</h2>
+              <p>Based on your saved symptoms, here are personalized insights and recommendations.</p>
+              {(() => {
+                const mostRecentLog = [...data.logs].sort((a, b) => b.date.localeCompare(a.date))[0];
+                return mostRecentLog && mostRecentLog.symptoms.length > 0 ? (
+                  <SymptomInsights symptoms={mostRecentLog.symptoms} />
+                ) : (
+                  <div style={{ padding: "2rem", textAlign: "center", color: "#666" }}>
+                    <p>No symptoms recorded yet. Add symptoms in your Daily log and save to see personalized suggestions here.</p>
+                  </div>
+                );
+              })()}
+            </>
           {section === "Weight" && (
             <WeightManager
               data={data}

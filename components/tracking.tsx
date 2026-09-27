@@ -1,4 +1,5 @@
 "use client";
+import { validateMedication, validateLab } from "../lib/tracking-validation";
 import { useEffect, useState, useMemo } from "react";
 import { validateMedication, validateLab, validateDaily as validateLog } from "../lib/tracking-validation";
 import { SymptomInsights } from "./symptom-insights";
@@ -21,11 +22,13 @@ type Props = {
   data: HealthData;
   save: (data: HealthData) => boolean;
   onDirty?: (dirty: boolean) => void;
+  onSave?: () => void;
 };
 export function DailyLogForm({
   data,
   save,
   onDirty,
+  onSave,
   date: initial = dateKey(),
 }: Props & { date?: string }) {
   const [date, setDate] = useState(initial);
@@ -42,7 +45,6 @@ export function DailyLogForm({
   const [status, setStatus] = useState("");
   const [nextDate, setNextDate] = useState<string | null>(null);
   const [changed, setChanged] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   useEffect(() => {
     if (window.location.hash === "#cycle-bleeding") {
       const section = document.getElementById("cycle-bleeding");
@@ -117,6 +119,7 @@ export function DailyLogForm({
           setChanged(false);
           onDirty?.(false);
           setStatus("Your entry is saved. You can edit it anytime.");
+          onSave?.();
         } else
           setStatus(
             "Could not save. Your entry is still here. Please try again.",
@@ -276,28 +279,6 @@ export function DailyLogForm({
           <p className="field-hint">Previously recorded overall pain: {log.pain}/10.</p>
         )}
       </fieldset>
-      {log.symptoms.length > 0 && (
-        <div className="centered-suggestions-trigger">
-          <button
-            type="button"
-            className="get-suggestions-button"
-            onClick={() => setShowSuggestions(!showSuggestions)}
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
-            </svg>
-            <span>{showSuggestions ? "Hide" : "Get"} Personalized Suggestions</span>
-          </button>
-        </div>
-      )}
-      {showSuggestions && log.symptoms.length > 0 && (
-        <SymptomInsights symptoms={log.symptoms} />
-      )}
       <fieldset id="cycle-bleeding" tabIndex={-1}>
         <legend>Cycle & bleeding</legend>
         <div className="chips">
