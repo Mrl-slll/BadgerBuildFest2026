@@ -42,7 +42,6 @@ try {
 const { DatabricksVectorSearchRetriever } = require(join(output, 'server/databricks-research.js'));
 const { DatabricksLakehouseAnalytics } = require(join(output, 'server/databricks-lakehouse.js'));
 const { DatabricksAIService } = require(join(output, 'server/databricks-ai.js'));
-const { getAIService } = require(join(output, 'server/services.js'));
 
 after(() => rmSync(output, { recursive: true, force: true }));
 

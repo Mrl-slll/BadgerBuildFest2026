@@ -119,8 +119,6 @@ function LoadedTrackingWorkspace() {
               </span>
             )}
           </div>
-        </div>
-      </section>
         </section>
       </ScrollReveal>
       <nav className="track-nav" aria-label="Tracking sections">
