@@ -34,6 +34,11 @@ export default function HealthTimeline({data, compact=false, start:providedStart
     if(!log) return {height:0,text:'Not recorded'};
     if(layer==='Bleeding') return {height:log.bleeding&&log.bleeding!=='None'?65:0,text:log.bleeding??'Not recorded'};
     if(layer==='Acne') return {height:log.symptoms.includes('Acne')?60:0,text:log.symptoms.includes('Acne')?'Selected':'Not selected in entry'};
+    if (layer === 'Pain' && Object.keys(log.painScores ?? {}).length) {
+      const scores = Object.entries(log.painScores!);
+      const highest = Math.max(...scores.map(([, score]) => score));
+      return {height: Math.max(3, highest * 10), text: `${scores.map(([symptom, score]) => `${symptom}: ${score}/10`).join('; ')} (bar shows highest impact)`};
+    }
     const n=layer==='Pain'?log.pain:layer==='Energy'?log.energy:log.sleepMinutes;
     const max=layer==='Pain'?10:layer==='Energy'?5:1440;
     return {height:n===undefined?0:Math.max(3,n/max*100),text:n===undefined?'Not recorded':layer==='Sleep'?`${(n/60).toFixed(1)} hours`:`${n} / ${max}`};
