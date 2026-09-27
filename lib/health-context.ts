@@ -1,5 +1,16 @@
 import { addDays, dateKey, type HealthData } from './health';
 
+export type LogEntrySummary = {
+  date: string;
+  symptoms: string[];
+  pain?: number;
+  mood?: number;
+  energy?: number;
+  sleepMinutes?: number;
+  sleepQuality?: string;
+  periodStart?: boolean;
+};
+
 /** Identity-free projection. Notes, appointments, and identifiers are excluded. */
 export type HealthContext = {
   start: string; end: string; loggedDays: number;
@@ -7,6 +18,7 @@ export type HealthContext = {
   periodStarts: string[];
   medications: { name: string; startedAt: string; endedAt?: string }[];
   labs: { name: string; value: string; unit: string; date: string; low: string; high: string }[];
+  recentLogs?: LogEntrySummary[];
 };
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid history');
@@ -29,11 +41,18 @@ function rows(value: unknown): Record<string, unknown>[] {
 export function assembleHealthContext(input?: HealthData | unknown, end = dateKey()): HealthContext | undefined {
   if (input === undefined || input === null) return undefined;
   const data = record(input);
-  if (data.personalize !== true) return undefined;
-  const userId = string(record(data.user).id);
-  if (!userId) throw new Error('Missing record owner');
+  if (data.personalize === false) return undefined;
+  const userObj = data.user && typeof data.user === 'object' ? record(data.user) : null;
+  const userId = userObj?.id ? string(userObj.id) : 'local-user';
   const start = addDays(date(end), -89);
-  const own = (value: unknown) => rows(value).filter(row => row.userId === userId);
+  const own = (value: unknown) =>
+    rows(value).filter(
+      (row) =>
+        !row.userId ||
+        row.userId === userId ||
+        row.userId === 'local-user' ||
+        userId === 'local-user'
+    );
   const inRange = (value: unknown) => { const day = date(value); return day >= start && day <= end; };
   const logs = own(data.logs).filter(row => inRange(row.date));
   const symptoms = new Map<string, Set<string>>();
@@ -46,6 +65,20 @@ export function assembleHealthContext(input?: HealthData | unknown, end = dateKe
       symptoms.set(name, days);
     }
   }
+
+  // Extract recent detailed daily logs for the prompt
+  const sortedLogs = [...logs].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const recentLogs: LogEntrySummary[] = sortedLogs.slice(-25).map((log) => ({
+    date: date(log.date),
+    symptoms: Array.isArray(log.symptoms) ? log.symptoms.map((s) => String(s)) : [],
+    pain: typeof log.pain === 'number' ? log.pain : undefined,
+    mood: typeof log.mood === 'number' ? log.mood : undefined,
+    energy: typeof log.energy === 'number' ? log.energy : undefined,
+    sleepMinutes: typeof log.sleepMinutes === 'number' ? log.sleepMinutes : undefined,
+    sleepQuality: typeof log.sleepQuality === 'string' ? log.sleepQuality : undefined,
+    periodStart: Boolean(log.periodStart),
+  }));
+
   return {
     start, end,
     loggedDays: new Set(logs.map(log => date(log.date))).size,
@@ -53,5 +86,6 @@ export function assembleHealthContext(input?: HealthData | unknown, end = dateKe
     periodStarts: [...new Set(logs.filter(log => log.periodStart === true).map(log => date(log.date)))].sort(),
     medications: own(data.medications).filter(row => date(row.startedAt) <= end && (!row.endedAt || date(row.endedAt) >= start)).map(row => ({ name: string(row.name), startedAt: date(row.startedAt), ...(row.endedAt ? { endedAt: date(row.endedAt) } : {}) })),
     labs: own(data.labs).filter(row => inRange(row.date)).map(row => ({ name: string(row.name), value: string(row.value), unit: string(row.unit), date: date(row.date), low: string(row.low), high: string(row.high) })),
+    recentLogs,
   };
 }

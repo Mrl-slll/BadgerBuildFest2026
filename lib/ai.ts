@@ -74,7 +74,23 @@ export function describeContext(context?: HealthContext): string {
   const labs = context.labs.length > 0
     ? ` Recent labs: ${context.labs.map(l => `${l.name} (${l.value} ${l.unit})`).join(', ')}.`
     : '';
-  return `${context.loggedDays} distinct ${context.loggedDays === 1 ? 'day' : 'days'} logged from ${context.start} to ${context.end}. ${symptoms ? `Symptoms tracked: ${symptoms}.` : 'No symptoms recorded in this window.'} Period starts: ${context.periodStarts.length}.${meds}${labs}`;
+
+  let detailedLogs = '';
+  if (context.recentLogs && context.recentLogs.length > 0) {
+    const formattedRows = context.recentLogs.slice(-20).map(log => {
+      const items: string[] = [`Date ${log.date}`];
+      if (log.symptoms.length > 0) items.push(`Symptoms: ${log.symptoms.join(', ')}`);
+      if (log.pain !== undefined && log.pain > 0) items.push(`Pain: ${log.pain}/5`);
+      if (log.energy !== undefined) items.push(`Energy: ${log.energy}/5`);
+      if (log.mood !== undefined) items.push(`Mood: ${log.mood}/5`);
+      if (log.sleepMinutes !== undefined) items.push(`Sleep: ${Math.round(log.sleepMinutes / 60 * 10) / 10}h (${log.sleepQuality || 'Normal'})`);
+      if (log.periodStart) items.push(`[Period Started]`);
+      return `  - ${items.join(' | ')}`;
+    });
+    detailedLogs = `\n\nDETAILED USER JOURNAL ENTRIES (Reference these specific dates and trends directly):\n` + formattedRows.join('\n');
+  }
+
+  return `${context.loggedDays} distinct ${context.loggedDays === 1 ? 'day' : 'days'} logged from ${context.start} to ${context.end}. ${symptoms ? `Symptoms tracked: ${symptoms}.` : 'No symptoms recorded in this window.'} Period starts: ${context.periodStarts.length}.${meds}${labs}${detailedLogs}`;
 }
 export class DevelopmentAIService implements AIService {
   private readonly research: ResearchRetriever;

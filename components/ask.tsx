@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 
 import { useUser } from '@clerk/nextjs';
 import type { Answer } from '../lib/ai';
 import { type HealthData } from '../lib/health';
-import { getInitialOrStoredHealthData } from '../lib/health-storage';
+import { getInitialOrStoredHealthData, saveHealthDataLocally } from '../lib/health-storage';
 import styles from '../app/ask/ask.module.css';
 import { ScrollReveal, PhysicsInteractive, MagneticButton } from './motion';
 import { SymptomSearch } from './SymptomSearch';
@@ -15,6 +15,30 @@ const starterSuggestions = [
   'What should I discuss about medication changes and side effects?',
   'What snacks and meal patterns support PCOS blood sugar balance?',
 ];
+
+function cleanDisplaySyntax(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/^```(?:json|markdown)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .replace(/^\s*\{\s*["']?interpretation["']?\s*:\s*["']?/i, '')
+    .replace(/["']?\s*,\s*["']?clinicianQuestions["']?\s*:\s*(?:\[|["'])?/i, '')
+    .replace(/["'\}\]]+$/g, '')
+    .replace(/\\"/g, '"')
+    .replace(/\\n/g, '\n')
+    .trim();
+}
+
+function parseClinicianQuestions(raw: string): string[] {
+  if (!raw) return [];
+  const cleaned = cleanDisplaySyntax(raw);
+  const items = cleaned
+    .split(/\n+|•|\*|-/)
+    .map((s) => s.replace(/^["'\s]+|["'\s]+$/g, '').trim())
+    .filter((s) => s.length > 5);
+
+  return items.length > 0 ? items : [cleaned];
+}
 
 type Message = {
   id: string;
@@ -28,6 +52,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   const { isSignedIn, user } = useUser();
   const currentUserId = isSignedIn && user ? user.id : "local-user";
 
+  const [activeData, setActiveData] = useState<HealthData | null>(initialPropData || null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState('');
   const [pending, setPending] = useState(false);
@@ -43,6 +68,24 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   const agentJustResponded = useRef(false);
 
   const hasMounted = useRef(false);
+
+  // Sync health data from isolated local storage and cloud Databricks
+  useEffect(() => {
+    const stored = getInitialOrStoredHealthData(currentUserId);
+    setActiveData(stored);
+
+    if (isSignedIn) {
+      fetch('/api/user-data')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          if (payload?.data && Array.isArray(payload.data.logs)) {
+            setActiveData(payload.data);
+            saveHealthDataLocally(payload.data, currentUserId);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isSignedIn, currentUserId]);
 
   const scrollToPromptBox = (behavior: ScrollBehavior = 'smooth') => {
     if (!chatContainerRef.current) return;
@@ -96,8 +139,13 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   }, [messages, pending]);
 
   function getActiveHealthData(): HealthData {
+    if (activeData && activeData.logs.length > 0) return activeData;
     if (initialPropData && initialPropData.logs.length > 0) return initialPropData;
-    return getInitialOrStoredHealthData(currentUserId);
+    const stored = getInitialOrStoredHealthData(currentUserId);
+    if (stored.logs.length > 0) return stored;
+    // Fallback to local baseline logs if current account doesn't have logs yet
+    const guestStored = getInitialOrStoredHealthData('local-user');
+    return guestStored.logs.length > 0 ? guestStored : stored;
   }
 
   async function handleSend(textToSend?: string) {
@@ -340,37 +388,52 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
                   {/* Primary conversational answer */}
                   {interpretationSection && (
                     <div className={styles.primaryText}>
-                      {interpretationSection.text.split('\n\n').map((paragraph, pIdx) => {
-                        if (paragraph.includes('• ')) {
-                          const lines = paragraph.split('\n').filter(Boolean);
-                          const intro = lines.find((l) => !l.startsWith('• '));
-                          const items = lines.filter((l) => l.startsWith('• '));
-                          return (
-                            <div key={pIdx} className={styles.paragraphBlock}>
-                              {intro && <p>{intro}</p>}
-                              <ul className={styles.bulletList}>
-                                {items.map((item, itemIdx) => (
-                                  <li key={itemIdx}>{item.replace(/^•\s*/, '')}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          );
-                        }
-                        return <p key={pIdx}>{paragraph}</p>;
-                      })}
+                      {cleanDisplaySyntax(interpretationSection.text)
+                        .split('\n\n')
+                        .map((paragraph, pIdx) => {
+                          const trimmedP = paragraph.trim();
+                          if (/[•*-]\s+/.test(trimmedP)) {
+                            const lines = trimmedP
+                              .split('\n')
+                              .map((l) => l.trim())
+                              .filter(Boolean);
+                            const intro = lines.find((l) => !/^[•*-]\s+/.test(l));
+                            const items = lines.filter((l) => /^[•*-]\s+/.test(l));
+                            if (items.length > 0) {
+                              return (
+                                <div key={pIdx} className={styles.paragraphBlock}>
+                                  {intro && <p>{intro}</p>}
+                                  <ul className={styles.bulletList}>
+                                    {items.map((item, itemIdx) => (
+                                      <li key={itemIdx}>{item.replace(/^[•*-]\s*/, '')}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              );
+                            }
+                          }
+                          return <p key={pIdx}>{trimmedP}</p>;
+                        })}
                     </div>
                   )}
 
-                  {/* Clinician Question (only if user asked for doctor questions) */}
+                  {/* Clinician Question (questions to bring to clinician) */}
                   {clinicianSection && clinicianSection.text && (
                     <div className={styles.doctorCard}>
                       <div className={styles.doctorCardHeader}>
                         <svg className={styles.doctorIcon} viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
-                        <span className={styles.doctorCardTitle}>Question to bring to your clinician</span>
+                        <span className={styles.doctorCardTitle}>Questions to bring to your clinician</span>
                       </div>
-                      <p className={styles.doctorQuestionText}>&ldquo;{clinicianSection.text}&rdquo;</p>
+                      <div className={styles.doctorQuestionList}>
+                        {parseClinicianQuestions(clinicianSection.text).map((q, qIdx) => (
+                          <div key={qIdx} className={styles.doctorQuestionItem}>
+                            <span className={styles.doctorQuestionBullet}>•</span>
+                            <p className={styles.doctorQuestionText}>{q}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 

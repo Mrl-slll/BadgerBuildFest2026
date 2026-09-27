@@ -477,6 +477,27 @@
   margin: 0;
 }
 
+.doctorQuestionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.doctorQuestionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.doctorQuestionBullet {
+  color: #9c5523;
+  font-size: 16px;
+  line-height: 1.5;
+  user-select: none;
+  flex-shrink: 0;
+}
+
 .researchSection {
   display: flex;
   flex-direction: column;
