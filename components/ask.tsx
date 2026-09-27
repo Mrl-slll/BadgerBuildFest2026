@@ -8,6 +8,7 @@ import { getInitialOrStoredHealthData, saveHealthDataLocally } from '../lib/heal
 import styles from '../app/ask/ask.module.css';
 import { ScrollReveal, PhysicsInteractive, MagneticButton } from './motion';
 import { SymptomSearch } from './SymptomSearch';
+import { ExpertReviewModal } from './expert-review-modal';
 
 const starterSuggestions = [
   'What symptoms have I logged most frequently?',
@@ -58,6 +59,16 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+
+  // Expert feedback & correction state
+  const [reviewTarget, setReviewTarget] = useState<{
+    messageId: string;
+    userQuestion: string;
+    originalAIResponse: string;
+  } | null>(null);
+  const [reviewedMessages, setReviewedMessages] = useState<
+    Record<string, { correctedText?: string; expertVerified: boolean }>
+  >({});
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<HTMLDivElement>(null);
@@ -137,6 +148,25 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
       return () => cancelAnimationFrame(animFrame);
     }
   }, [messages, pending]);
+
+  function handleReviewSuccess(messageId: string, correctedText?: string) {
+    setReviewedMessages((prev) => ({
+      ...prev,
+      [messageId]: { correctedText, expertVerified: true },
+    }));
+
+    if (correctedText) {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id !== messageId || !msg.answer) return msg;
+          const updatedAnswer = msg.answer.map((sec) =>
+            sec.source === 'AI interpretation' ? { ...sec, text: correctedText } : sec
+          );
+          return { ...msg, answer: updatedAnswer };
+        })
+      );
+    }
+  }
 
   function getActiveHealthData(): HealthData {
     if (activeData && activeData.logs.length > 0) return activeData;
@@ -461,6 +491,44 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
                     </div>
                   )}
 
+                  {/* Expert Review & Correction Action Bar */}
+                  <div className={styles.expertActionBar}>
+                    <div className={styles.expertActionLeft}>
+                      {reviewedMessages[message.id]?.expertVerified ? (
+                        <span className={styles.expertVerifiedBadge}>
+                          <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          <span>
+                            {reviewedMessages[message.id]?.correctedText
+                              ? 'Clinician Corrected & Verified'
+                              : 'Clinician Reviewed & Approved'}
+                          </span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className={styles.expertReviewButton}
+                          onClick={() => {
+                            const userQ = message.question || messages.slice(0, idx).reverse().find((m) => m.role === 'user')?.question || 'PCOS Inquiry';
+                            const fullAIResponse = interpretationSection?.text || '';
+                            setReviewTarget({
+                              messageId: message.id,
+                              userQuestion: userQ,
+                              originalAIResponse: fullAIResponse,
+                            });
+                          }}
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                          </svg>
+                          <span>Expert Review & Fix</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
                   <div className={styles.metaDisclaimer}>
                     Development assistant response · For reflection and doctor prep, not diagnosis.
                   </div>
@@ -543,6 +611,17 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
           </form>
         </div>
       </div>
+
+      {reviewTarget && (
+        <ExpertReviewModal
+          isOpen={Boolean(reviewTarget)}
+          onClose={() => setReviewTarget(null)}
+          messageId={reviewTarget.messageId}
+          userQuestion={reviewTarget.userQuestion}
+          originalAIResponse={reviewTarget.originalAIResponse}
+          onSuccess={(correctedText) => handleReviewSuccess(reviewTarget.messageId, correctedText)}
+        />
+      )}
     </div>
   );
 }

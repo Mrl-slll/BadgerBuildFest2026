@@ -6,6 +6,7 @@ import { assembleHealthContext, type HealthContext } from '../health-context';
 import type { ResearchResult } from '../research';
 import { DatabricksVectorSearchRetriever } from './databricks-research';
 import { DatabricksLakehouseAnalytics } from './databricks-lakehouse';
+import { databricksExpertReviews } from './databricks-expert-reviews';
 import type { DatabricksModelServing } from './services';
 
 export interface DatabricksAIServiceConfig {
@@ -156,6 +157,11 @@ Provide a comprehensive, empathetic, and evidence-grounded explanation (2-3 para
 ### QUESTIONS FOR YOUR CLINICIAN
 Provide 1 to 3 targeted, specific questions for the user to bring to their doctor at their next visit. Format each question on its own bullet point.`;
 
+        const verifiedExamples = await databricksExpertReviews.getTopVerifiedExamples(question, 1).catch(() => []);
+        const fewShotText = verifiedExamples.length > 0
+          ? `\nCLINICIAN-VERIFIED GOLD STANDARD REFERENCE EXAMPLE (Follow this clinical tone and rigor):\nReference Question: "${verifiedExamples[0].question}"\nExpert-Approved Response:\n${verifiedExamples[0].answer}\n${verifiedExamples[0].expertComments ? `Expert Feedback Note: ${verifiedExamples[0].expertComments}\n` : ''}\n`
+          : '';
+
         const userPrompt = `USER QUESTION: "${question}"
 
 USER HEALTH JOURNAL CONTEXT (De-identified 90-day window):
@@ -163,7 +169,7 @@ ${describeContext(context)}
 
 RETRIEVED RESEARCH FROM DATABRICKS VECTOR SEARCH:
 ${JSON.stringify(research.sources.map(s => ({ title: s.title, publisher: s.publisher, excerpt: s.excerpt })))}
-`;
+${fewShotText}`;
 
         const res = await fetch(invocationUrl, {
           method: 'POST',
