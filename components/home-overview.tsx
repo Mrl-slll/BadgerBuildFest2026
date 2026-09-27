@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { CycleWheel } from "./cycle-wheel";
-import { useState, useSyncExternalStore } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import {
   addDays,
   cycleHistory,
@@ -59,6 +59,37 @@ function HomeOverviewContent({
     .sort((a, b) => b.date.localeCompare(a.date));
   const cycles = cycleHistory(logs);
   const dates = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13));
+
+  // Determine the 2-3 items logged most frequently in the last two weeks
+  const frequentLayers = useMemo(() => {
+    const twoWeekLogs = logs.filter((entry) => dates.includes(entry.date));
+    const counts = new Map<string, number>();
+
+    const bleedingCount = twoWeekLogs.filter(
+      (entry) => entry.bleeding && entry.bleeding !== "None"
+    ).length;
+    if (bleedingCount > 0) {
+      counts.set("Bleeding", bleedingCount);
+    }
+
+    twoWeekLogs.forEach((entry) => {
+      entry.symptoms.forEach((symptom) => {
+        counts.set(symptom, (counts.get(symptom) ?? 0) + 1);
+      });
+    });
+
+    const sorted = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([name]) => name);
+
+    if (sorted.length >= 2) {
+      return sorted.slice(0, 3);
+    }
+
+    const fallback = ["Bleeding", "Bloating", "Fatigue"];
+    const merged = Array.from(new Set([...sorted, ...fallback]));
+    return merged.slice(0, 3);
+  }, [logs, dates]);
   return (
     <>
       <section className="page-hero" aria-labelledby="home-hero-title">
@@ -154,7 +185,9 @@ function HomeOverviewContent({
                           <span className="entry-badge badge-period">Cycle Day 1</span>
                         )}
                         {log.bleeding && log.bleeding !== "None" && (
-                          <span className="entry-badge badge-flow">Flow: {log.bleeding}</span>
+                          <span className={`entry-badge badge-flow badge-flow-${log.bleeding.toLowerCase()}`}>
+                            Flow: {log.bleeding}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -273,7 +306,7 @@ function HomeOverviewContent({
                   </tr>
                 </thead>
                 <tbody>
-                  {["Bleeding", "Acne", "Fatigue", "Bloating"].map((layer) => (
+                  {frequentLayers.map((layer) => (
                     <tr key={layer}>
                       <th scope="row">{layer}</th>
                       {dates.map((date) => {

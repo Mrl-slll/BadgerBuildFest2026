@@ -326,23 +326,6 @@ export function CycleWheel({ cycles, today }: { cycles: ReturnType<typeof cycleH
           </svg>
           <span>Add period</span>
         </Link>
-
-        {cycles.length > 1 && (
-          <details className="cycle-previous">
-            <summary>Earlier cycles ({cycles.length - 1})</summary>
-            <div className="cycle-previous-list">
-              {[...cycles]
-                .reverse()
-                .slice(1)
-                .map((cycle) => (
-                  <p key={cycle.start}>
-                    Started {pretty(cycle.start)} · {cycle.length} days between starts
-                    {cycle.end ? ` · ended ${pretty(cycle.end)}` : " · no end date recorded"}
-                  </p>
-                ))}
-            </div>
-          </details>
-        )}
       </div>
     </section>
   );

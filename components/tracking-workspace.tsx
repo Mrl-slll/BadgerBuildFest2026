@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useMemo, useSyncExternalStore } from "react";
 import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
 import { dateKey, HealthData, pretty } from "../lib/health";
 import {
@@ -18,6 +18,93 @@ const sections = [
 ] as const;
 type Section = (typeof sections)[number];
 const subscribe = () => () => { };
+
+// Levenshtein edit distance for fuzzy typo tolerance
+function editDistance(a: string, b: string): number {
+  if (Math.abs(a.length - b.length) > 2) return 999;
+  const m = a.length;
+  const n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (a[i - 1] === b[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+      }
+    }
+  }
+  return dp[m][n];
+}
+
+// Subsequence check (e.g. "plvc" matches "pelvic")
+function isSubsequence(pattern: string, text: string): boolean {
+  let pIdx = 0;
+  for (let tIdx = 0; tIdx < text.length && pIdx < pattern.length; tIdx++) {
+    if (pattern[pIdx] === text[tIdx]) {
+      pIdx++;
+    }
+  }
+  return pIdx === pattern.length;
+}
+
+// Check if a query token fuzzy-matches any word or the full string
+function tokenFuzzyMatch(token: string, fullText: string, words: string[]): boolean {
+  if (!token) return true;
+  if (fullText.includes(token)) return true;
+  for (const word of words) {
+    if (!word) continue;
+    if (word.includes(token)) return true;
+    if (token.length >= 3 && isSubsequence(token, word)) return true;
+    if (token.length >= 4) {
+      const maxDistance = token.length >= 7 ? 2 : 1;
+      if (editDistance(token, word) <= maxDistance) return true;
+    }
+  }
+  return false;
+}
+
+function getLogSearchData(log: HealthData["logs"][number]) {
+  const [year, month, day] = log.date.split("-");
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const shortMonths = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  const mIdx = parseInt(month, 10) - 1;
+  const mName = mIdx >= 0 && mIdx < 12 ? monthNames[mIdx] : "";
+  const sName = mIdx >= 0 && mIdx < 12 ? shortMonths[mIdx] : "";
+  const dayNum = parseInt(day, 10);
+
+  const parts: string[] = [
+    log.date,
+    pretty(log.date),
+    `${mName} ${dayNum}`,
+    `${sName} ${dayNum}`,
+    `${mName} ${dayNum}, ${year}`,
+    `${sName} ${dayNum}, ${year}`,
+    `${mIdx + 1}/${dayNum}`,
+    `${mIdx + 1}/${dayNum}/${year}`,
+    ...log.symptoms,
+    log.bleeding ? `Bleeding ${log.bleeding} Flow` : "",
+    log.periodStart ? "Period started cycle day 1" : "",
+    log.periodEnd ? "Period ended" : "",
+    log.notes || "",
+    log.painNote || "",
+    log.meals || "",
+    log.movement || "",
+    ...Object.values(log.sideEffects || {}),
+  ];
+
+  const fullText = parts.join(" ").toLowerCase();
+  const words = fullText.split(/[\s,·\-_/]+/).filter(Boolean);
+  return { fullText, words };
+}
 export function TrackingWorkspace() {
   const ready = useSyncExternalStore(
     subscribe,
@@ -52,6 +139,8 @@ function LoadedTrackingWorkspace() {
   const [section, setSection] = useState<Section>("Daily log");
   const [date, setDate] = useState(dateKey());
   const [dirty, setDirty] = useState(false);
+  const [logSearchQuery, setLogSearchQuery] = useState("");
+  const [logDateFilter, setLogDateFilter] = useState("");
   const [pending, setPending] = useState<{
     section: Section;
     date: string;
@@ -82,6 +171,26 @@ function LoadedTrackingWorkspace() {
       return false;
     }
   }
+
+  const filteredLogs = useMemo(() => {
+    if (!data?.logs) return [];
+    let list = [...data.logs].sort((a, b) => b.date.localeCompare(a.date));
+
+    if (logDateFilter) {
+      list = list.filter((l) => l.date === logDateFilter);
+    }
+
+    const trimmedQuery = logSearchQuery.trim().toLowerCase();
+    if (trimmedQuery) {
+      const tokens = trimmedQuery.split(/\s+/).filter(Boolean);
+      list = list.filter((log) => {
+        const { fullText, words } = getLogSearchData(log);
+        return tokens.every((token) => tokenFuzzyMatch(token, fullText, words));
+      });
+    }
+
+    return list;
+  }, [data?.logs, logDateFilter, logSearchQuery]);
   return (
     <div className="tracking">
       <a className="skip-link" href="#tracking-content">
@@ -187,34 +296,132 @@ function LoadedTrackingWorkspace() {
             <>
               <h2>Previous logs</h2>
               <p>Open an entry to update any detail.</p>
-              {[...data.logs]
-                .sort((a, b) => b.date.localeCompare(a.date))
-                .map((l) => (
-                  <article className="record" key={l.id}>
-                    <div>
-                      <h3>
-                        {pretty(l.date)}, {l.date.slice(0, 4)}
-                      </h3>
-                      <p>{l.symptoms.join(", ") || "No symptoms recorded"}</p>
-                      <small>
-                        {[
-                          l.bleeding && `Bleeding: ${l.bleeding}`,
-                          l.periodStart && "Period started",
-                          l.periodEnd && "Period ended",
-                        ]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </small>
-                    </div>
+
+              <div className="previous-logs-toolbar">
+                <div className="search-input-box">
+                  <svg
+                    className="search-input-icon"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    className="logs-search-input"
+                    placeholder="Search by symptom, flow, note, or date (e.g. 'bloating', 'Sep 24')..."
+                    value={logSearchQuery}
+                    onChange={(e) => setLogSearchQuery(e.target.value)}
+                    aria-label="Search previous logs with fuzzy matching"
+                  />
+                  {logSearchQuery && (
                     <button
-                      aria-label={`Edit entry for ${l.date}`}
-                      onClick={() => navigate("Daily log", l.date)}
+                      type="button"
+                      className="search-clear-action"
+                      onClick={() => setLogSearchQuery("")}
+                      aria-label="Clear search query"
+                      title="Clear search"
                     >
-                      Edit entry
+                      ✕
                     </button>
-                  </article>
-                ))}
-              {!data.logs.length && (
+                  )}
+                </div>
+
+                <div className="date-filter-box">
+                  <span className="date-filter-label">Date:</span>
+                  <input
+                    type="date"
+                    className="logs-date-input"
+                    value={logDateFilter}
+                    onChange={(e) => setLogDateFilter(e.target.value)}
+                    aria-label="Filter logs by specific date"
+                    title="Filter by exact date"
+                  />
+                  {logDateFilter && (
+                    <button
+                      type="button"
+                      className="date-clear-action"
+                      onClick={() => setLogDateFilter("")}
+                      aria-label="Clear date filter"
+                      title="Clear date"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {(logSearchQuery || logDateFilter) && (
+                <div className="search-status-bar">
+                  <span>
+                    Showing <strong>{filteredLogs.length}</strong> of {data?.logs?.length ?? 0} entries
+                    {logDateFilter && <> on <strong>{pretty(logDateFilter)}</strong></>}
+                    {logSearchQuery && <> matching &ldquo;<strong>{logSearchQuery}</strong>&rdquo;</>}
+                  </span>
+                  <button
+                    type="button"
+                    className="reset-filters-btn"
+                    onClick={() => {
+                      setLogSearchQuery("");
+                      setLogDateFilter("");
+                    }}
+                  >
+                    Reset filters
+                  </button>
+                </div>
+              )}
+
+              {filteredLogs.map((l) => (
+                <article className="record" key={l.id}>
+                  <div>
+                    <h3>
+                      {pretty(l.date)}, {l.date.slice(0, 4)}
+                    </h3>
+                    <p>{l.symptoms.join(", ") || "No symptoms recorded"}</p>
+                    <small>
+                      {[
+                        l.bleeding && `Bleeding: ${l.bleeding}`,
+                        l.periodStart && "Period started",
+                        l.periodEnd && "Period ended",
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </small>
+                  </div>
+                  <button
+                    aria-label={`Edit entry for ${l.date}`}
+                    onClick={() => navigate("Daily log", l.date)}
+                  >
+                    Edit entry
+                  </button>
+                </article>
+              ))}
+
+              {data && data.logs.length > 0 && filteredLogs.length === 0 && (
+                <div className="empty-search-state">
+                  <p>No previous logs match your search or date filter.</p>
+                  <button
+                    type="button"
+                    className="button button-quiet"
+                    onClick={() => {
+                      setLogSearchQuery("");
+                      setLogDateFilter("");
+                    }}
+                  >
+                    Clear search & date filter
+                  </button>
+                </div>
+              )}
+
+              {(!data || !data.logs.length) && (
                 <p className="empty-state">
                   Your saved check-ins will appear here. Start with today, or
                   choose an earlier date in Daily log.

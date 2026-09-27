@@ -25,8 +25,39 @@
 .insights-app button:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
 .insights-app :focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .insights-app a{color:inherit;text-decoration:none}
-.insights-app .primary{display:inline-flex;align-items:center;justify-content:center;background:var(--teal);color:var(--surface);border:1px solid var(--teal);border-radius:6px;min-height:46px;padding:10px 20px;white-space:nowrap;box-shadow:0 2px 6px rgba(40,109,112,0.22);transition:transform 200ms cubic-bezier(0.16, 1, 0.3, 1),box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),background-color 180ms ease,border-color 180ms ease}
-.insights-app .primary:hover{background:var(--ink);color:var(--surface);transform:translateY(-2px);box-shadow:0 6px 18px rgba(32,62,67,0.28)}
+.insights-app .button-primary,
+.insights-app a.button-primary {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background-color:var(--teal);
+  color:#ffffff !important;
+  font-weight:600;
+  border:1px solid var(--teal);
+  border-radius:6px;
+  min-height:44px;
+  padding:10px 20px;
+  box-shadow:0 2px 6px rgba(40,109,112,0.25);
+  text-decoration:none;
+}
+.insights-app .button-primary span,
+.insights-app a.button-primary span {
+  color:#ffffff !important;
+}
+.insights-app .button-primary:hover,
+.insights-app a.button-primary:hover {
+  background-color:var(--ink);
+  border-color:var(--ink);
+  color:#ffffff !important;
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(32,62,67,0.28);
+}
+.insights-app .button-primary:hover span,
+.insights-app a.button-primary:hover span {
+  color:#ffffff !important;
+}
+.insights-app .primary{display:inline-flex;align-items:center;justify-content:center;background:var(--teal);color:#ffffff;border:1px solid var(--teal);border-radius:6px;min-height:46px;padding:10px 20px;white-space:nowrap;box-shadow:0 2px 6px rgba(40,109,112,0.22);transition:transform 200ms cubic-bezier(0.16, 1, 0.3, 1),box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),background-color 180ms ease,border-color 180ms ease}
+.insights-app .primary:hover{background:var(--ink);color:#ffffff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(32,62,67,0.28)}
 .insights-app .primary:active{transform:translateY(0) scale(0.97);box-shadow:0 1px 3px rgba(32,62,67,0.2)}
 .app-header{border-bottom:1px solid var(--line);padding:24px max(24px,calc((100vw - 1200px)/2));display:flex;align-items:center;justify-content:space-between;gap:24px;background:var(--surface)}
 .wordmark{font-size:23px;font-weight:650;letter-spacing:-.8px}.wordmark span{font-weight:400;color:var(--teal)}
@@ -94,13 +125,51 @@
 .insights-app .symptom-trends table { table-layout: fixed; }
 .insights-app .symptom-trends th,
 .insights-app .symptom-trends td { padding: 14px 8px; vertical-align: top; overflow-wrap: anywhere; }
-.insights-app .trend-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.insights-app .trend-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+  padding: 0;
+  border-top: none;
+  border-bottom: none;
+}
+.insights-app .insights-two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+}
+.insights-app .trend-columns > section,
+.insights-app .insights-two-col > section {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.insights-app #history {
+  margin-bottom: 8px;
+}
+.insights-app .insights-divider {
+  margin: 36px 0;
+}
+.insights-app .cycle-section,
+.insights-app .patterns-section,
+.insights-app .symptom-trends,
+.insights-app .medication-section {
+  border-bottom: none;
+}
 .insights-app .weekly-header,
 .insights-app .weekly-row { grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-inline: 0; }
 .insights-app .average-line { flex-wrap: wrap; gap: 16px 24px; }
 @media (max-width: 1000px) {
   .insights-app .insights-two-col,
-  .insights-app .trend-columns { grid-template-columns: minmax(0, 1fr); }
+  .insights-app .trend-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .insights-app .insights-divider {
+    margin: 28px 0;
+  }
 }
 @media (max-width: 430px) {
   .insights-app .card-surface { padding: 24px 20px; }
