@@ -6,8 +6,8 @@ import {
   getInitialOrStoredHealthData,
   healthStorageKey,
 } from "../lib/health-storage";
-import { ScrollReveal, PhysicsInteractive } from "./motion";
 import { sampleHealthData } from "../lib/sample-data";
+import { ScrollReveal, PhysicsInteractive } from "./motion";
 
 const sections = [
   "Daily log",
@@ -98,27 +98,27 @@ function LoadedTrackingWorkspace() {
               <span>Stored in this browser only · Private & local</span>
             </div>
             <div style={{ marginTop: '0.875rem', display: 'flex', gap: '0.625rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className="button button-quiet"
-              style={{ fontSize: '0.8125rem', padding: '0.375rem 0.75rem' }}
-              onClick={() => {
-                if (window.confirm("Reload the 2-year sample dataset (731 daily logs, 20 cycles, medications, and labs)?")) {
-                  save(sampleHealthData);
-                  setSampleLoadedNotice("Loaded 2 years of sample records.");
-                  setTimeout(() => setSampleLoadedNotice(""), 4500);
-                }
-              }}
-            >
-              Reload 2-Year Sample Data
-            </button>
-            {sampleLoadedNotice && (
-              <span className="badge" role="status">
-                {sampleLoadedNotice}
-              </span>
-            )}
+              <button
+                type="button"
+                className="button button-quiet"
+                style={{ fontSize: '0.8125rem', padding: '0.375rem 0.75rem' }}
+                onClick={() => {
+                  if (window.confirm("Reload the 2-year sample dataset (731 daily logs, 20 cycles, medications, and labs)?")) {
+                    save(sampleHealthData);
+                    setSampleLoadedNotice("Loaded 2 years of sample records.");
+                    setTimeout(() => setSampleLoadedNotice(""), 4500);
+                  }
+                }}
+              >
+                Reload 2-Year Sample Data
+              </button>
+              {sampleLoadedNotice && (
+                <span className="badge" role="status">
+                  {sampleLoadedNotice}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
         </section>
       </ScrollReveal>
       <nav className="track-nav" aria-label="Tracking sections">

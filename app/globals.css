@@ -2333,3 +2333,20 @@ main:focus {
     transform: none !important;
   }
 }
+
+/* Calm button interactions: controls stay fixed under the pointer. */
+:where(button, .button, .header-cta-button, .footer-back-to-top) {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+:where(button, .button, .header-cta-button, .footer-back-to-top):hover,
+:where(button, .button, .header-cta-button, .footer-back-to-top):active {
+  transform: none !important;
+}
+:where(button, .button, .header-cta-button, .footer-back-to-top) svg {
+  transform: none !important;
+  transition: none !important;
+}
