@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { DatabricksStorageService } from '../../../lib/server/databricks-storage';
 import type { HealthData } from '../../../lib/health';
+import { mergeWithBaselineData } from '../../../lib/health-storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,11 +57,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid health data payload.' }, { status: 400 });
     }
 
-    // Tag the user record with their verified Clerk account ID
+    // Tag the user record and child collections with their verified Clerk account ID
     data.user = {
       id: userId,
       name: data.user?.name || 'PCOS Journal User',
     };
+    if (Array.isArray(data.logs)) {
+      data.logs = data.logs.map((l) => ({ ...l, userId }));
+    }
+    if (Array.isArray(data.medications)) {
+      data.medications = data.medications.map((m) => ({ ...m, userId }));
+    }
+    if (Array.isArray(data.labs)) {
+      data.labs = data.labs.map((l) => ({ ...l, userId }));
+    }
 
     if (!storage.isConfigured()) {
       return NextResponse.json({

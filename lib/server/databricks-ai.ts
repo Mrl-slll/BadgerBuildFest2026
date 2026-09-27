@@ -6,6 +6,7 @@ import { assembleHealthContext, type HealthContext } from '../health-context';
 import type { ResearchResult } from '../research';
 import { DatabricksVectorSearchRetriever } from './databricks-research';
 import { DatabricksLakehouseAnalytics } from './databricks-lakehouse';
+import { databricksExpertReviews } from './databricks-expert-reviews';
 import type { DatabricksModelServing } from './services';
 
 export interface DatabricksAIServiceConfig {
@@ -13,6 +14,94 @@ export interface DatabricksAIServiceConfig {
   token?: string;
   endpoint?: string;
   mockMode?: boolean;
+}
+
+function cleanText(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/^```(?:json|markdown)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .replace(/^\s*\{\s*["']?interpretation["']?\s*:\s*["']?/i, '')
+    .replace(/["']?\s*,\s*["']?clinicianQuestions["']?\s*:\s*(?:\[|["'])?/i, '')
+    .replace(/\s*["'\]\}]+\s*$/g, '')
+    .trim();
+}
+
+export function normalizeAIResponse(rawContent: string): { interpretation: string; clinicianQuestions: string } {
+  if (!rawContent || !rawContent.trim()) {
+    return { interpretation: '', clinicianQuestions: '' };
+  }
+
+  const trimmed = rawContent.trim();
+
+  // 1. Try JSON parsing if JSON structure is detected
+  if (trimmed.startsWith('{') || trimmed.includes('"interpretation"')) {
+    try {
+      const match = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || trimmed.match(/(\{[\s\S]*\})/);
+      const toParse = match ? match[1] : trimmed;
+      const parsed = JSON.parse(toParse);
+      if (parsed && (parsed.interpretation || parsed.clinicianQuestions)) {
+        let cq = '';
+        if (Array.isArray(parsed.clinicianQuestions)) {
+          cq = parsed.clinicianQuestions.map((q: string) => `• ${String(q).replace(/^[•*-]\s*/, '').trim()}`).join('\n');
+        } else if (typeof parsed.clinicianQuestions === 'string') {
+          cq = parsed.clinicianQuestions.trim();
+        }
+        return {
+          interpretation: cleanText(String(parsed.interpretation || '')),
+          clinicianQuestions: cq,
+        };
+      }
+    } catch {
+      // Regex extraction fallback for malformed or unescaped JSON
+      const interpMatch = trimmed.match(/"interpretation"\s*:\s*"([\s\S]*?)(?:",\s*"clinicianQuestions"|"\s*\})/);
+      const qMatch = trimmed.match(/"clinicianQuestions"\s*:\s*(?:\[([\s\S]*?)\]|"([\s\S]*?)")/);
+
+      if (interpMatch) {
+        const interp = interpMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').trim();
+        let cq = '';
+        if (qMatch) {
+          const rawQ = qMatch[1] || qMatch[2] || '';
+          if (qMatch[1]) {
+            const items = rawQ
+              .split('",')
+              .map((s) => s.replace(/["'\[\]]/g, '').trim())
+              .filter(Boolean);
+            cq = items.map((q) => `• ${q.replace(/^[•*-]\s*/, '')}`).join('\n');
+          } else {
+            cq = rawQ.replace(/\\n/g, '\n').replace(/\\"/g, '"').trim();
+          }
+        }
+        return {
+          interpretation: cleanText(interp),
+          clinicianQuestions: cq,
+        };
+      }
+    }
+  }
+
+  // 2. Structured markdown headers: ### INTERPRETATION ... ### QUESTIONS FOR YOUR CLINICIAN
+  const sectionSplit = trimmed.split(/###\s*(?:QUESTIONS?\s*FOR\s*(?:YOUR\s*)?CLINICIAN|CLINICIAN_QUESTIONS?|DOCTOR_QUESTIONS?)/i);
+  if (sectionSplit.length > 1) {
+    const interpRaw = sectionSplit[0].replace(/###\s*INTERPRETATION\s*/i, '').trim();
+    const cqRaw = sectionSplit[1].trim();
+    return {
+      interpretation: cleanText(interpRaw),
+      clinicianQuestions: cleanText(cqRaw),
+    };
+  }
+
+  // 3. Fallback: Clean any residual syntax
+  const cleaned = trimmed
+    .replace(/^\{[\s\S]*?"interpretation"\s*:\s*"?/i, '')
+    .replace(/"\s*,\s*"clinicianQuestions"[\s\S]*$/i, '')
+    .replace(/["'\}\]]+$/g, '')
+    .trim();
+
+  return {
+    interpretation: cleanText(cleaned),
+    clinicianQuestions: '',
+  };
 }
 
 export class DatabricksAIService implements AIService, DatabricksModelServing {
@@ -55,13 +144,23 @@ export class DatabricksAIService implements AIService, DatabricksModelServing {
         const invocationUrl = `${cleanHost}/serving-endpoints/${encodeURIComponent(endpoint)}/invocations`;
 
         const systemPrompt = `You are a clinical PCOS health companion powered by Databricks AI.
-You have access to the user's private, de-identified health journal context and retrieved peer-reviewed medical citations from Databricks Vector Search.
-Ground your response strictly in the provided evidence and health context. Do NOT fabricate facts.
-Your output must be a valid JSON object with the following fields:
-{
-  "interpretation": "Comprehensive, empathetic, and evidence-grounded explanation (2-3 paragraphs with bullet points where appropriate).",
-  "clinicianQuestions": "1 to 3 targeted, specific questions for their clinician to review at their next appointment."
-}`;
+You have direct access to the user's private, de-identified health journal context (including specific dated log entries, symptoms, medications, and labs) and retrieved peer-reviewed medical citations from Databricks Vector Search.
+
+CRITICAL INSTRUCTIONS:
+1. GROUNDING IN USER LOGS: You MUST directly reference the user's specific logged journal entries by date, symptom severity, medications, and cycle patterns (e.g., "Looking at your log from [Date] where you tracked acne and fatigue..."). Never state that the journal is empty if entries are present.
+2. MEDICAL CITATIONS: Ground medical claims strictly in the provided research citations. Do NOT fabricate clinical facts.
+3. OUTPUT FORMAT: Present your response in two designated sections. Do NOT output raw JSON, curly braces, quotes, or JSON brackets.
+
+### INTERPRETATION
+Provide a comprehensive, empathetic, and evidence-grounded explanation (2-3 paragraphs with clean bullet points where appropriate) referencing the user's specific logged symptoms and dates.
+
+### QUESTIONS FOR YOUR CLINICIAN
+Provide 1 to 3 targeted, specific questions for the user to bring to their doctor at their next visit. Format each question on its own bullet point.`;
+
+        const verifiedExamples = await databricksExpertReviews.getTopVerifiedExamples(question, 1).catch(() => []);
+        const fewShotText = verifiedExamples.length > 0
+          ? `\nCLINICIAN-VERIFIED GOLD STANDARD REFERENCE EXAMPLE (Follow this clinical tone and rigor):\nReference Question: "${verifiedExamples[0].question}"\nExpert-Approved Response:\n${verifiedExamples[0].answer}\n${verifiedExamples[0].expertComments ? `Expert Feedback Note: ${verifiedExamples[0].expertComments}\n` : ''}\n`
+          : '';
 
         const userPrompt = `USER QUESTION: "${question}"
 
@@ -70,7 +169,7 @@ ${describeContext(context)}
 
 RETRIEVED RESEARCH FROM DATABRICKS VECTOR SEARCH:
 ${JSON.stringify(research.sources.map(s => ({ title: s.title, publisher: s.publisher, excerpt: s.excerpt })))}
-`;
+${fewShotText}`;
 
         const res = await fetch(invocationUrl, {
           method: 'POST',
@@ -93,15 +192,7 @@ ${JSON.stringify(research.sources.map(s => ({ title: s.title, publisher: s.publi
           const completion = await res.json();
           const content = completion.choices?.[0]?.message?.content || completion.predictions?.[0];
           if (content) {
-            let parsed: { interpretation?: string; clinicianQuestions?: string } | null = null;
-            try {
-              // Extract JSON block robustly (handling markdown fences or embedded JSON object)
-              const match = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || content.match(/(\{[\s\S]*\})/);
-              const toParse = match ? match[1] : content.trim();
-              parsed = JSON.parse(toParse);
-            } catch {
-              parsed = { interpretation: content };
-            }
+            const parsed = normalizeAIResponse(content);
 
             if (parsed && parsed.interpretation) {
               const lakehouseCommunity = await this.lakehouse.getCohortSummary(question, context);
@@ -233,6 +324,19 @@ Clinical consensus from the *British Journal of Dermatology*:
 • **Systemic vs. Topical**: Topical treatments alone often underperform because the underlying driver is systemic hormonal signaling.
 • **Combination Approach**: Anti-androgenic therapies (such as Spironolactone or specific progestin oral contraceptives) combined with insulin-sensitizing lifestyle changes yield superior clearance compared to isolated interventions.`;
       clinician = 'Should we check free testosterone, DHEA-S, and SHBG to measure my androgen excess, and could anti-androgenic therapy be appropriate for my symptoms?';
+    }
+    // Weight & Metabolic Regulation
+    else if (/weight|gain|loss|scale|pound|lbs|kg|heavy|fat/.test(qLower)) {
+      interpretation = `Weight regulation in PCOS is closely linked to metabolic and endocrine pathways rather than simple caloric mathematics. Elevated fasting insulin impairs lipolysis (fat breakdown) and promotes lipid storage, while cyclical progesterone and aldosterone fluctuations frequently cause 2 to 5 pounds of water retention during the luteal phase.
+
+Key clinical findings from *The Journal of Clinical Endocrinology & Metabolism*:
+• **Insulin-Driven Metabolic Resistance**: Hyperinsulinemia directly inhibits SHBG production, increasing bioactive free androgens and favoring abdominal fat storage while blunting postprandial fat oxidation.
+• **Cyclical Fluid Retention**: Pre-menstrual weight increases are overwhelmingly fluid shifts rather than changes in tissue mass, typically normalizing within 1–2 days of menstrual flow onset.
+• **Pattern Focus Over Scale Numbers**: Clinical guidelines emphasize monitoring fasting insulin, HOMA-IR, waist-to-hip ratio, and symptom resolution rather than daily scale changes.`;
+      if (context?.weightSummary && context.weightSummary.count > 0) {
+        interpretation += `\n\nYour recorded history shows **${context.weightSummary.count} weight ${context.weightSummary.count === 1 ? 'entry' : 'entries'}** (averaging ${context.weightSummary.average} lbs, with a recorded range of ${context.weightSummary.min}–${context.weightSummary.max} lbs). Observing how these fluctuations coincide with your cycle days provides valuable context for your care team.`;
+      }
+      clinician = 'How do my fasting insulin, lipid profile, and cycle phases correlate with my weight patterns, and what non-scale metabolic indicators should we track together?';
     }
     // Doctor Questions Intent
     else if (hasDoctorIntent) {

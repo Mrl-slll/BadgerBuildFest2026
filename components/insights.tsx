@@ -1,25 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { addDays, duration, pretty } from '../lib/health';
 import type { HealthData } from '../lib/health';
 import { summarize } from '../lib/insights';
-import { getInitialOrStoredHealthData } from '../lib/health-storage';
+import { getInitialOrStoredHealthData, saveHealthDataLocally } from '../lib/health-storage';
 import HealthTimeline from './timeline';
 import './insights.css';
 import { ScrollReveal, MagneticButton, TracingDivider } from './motion';
+import { PhenotypeSummaryCard } from './quiz/phenotype-summary-card';
+import { useStoredQuizResult } from '../lib/quiz-storage';
 
 export default function Insights({ data: propData, end }: {data:HealthData; end:string}) {
+  const { isLoaded, isSignedIn, user } = useUser();
+  const currentUserId = isSignedIn && user ? user.id : "local-user";
+  const quizResult = useStoredQuizResult(currentUserId);
+
   const [data, setData] = useState<HealthData>(propData);
 
   useEffect(() => {
-    try {
-      const stored = getInitialOrStoredHealthData();
-      if (stored && stored.logs && stored.logs.length > 0) {
-        setData(stored);
-      }
-    } catch {}
-  }, []);
+    if (!isLoaded) return;
+
+    // Load from this user's isolated storage
+    const stored = getInitialOrStoredHealthData(currentUserId);
+    setData(stored);
+
+    // If signed in, query Databricks for this user's cloud records
+    if (isSignedIn) {
+      fetch('/api/user-data')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          if (payload?.data && Array.isArray(payload.data.logs)) {
+            setData(payload.data);
+            saveHealthDataLocally(payload.data, currentUserId);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoaded, isSignedIn, currentUserId]);
   const [days,setDays]=useState(90);
   const start=addDays(end,1-days);
   const report=summarize(data,start,end);
@@ -60,6 +79,14 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
       </ScrollReveal>
 
       <TracingDivider variant="pulse" color="#66A3BF" className="insights-divider" />
+
+      <div style={{ maxWidth: 1100, margin: '0 auto 24px', padding: '0 20px' }}>
+        <PhenotypeSummaryCard
+          quizResult={quizResult}
+          userId={currentUserId}
+          userName={user?.firstName}
+        />
+      </div>
 
       <div className="range-bar">
         <div>
@@ -193,6 +220,33 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="card-surface weight-insight-card">
+          <h2>Weight patterns</h2>
+          <p>Longitudinal entries and fluctuations across this {days}-day period.</p>
+          {report.weight && report.weight.count > 0 ? (
+            <div>
+              <div className="average-line">
+                <span>
+                  <strong>{report.weight.average} lbs</strong> average · {report.weight.count} entries
+                </span>
+                <span>
+                  <strong>{report.weight.min} – {report.weight.max} lbs</strong> recorded range
+                </span>
+                {report.weight.netChange !== null && (
+                  <span>
+                    <strong>{report.weight.netChange > 0 ? "+" : ""}{report.weight.netChange} lbs</strong> net change
+                  </span>
+                )}
+              </div>
+              <p className="chart-note">
+                Normal hormonal shifts commonly cause cyclical water retention across follicular and luteal phases.
+              </p>
+            </div>
+          ) : (
+            <p className="empty-note">No weight entries recorded in this range.</p>
+          )}
         </section>
       </div>
 
@@ -338,6 +392,12 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
               <dd>
                 {duration(report.sleep.value === null ? null : Math.round(report.sleep.value))} average sleep ({report.sleep.count} entries);
                 energy {report.energy.value?.toFixed(1) ?? "not recorded"} / 5 ({report.energy.count} entries).
+              </dd>
+              <dt>Weight patterns</dt>
+              <dd>
+                {report.weight && report.weight.count > 0
+                  ? `${report.weight.count} entries logged · Average: ${report.weight.average} lbs (Range: ${report.weight.min}–${report.weight.max} lbs)${report.weight.netChange !== null ? ` · Net change: ${report.weight.netChange > 0 ? "+" : ""}${report.weight.netChange} lbs` : ""}.`
+                  : "No weight entries recorded in this period."}
               </dd>
               <dt>Medications & reported side effects</dt>
               <dd>

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { CycleWheel } from "./cycle-wheel";
-import { useState, useMemo, useSyncExternalStore } from "react";
+import { useState, useEffect, useMemo, useSyncExternalStore } from "react";
+import { useUser } from "@clerk/nextjs";
 import {
   addDays,
   cycleHistory,
@@ -11,7 +12,7 @@ import {
   type HealthData,
 } from "../lib/health";
 import { EmptyState, Icon, SectionHeading } from "./ui";
-import { getInitialOrStoredHealthData } from "../lib/health-storage";
+import { getInitialOrStoredHealthData, saveHealthDataLocally } from "../lib/health-storage";
 import {
   MagneticButton,
   ScrollReveal,
@@ -21,6 +22,10 @@ import {
   AmbientBackground,
   AnimatedFingerprintCycle,
 } from "./motion";
+import { PhenotypeSummaryCard } from "./quiz/phenotype-summary-card";
+import { QuizModal } from "./quiz/quiz-modal";
+import { useStoredQuizResult } from "../lib/quiz-storage";
+import type { QuizResult } from "../lib/quiz-types";
 import "./home-overview.css";
 
 type Props = { data: HealthData; today: string };
@@ -41,18 +46,73 @@ export function HomeOverview(props: Props) {
 }
 
 function LoadedHomeOverview(props: Props) {
-  const [personalData] = useState(() => {
-    return getInitialOrStoredHealthData();
-  });
+  const { isLoaded, isSignedIn, user } = useUser();
+  const currentUserId = isSignedIn && user ? user.id : "local-user";
+  const userName = user?.firstName || null;
+  const quizResult = useStoredQuizResult(currentUserId);
+  const [autoQuizOpen, setAutoQuizOpen] = useState(false);
 
-  return <HomeOverviewContent {...props} personalData={personalData} />;
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    const alreadyAutoShown = typeof window !== 'undefined' && sessionStorage.getItem('pcos-quiz-auto-shown');
+    if (!quizResult && !alreadyAutoShown) {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('pcos-quiz-auto-shown', 'true');
+      }
+      setAutoQuizOpen(true);
+    }
+  }, [isLoaded, isSignedIn, quizResult]);
+
+  const [personalData, setPersonalData] = useState<HealthData | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const local = getInitialOrStoredHealthData(currentUserId);
+    setPersonalData(local);
+
+    if (isSignedIn) {
+      fetch("/api/user-data")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          if (payload?.data && Array.isArray(payload.data.logs)) {
+            setPersonalData(payload.data);
+            saveHealthDataLocally(payload.data, currentUserId);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoaded, isSignedIn, currentUserId]);
+
+  return (
+    <HomeOverviewContent
+      {...props}
+      personalData={personalData}
+      userName={userName}
+      userId={currentUserId}
+      quizResult={quizResult}
+      autoQuizOpen={autoQuizOpen}
+      setAutoQuizOpen={setAutoQuizOpen}
+    />
+  );
 }
 
 function HomeOverviewContent({
   data: emptyStateData,
   personalData,
   today,
-}: Props & { personalData: HealthData | null }) {
+  userName,
+  userId,
+  quizResult,
+  autoQuizOpen,
+  setAutoQuizOpen,
+}: Props & {
+  personalData: HealthData | null;
+  userName?: string | null;
+  userId?: string | null;
+  quizResult?: QuizResult | null;
+  autoQuizOpen?: boolean;
+  setAutoQuizOpen?: (open: boolean) => void;
+}) {
   const data = scoped(personalData ?? emptyStateData);
   const logs = [...data.logs]
     .filter((log) => log.date <= today)
@@ -103,8 +163,7 @@ function HomeOverviewContent({
               <StaggerItem>
                 <div className="hero-headline-group">
                   <h1 id="home-hero-title">
-                    A little more context.
-                    <br />A clearer picture of you.
+                    {userName ? `Welcome to PHASE, ${userName}` : "Welcome to PHASE"}
                   </h1>
                   <div className="hero-tablet-emblem" aria-hidden="true">
                     <AnimatedFingerprintCycle size={120} />
@@ -113,7 +172,7 @@ function HomeOverviewContent({
               </StaggerItem>
               <StaggerItem>
                 <p className="hero-subtitle">
-                  Bring the small details together, one day at a time, to understand your patterns and cycles.
+                  Here is your recent health context, cycle patterns, and longitudinal journal.
                 </p>
               </StaggerItem>
               <StaggerItem>
@@ -146,6 +205,15 @@ function HomeOverviewContent({
 
       {/* SVG Path Tracing Divider */}
       <TracingDivider variant="wave" color="#66A3BF" />
+
+      {/* Phenotype & Cycle Assessment Summary Card */}
+      <ScrollReveal yOffset={24}>
+        <PhenotypeSummaryCard
+          quizResult={quizResult ?? null}
+          userId={userId}
+          userName={userName}
+        />
+      </ScrollReveal>
 
       <ScrollReveal yOffset={24}>
         <div className="home-summary-row">
@@ -205,7 +273,7 @@ function HomeOverviewContent({
                         <p className="recent-entry-no-symptoms">No symptoms recorded in this check-in</p>
                       )}
 
-                      {(log.pain !== undefined || log.energy !== undefined || log.sleepMinutes !== undefined || log.notes) && (
+                      {(log.pain !== undefined || log.energy !== undefined || log.sleepMinutes !== undefined || log.weight !== undefined || log.notes) && (
                         <div className="recent-entry-meta">
                           {log.pain !== undefined && (
                             <span className="meta-pill">Pain: {log.pain}/10</span>
@@ -216,6 +284,11 @@ function HomeOverviewContent({
                           {log.sleepMinutes !== undefined && (
                             <span className="meta-pill">
                               Sleep: {Math.floor(log.sleepMinutes / 60)}h {log.sleepMinutes % 60}m
+                            </span>
+                          )}
+                          {log.weight !== undefined && (
+                            <span className="meta-pill">
+                              Weight: {log.weight} {log.weightUnit || "lbs"}
                             </span>
                           )}
                           {log.notes && (
@@ -358,6 +431,14 @@ function HomeOverviewContent({
           </section>
         </ScrollReveal>
       )}
+
+      {/* Auto-launching Onboarding Quiz Modal for new users */}
+      <QuizModal
+        isOpen={Boolean(autoQuizOpen)}
+        onClose={() => setAutoQuizOpen?.(false)}
+        userId={userId}
+        initialResult={null}
+      />
     </>
   );
 }
