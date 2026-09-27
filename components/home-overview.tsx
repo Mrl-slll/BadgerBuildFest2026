@@ -11,10 +11,7 @@ import {
   type HealthData,
 } from "../lib/health";
 import { EmptyState, Icon, SectionHeading } from "./ui";
-import {
-  healthStorageKey,
-  parseStoredHealthData,
-} from "../lib/health-storage";
+import { getInitialOrStoredHealthData } from "../lib/health-storage";
 
 type Props = { data: HealthData; today: string };
 const subscribe = () => () => {};
@@ -35,11 +32,7 @@ export function HomeOverview(props: Props) {
 
 function LoadedHomeOverview(props: Props) {
   const [personalData] = useState(() => {
-    try {
-      return parseStoredHealthData(localStorage.getItem(healthStorageKey)).data;
-    } catch {
-      return null;
-    }
+    return getInitialOrStoredHealthData();
   });
 
   return <HomeOverviewContent {...props} personalData={personalData} />;

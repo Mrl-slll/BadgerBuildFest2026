@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import type { Answer } from '../lib/ai';
-import { emptyData, type HealthData } from '../lib/health';
-import { healthStorageKey, parseStoredHealthData } from '../lib/health-storage';
+import { type HealthData } from '../lib/health';
+import { getInitialOrStoredHealthData } from '../lib/health-storage';
 import styles from '../app/ask/ask.module.css';
 
 const starterSuggestions = [
@@ -26,24 +26,10 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   const [question, setQuestion] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
-  const [hasLoggedRecords, setHasLoggedRecords] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const busy = useRef(false);
-
-  // Read local storage on client load
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(healthStorageKey);
-      const parsed = parseStoredHealthData(raw);
-      if (parsed.data && parsed.data.logs.length > 0) {
-        setHasLoggedRecords(true);
-      }
-    } catch {
-      // Ignored
-    }
-  }, []);
 
   const hasMounted = useRef(false);
 
@@ -59,14 +45,8 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   }, [messages, pending]);
 
   function getActiveHealthData(): HealthData {
-    if (initialPropData) return initialPropData;
-    try {
-      const raw = typeof window !== 'undefined' ? localStorage.getItem(healthStorageKey) : null;
-      const parsed = parseStoredHealthData(raw);
-      return parsed.data ?? emptyData('local-user');
-    } catch {
-      return emptyData('local-user');
-    }
+    if (initialPropData && initialPropData.logs.length > 0) return initialPropData;
+    return getInitialOrStoredHealthData();
   }
 
   async function handleSend(textToSend?: string) {
@@ -79,7 +59,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
     }
 
     const currentRecords = getActiveHealthData();
-    const messageId = Date.now().toString();
+    const messageId = crypto.randomUUID();
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Append user message immediately
@@ -97,6 +77,10 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
     setPending(true);
 
     try {
+      const contextLogs = currentRecords.logs.length > 120
+        ? currentRecords.logs.slice(-120)
+        : currentRecords.logs;
+
       const response = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -104,6 +88,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
           question: rawQuestion,
           data: {
             ...currentRecords,
+            logs: contextLogs,
             personalize: true, // Always personalize based on user's records!
           },
         }),

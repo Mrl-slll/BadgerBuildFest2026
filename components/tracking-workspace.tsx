@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
-import { dateKey, emptyData, HealthData, pretty } from "../lib/health";
+import { dateKey, HealthData, pretty } from "../lib/health";
 import {
+  getInitialOrStoredHealthData,
   healthStorageKey,
-  parseStoredHealthData,
 } from "../lib/health-storage";
+import { sampleHealthData } from "../lib/sample-data";
 
 const sections = [
   "Daily log",
@@ -32,11 +33,8 @@ export function TrackingWorkspace() {
 }
 function readStorage(): { data: HealthData | null; error: string } {
   try {
-    const stored = parseStoredHealthData(
-      localStorage.getItem(healthStorageKey),
-    );
-    if (stored.invalid) throw new Error();
-    return { data: stored.data ?? emptyData("local-user"), error: "" };
+    const data = getInitialOrStoredHealthData();
+    return { data, error: "" };
   } catch {
     return {
       data: null,
@@ -49,6 +47,7 @@ function LoadedTrackingWorkspace() {
   const [initial] = useState(readStorage);
   const [data, setData] = useState(initial.data);
   const error = initial.error;
+  const [sampleLoadedNotice, setSampleLoadedNotice] = useState("");
   const [section, setSection] = useState<Section>("Daily log");
   const [date, setDate] = useState(dateKey());
   const [dirty, setDirty] = useState(false);
@@ -95,6 +94,27 @@ function LoadedTrackingWorkspace() {
           <div className="privacy-pill">
             <span className="privacy-dot" aria-hidden="true" />
             <span>Stored in this browser only · Private & local</span>
+          </div>
+          <div style={{ marginTop: '0.875rem', display: 'flex', gap: '0.625rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="button button-quiet"
+              style={{ fontSize: '0.8125rem', padding: '0.375rem 0.75rem' }}
+              onClick={() => {
+                if (window.confirm("Reload the 2-year sample dataset (731 daily logs, 20 cycles, medications, and labs)?")) {
+                  save(sampleHealthData);
+                  setSampleLoadedNotice("Loaded 2 years of sample records.");
+                  setTimeout(() => setSampleLoadedNotice(""), 4500);
+                }
+              }}
+            >
+              Reload 2-Year Sample Data
+            </button>
+            {sampleLoadedNotice && (
+              <span className="badge" role="status">
+                {sampleLoadedNotice}
+              </span>
+            )}
           </div>
         </div>
       </section>
