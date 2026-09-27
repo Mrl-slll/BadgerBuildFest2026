@@ -77,37 +77,10 @@ export async function POST(request: Request) {
     const host = process.env.DATABRICKS_HOST;
     const token = process.env.DATABRICKS_TOKEN;
     const indexName = process.env.DATABRICKS_VECTOR_INDEX || 'pcos.vector_search.disease_symptoms_v2_vs_index';
-    const appUrl = process.env.DATABRICKS_APP_URL;
     const forceMock = process.env.DATABRICKS_MOCK === 'true';
 
-    // 1. Try Live Databricks App or Vector Search if credentials are present
+    // 1. Try Live Databricks Vector Search if credentials are present
     if (host && token && !forceMock) {
-      // Option A: If Databricks App /search endpoint is configured, try calling it
-      if (appUrl) {
-        try {
-          const appRes = await fetch(`${appUrl.replace(/\/+$/, '')}/search`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query, limit }),
-          });
-
-          if (appRes.ok) {
-            const data = await appRes.json();
-            return NextResponse.json({
-              source: 'databricks-app',
-              query,
-              results: Array.isArray(data) ? data : data.results || data,
-            });
-          }
-        } catch (appErr) {
-          console.warn('[Search API] Databricks App query failed, falling back to Vector Search:', appErr);
-        }
-      }
-
-      // Option B: Query Vector Search REST API directly
       try {
         const cleanHost = host.replace(/\/+$/, '');
         const vectorUrl = `${cleanHost}/api/2.0/vector-search/indexes/${encodeURIComponent(indexName)}/query`;
