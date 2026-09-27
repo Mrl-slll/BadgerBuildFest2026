@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { validateMedication, validateLab } from "../lib/tracking-validation";
 import {
   HealthData,
@@ -37,6 +37,13 @@ export function DailyLogForm({
   const [status, setStatus] = useState("");
   const [nextDate, setNextDate] = useState<string | null>(null);
   const [changed, setChanged] = useState(false);
+  useEffect(() => {
+    if (window.location.hash === "#cycle-bleeding") {
+      const section = document.getElementById("cycle-bleeding");
+      section?.scrollIntoView({ block: "start" });
+      section?.focus({ preventScroll: true });
+    }
+  }, []);
   const field = <K extends keyof Log>(key: K, value: Log[K]) => {
     setLog({ ...log, [key]: value });
     setStatus("");
@@ -263,7 +270,7 @@ export function DailyLogForm({
           <p className="field-hint">Previously recorded overall pain: {log.pain}/10.</p>
         )}
       </fieldset>
-      <fieldset>
+      <fieldset id="cycle-bleeding" tabIndex={-1}>
         <legend>Cycle & bleeding</legend>
         <div className="chips">
           {["None", "Spotting", "Light", "Medium", "Heavy"].map((s) => (

@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { CycleWheel } from "./cycle-wheel";
 import { useState, useSyncExternalStore } from "react";
 import {
   addDays,
   cycleHistory,
-  daysBetween,
   pretty,
   scoped,
   type HealthData,
@@ -55,12 +55,6 @@ function HomeOverviewContent({
     .filter((log) => log.date <= today)
     .sort((a, b) => b.date.localeCompare(a.date));
   const cycles = cycleHistory(logs);
-  const recentCycles = [...cycles].reverse().slice(0, 4);
-  const latestCycle = recentCycles[0];
-  const visibleCycleDays = recentCycles.map((cycle) =>
-    cycle.length ?? daysBetween(cycle.start, today) + 1,
-  );
-  const cycleScale = Math.max(45, ...visibleCycleDays);
   const dates = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13));
   return (
     <>
@@ -87,142 +81,29 @@ function HomeOverviewContent({
           </div>
         </div>
       </section>
+      <div className="home-summary-row">
+        <CycleWheel cycles={cycles} today={today} />
+        <section className="recent-context home-recent-entries" aria-labelledby="recent-entries-title" id="recent-entries">
+          <h2 id="recent-entries-title">Most recent entries</h2>
+          {logs.length ? (
+            <div className="recent-entry-list">
+              {logs.slice(0, 3).map((log) => (
+                <article className="recent-entry" key={log.id}>
+                  <h3><time dateTime={log.date}>{pretty(log.date)}</time></h3>
+                  <p>{log.symptoms.length ? log.symptoms.join(", ") : "No symptoms selected in this entry."}</p>
+                  {log.bleeding && <p className="recent-entry-detail">Bleeding: {log.bleeding}</p>}
+                  {log.notes && <p className="recent-entry-note">{log.notes}</p>}
+                </article>
+              ))}
+            </div>
+          ) : <p className="recent-entry-empty">Your saved check-ins will appear here. Start with what feels useful today.</p>}
+          <Link className="text-link" href="/track">
+            {logs.length ? "Open your daily log" : "Add your first entry"} <Icon name="arrow" />
+          </Link>
+        </section>
+      </div>
       {personalData ? (
         <>
-          <section
-            className="cycle-history-surface"
-            aria-labelledby="cycle-history-title"
-          >
-            <div className="cycle-history-intro">
-              <div>
-                <h2 id="cycle-history-title">Cycle history</h2>
-                <p>
-                  A view of the period starts and ends you recorded. No dates
-                  are predicted.
-                </p>
-              </div>
-              <div className="cycle-now" aria-label="Latest recorded cycle">
-                <span>Latest recorded cycle</span>
-                <strong>
-                  {latestCycle
-                    ? `Day ${daysBetween(latestCycle.start, today) + 1}`
-                    : "Not started"}
-                </strong>
-                <small>
-                  {latestCycle
-                    ? `Started ${pretty(latestCycle.start)}`
-                    : "No period start recorded"}
-                </small>
-              </div>
-            </div>
-
-            {recentCycles.length ? (
-              <>
-                <div className="cycle-ledger">
-                  {recentCycles.map((cycle) => {
-                    const days =
-                      cycle.length ?? daysBetween(cycle.start, today) + 1;
-                    const periodDays = cycle.end
-                      ? daysBetween(cycle.start, cycle.end) + 1
-                      : 1;
-                    const isCurrent = cycle.length === null;
-
-                    return (
-                      <article
-                        className={`cycle-ledger-row${isCurrent ? " is-current" : ""}`}
-                        key={cycle.start}
-                      >
-                        <div className="cycle-date">
-                          <time dateTime={cycle.start}>
-                            {pretty(cycle.start)}
-                          </time>
-                          <span>
-                            {cycle.end
-                              ? `Period ended ${pretty(cycle.end)}`
-                              : "No period end recorded"}
-                          </span>
-                        </div>
-                        <div
-                          className="cycle-track"
-                          role="img"
-                          aria-label={`${isCurrent ? "Current cycle" : "Recorded cycle"} starting ${pretty(cycle.start)}: ${isCurrent ? `day ${days}` : `${days} days between starts`}${cycle.end ? `; period end recorded ${pretty(cycle.end)}` : "; no period end recorded"}`}
-                        >
-                          <span
-                            className="cycle-span"
-                            style={{ width: `${(days / cycleScale) * 100}%` }}
-                          >
-                            <span
-                              className="period-span"
-                              style={{
-                                width: `${Math.min(100, (periodDays / days) * 100)}%`,
-                              }}
-                            />
-                          </span>
-                        </div>
-                        <strong>{isCurrent ? `Day ${days}` : `${days} days`}</strong>
-                      </article>
-                    );
-                  })}
-                </div>
-                <div className="cycle-legend" aria-label="Cycle history key">
-                  <span>
-                    <i className="legend-period" aria-hidden="true" /> Recorded
-                    period
-                  </span>
-                  <span>
-                    <i className="legend-cycle" aria-hidden="true" /> Time
-                    between starts
-                  </span>
-                  <span>
-                    <i className="legend-current" aria-hidden="true" /> Current,
-                    unfinished cycle
-                  </span>
-                </div>
-                <p className="cycle-caption">
-                  Cycle length is counted between recorded period starts. A
-                  missing end date or unfinished cycle means the record is
-                  incomplete—not that bleeding continued.
-                </p>
-              </>
-            ) : (
-              <div className="cycle-empty">
-                <p>
-                  Period starts recorded in Track will build a cycle history
-                  here.
-                </p>
-              </div>
-            )}
-          </section>
-
-          <section
-            className="recent-context"
-            aria-label="Recent health context"
-          >
-            <div className="recent-context-main">
-              <span className="context-label">Most recent entry</span>
-              <h2>{logs[0] ? pretty(logs[0].date) : "No entries yet"}</h2>
-              <p className="recent-context-symptoms">
-                {logs[0]?.symptoms.length
-                  ? logs[0].symptoms.join(", ")
-                  : "No symptoms selected in this entry."}
-              </p>
-              <a className="text-link" href="#recent-entries">
-                Read recent entries <Icon name="arrow" />
-              </a>
-            </div>
-            <div className="check-in-note">
-              <span className="check-in-icon">
-                <Icon name="leaf" />
-              </span>
-              <div>
-                <h3>There’s room for the everyday.</h3>
-                <p>
-                  Sleep, symptoms, or simply how you felt. The details you choose
-                  to record belong in your story.
-                </p>
-              </div>
-            </div>
-          </section>
           <section className="history-surface" aria-labelledby="history-title">
             <SectionHeading
               title="The last two weeks"

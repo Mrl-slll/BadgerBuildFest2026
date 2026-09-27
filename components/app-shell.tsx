@@ -54,12 +54,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Top Navigation Bar */}
       <header className="site-header">
         <div className="site-header-inner">
-          <Link href="/" className="brand" aria-label="PCOS journal home">
+          <Link href="/" className="brand" aria-label="PHASE home">
             <span className="brand-mark">
               <Icon name="leaf" />
             </span>
             <span className="brand-text">
-              PCOS journal
+              PHASE
               <small>Your health, in context</small>
             </span>
           </Link>
@@ -164,12 +164,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="app-footer-inner">
           <div className="footer-main">
             <div className="footer-brand-col">
-              <Link href="/" className="footer-brand" aria-label="PCOS journal home">
+              <Link href="/" className="footer-brand" aria-label="PHASE home">
                 <span className="brand-mark">
                   <Icon name="leaf" />
                 </span>
                 <span className="brand-text">
-                  PCOS journal
+                  PHASE
                   <small>Your health, in context</small>
                 </span>
               </Link>
