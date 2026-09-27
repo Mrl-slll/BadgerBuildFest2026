@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo, useSyncExternalStore } from "react";
-import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
-import { dateKey, HealthData, pretty } from "../lib/health";
+import { DailyLogForm, Medications, Labs, Cycles, WeightManager } from "./tracking";
+import { dateKey, HealthData, pretty, addDays } from "../lib/health";
 import { useUser } from "@clerk/nextjs";
 import {
   getInitialOrStoredHealthData,
@@ -12,6 +12,7 @@ import { ScrollReveal, PhysicsInteractive } from "./motion";
 
 const sections = [
   "Daily log",
+  "Weight",
   "Cycles",
   "Medications",
   "Lab results",
@@ -95,6 +96,7 @@ function getLogSearchData(log: HealthData["logs"][number]) {
     log.bleeding ? `Bleeding ${log.bleeding} Flow` : "",
     log.periodStart ? "Period started cycle day 1" : "",
     log.periodEnd ? "Period ended" : "",
+    log.weight !== undefined ? `Weight ${log.weight} ${log.weightUnit || "lbs"} ${log.weightNote || ""}` : "",
     log.notes || "",
     log.painNote || "",
     log.meals || "",
@@ -132,7 +134,9 @@ function LoadedTrackingWorkspace() {
   const [date, setDate] = useState(dateKey());
   const [dirty, setDirty] = useState(false);
   const [logSearchQuery, setLogSearchQuery] = useState("");
-  const [logDateFilter, setLogDateFilter] = useState("");
+  const [logStartDate, setLogStartDate] = useState("");
+  const [logEndDate, setLogEndDate] = useState("");
+  const [extraLogsCount, setExtraLogsCount] = useState(0);
   const [pending, setPending] = useState<{
     section: Section;
     date: string;
@@ -207,12 +211,45 @@ function LoadedTrackingWorkspace() {
     }
   }
 
-  const filteredLogs = useMemo(() => {
-    if (!data?.logs) return [];
+  const twoWeeksAgo = useMemo(() => addDays(dateKey(), -14), []);
+
+  const {
+    displayLogs,
+    hasOlderLogs,
+    olderLogsCount,
+    visibleOlderCount,
+    remainingOlderCount,
+    hasDateFilter,
+    effectiveStart,
+    effectiveEnd,
+  } = useMemo(() => {
+    if (!data?.logs) {
+      return {
+        displayLogs: [],
+        hasOlderLogs: false,
+        olderLogsCount: 0,
+        visibleOlderCount: 0,
+        remainingOlderCount: 0,
+        hasDateFilter: false,
+        effectiveStart: "",
+        effectiveEnd: "",
+      };
+    }
+
     let list = [...data.logs].sort((a, b) => b.date.localeCompare(a.date));
 
-    if (logDateFilter) {
-      list = list.filter((l) => l.date === logDateFilter);
+    // Handle date range in either order gracefully
+    let start = logStartDate;
+    let end = logEndDate;
+    if (start && end && start > end) {
+      [start, end] = [end, start];
+    }
+
+    if (start) {
+      list = list.filter((l) => l.date >= start);
+    }
+    if (end) {
+      list = list.filter((l) => l.date <= end);
     }
 
     const trimmedQuery = logSearchQuery.trim().toLowerCase();
@@ -224,8 +261,39 @@ function LoadedTrackingWorkspace() {
       });
     }
 
-    return list;
-  }, [data?.logs, logDateFilter, logSearchQuery]);
+    const isCustomDateRange = Boolean(logStartDate || logEndDate);
+
+    // If explicit date range filter is active, show everything matching that range
+    if (isCustomDateRange) {
+      return {
+        displayLogs: list,
+        hasOlderLogs: false,
+        olderLogsCount: 0,
+        visibleOlderCount: 0,
+        remainingOlderCount: 0,
+        hasDateFilter: true,
+        effectiveStart: start,
+        effectiveEnd: end,
+      };
+    }
+
+    // Default mode: past 2 weeks + 20 additional entries per "show more" click
+    const recentLogs = list.filter((l) => l.date >= twoWeeksAgo);
+    const olderLogs = list.filter((l) => l.date < twoWeeksAgo);
+    const visibleOlder = olderLogs.slice(0, extraLogsCount);
+    const remainingOlder = Math.max(0, olderLogs.length - extraLogsCount);
+
+    return {
+      displayLogs: [...recentLogs, ...visibleOlder],
+      hasOlderLogs: olderLogs.length > 0,
+      olderLogsCount: olderLogs.length,
+      visibleOlderCount: visibleOlder.length,
+      remainingOlderCount: remainingOlder,
+      hasDateFilter: false,
+      effectiveStart: "",
+      effectiveEnd: "",
+    };
+  }, [data?.logs, logStartDate, logEndDate, logSearchQuery, extraLogsCount, twoWeeksAgo]);
   return (
     <div className="tracking">
       <a className="skip-link" href="#tracking-content">
@@ -314,6 +382,14 @@ function LoadedTrackingWorkspace() {
               onDirty={setDirty}
             />
           )}
+          {section === "Weight" && (
+            <WeightManager
+              data={data}
+              save={save}
+              onDirty={setDirty}
+              onEditDate={(d) => navigate("Daily log", d)}
+            />
+          )}
           {section === "Cycles" && (
             <Cycles
               data={data}
@@ -370,23 +446,48 @@ function LoadedTrackingWorkspace() {
                   )}
                 </div>
 
-                <div className="date-filter-box">
-                  <span className="date-filter-label">Date:</span>
-                  <input
-                    type="date"
-                    className="logs-date-input"
-                    value={logDateFilter}
-                    onChange={(e) => setLogDateFilter(e.target.value)}
-                    aria-label="Filter logs by specific date"
-                    title="Filter by exact date"
-                  />
-                  {logDateFilter && (
+                <div className="date-range-filter-box">
+                  <span className="date-filter-label">Range:</span>
+                  <div className="date-range-inputs">
+                    <span className="date-sublabel">From</span>
+                    <input
+                      type="date"
+                      className="logs-date-input"
+                      value={logStartDate}
+                      max={logEndDate || undefined}
+                      onChange={(e) => {
+                        setLogStartDate(e.target.value);
+                        setExtraLogsCount(0);
+                      }}
+                      aria-label="Filter logs starting from date"
+                      title="Start date"
+                    />
+                    <span className="date-range-separator" aria-hidden="true">–</span>
+                    <span className="date-sublabel">To</span>
+                    <input
+                      type="date"
+                      className="logs-date-input"
+                      value={logEndDate}
+                      min={logStartDate || undefined}
+                      onChange={(e) => {
+                        setLogEndDate(e.target.value);
+                        setExtraLogsCount(0);
+                      }}
+                      aria-label="Filter logs up to end date"
+                      title="End date"
+                    />
+                  </div>
+                  {(logStartDate || logEndDate) && (
                     <button
                       type="button"
                       className="date-clear-action"
-                      onClick={() => setLogDateFilter("")}
-                      aria-label="Clear date filter"
-                      title="Clear date"
+                      onClick={() => {
+                        setLogStartDate("");
+                        setLogEndDate("");
+                        setExtraLogsCount(0);
+                      }}
+                      aria-label="Clear date range filter"
+                      title="Clear date range"
                     >
                       ✕
                     </button>
@@ -394,11 +495,23 @@ function LoadedTrackingWorkspace() {
                 </div>
               </div>
 
-              {(logSearchQuery || logDateFilter) && (
+              {(logSearchQuery || hasDateFilter) ? (
                 <div className="search-status-bar">
                   <span>
-                    Showing <strong>{filteredLogs.length}</strong> of {data?.logs?.length ?? 0} entries
-                    {logDateFilter && <> on <strong>{pretty(logDateFilter)}</strong></>}
+                    Showing <strong>{displayLogs.length}</strong> of {data?.logs?.length ?? 0} entries
+                    {hasDateFilter && (
+                      effectiveStart && effectiveEnd ? (
+                        effectiveStart === effectiveEnd ? (
+                          <> on <strong>{pretty(effectiveStart)}, {effectiveStart.slice(0, 4)}</strong></>
+                        ) : (
+                          <> from <strong>{pretty(effectiveStart)}{effectiveStart.slice(0, 4) !== effectiveEnd.slice(0, 4) ? `, ${effectiveStart.slice(0, 4)}` : ""}</strong> to <strong>{pretty(effectiveEnd)}, {effectiveEnd.slice(0, 4)}</strong></>
+                        )
+                      ) : effectiveStart ? (
+                        <> from <strong>{pretty(effectiveStart)}, {effectiveStart.slice(0, 4)}</strong> onwards</>
+                      ) : (
+                        <> up to <strong>{pretty(effectiveEnd)}, {effectiveEnd.slice(0, 4)}</strong></>
+                      )
+                    )}
                     {logSearchQuery && <> matching &ldquo;<strong>{logSearchQuery}</strong>&rdquo;</>}
                   </span>
                   <button
@@ -406,15 +519,36 @@ function LoadedTrackingWorkspace() {
                     className="reset-filters-btn"
                     onClick={() => {
                       setLogSearchQuery("");
-                      setLogDateFilter("");
+                      setLogStartDate("");
+                      setLogEndDate("");
+                      setExtraLogsCount(0);
                     }}
                   >
                     Reset filters
                   </button>
                 </div>
+              ) : (
+                <div className="search-status-bar logs-scope-bar">
+                  <span>
+                    {extraLogsCount > 0 ? (
+                      <>Showing <strong>{displayLogs.length}</strong> entries (past 2 weeks + {visibleOlderCount} older)</>
+                    ) : (
+                      <>Showing past 2 weeks (<strong>{displayLogs.length}</strong> {displayLogs.length === 1 ? "entry" : "entries"})</>
+                    )}
+                  </span>
+                  {hasOlderLogs && remainingOlderCount > 0 && (
+                    <button
+                      type="button"
+                      className="reset-filters-btn"
+                      onClick={() => setExtraLogsCount((prev) => prev + 20)}
+                    >
+                      Show 20 more ({remainingOlderCount} left)
+                    </button>
+                  )}
+                </div>
               )}
 
-              {filteredLogs.map((l) => (
+              {displayLogs.map((l) => (
                 <article className="record" key={l.id}>
                   <div>
                     <h3>
@@ -426,6 +560,7 @@ function LoadedTrackingWorkspace() {
                         l.bleeding && `Bleeding: ${l.bleeding}`,
                         l.periodStart && "Period started",
                         l.periodEnd && "Period ended",
+                        l.weight !== undefined && `Weight: ${l.weight} ${l.weightUnit || "lbs"}${l.weightNote ? ` (${l.weightNote})` : ""}`,
                       ]
                         .filter(Boolean)
                         .join(" · ")}
@@ -440,19 +575,62 @@ function LoadedTrackingWorkspace() {
                 </article>
               ))}
 
-              {data && data.logs.length > 0 && filteredLogs.length === 0 && (
+              {!hasDateFilter && hasOlderLogs && (
+                <div className="show-more-logs-wrap">
+                  {remainingOlderCount > 0 ? (
+                    <button
+                      type="button"
+                      className="show-more-logs-btn"
+                      onClick={() => setExtraLogsCount((prev) => prev + 20)}
+                    >
+                      <span>Show more</span>
+                      <span className="older-count-badge">
+                        +{Math.min(20, remainingOlderCount)} more ({remainingOlderCount} older left)
+                      </span>
+                    </button>
+                  ) : (
+                    <span style={{ fontSize: "13px", color: "var(--muted)" }}>
+                      All {displayLogs.length} previous check-ins loaded
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {data && data.logs.length > 0 && displayLogs.length === 0 && (
                 <div className="empty-search-state">
-                  <p>No previous logs match your search or date filter.</p>
-                  <button
-                    type="button"
-                    className="button button-quiet"
-                    onClick={() => {
-                      setLogSearchQuery("");
-                      setLogDateFilter("");
-                    }}
-                  >
-                    Clear search & date filter
-                  </button>
+                  {!hasDateFilter && !logSearchQuery && extraLogsCount === 0 && hasOlderLogs ? (
+                    <>
+                      <p>No check-ins logged in the past 2 weeks.</p>
+                      <div className="show-more-logs-wrap" style={{ borderTop: "none", margin: "16px 0 0" }}>
+                        <button
+                          type="button"
+                          className="show-more-logs-btn"
+                          onClick={() => setExtraLogsCount((prev) => prev + 20)}
+                        >
+                          <span>Show more</span>
+                          <span className="older-count-badge">
+                            Show first {Math.min(20, olderLogsCount)} of {olderLogsCount} older entries
+                          </span>
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p>No previous logs match your search or date range.</p>
+                      <button
+                        type="button"
+                        className="button button-quiet"
+                        onClick={() => {
+                          setLogSearchQuery("");
+                          setLogStartDate("");
+                          setLogEndDate("");
+                          setExtraLogsCount(0);
+                        }}
+                      >
+                        Clear search & date range
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
 

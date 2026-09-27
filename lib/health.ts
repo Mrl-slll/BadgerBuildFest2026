@@ -26,10 +26,124 @@ export const symptomGroups = [
 ] as const;
 export const symptoms: string[] = symptomGroups.flatMap((group) => [...group.symptoms]);
 export const quickSymptoms = symptomGroups[0].symptoms;
-export type Log = { id: string; userId: string; date: string; symptoms: string[]; bleeding?: string; periodStart?: boolean; periodEnd?: boolean; pain?: number; painScores?: Record<string, number>; painNote?: string; mood?: number; energy?: number; sleepMinutes?: number; sleepQuality?: string; movement?: string; meals?: string; notes?: string; doses: Record<string, string>; sideEffects: Record<string, string>; medicationSymptoms?: Record<string, string[]> };
+export type Log = {
+  id: string;
+  userId: string;
+  date: string;
+  symptoms: string[];
+  bleeding?: string;
+  periodStart?: boolean;
+  periodEnd?: boolean;
+  pain?: number;
+  painScores?: Record<string, number>;
+  painNote?: string;
+  mood?: number;
+  energy?: number;
+  sleepMinutes?: number;
+  sleepQuality?: string;
+  weight?: number;
+  weightUnit?: 'lbs' | 'kg';
+  weightNote?: string;
+  movement?: string;
+  meals?: string;
+  notes?: string;
+  doses: Record<string, string>;
+  sideEffects: Record<string, string>;
+  medicationSymptoms?: Record<string, string[]>;
+};
 export type Medication = { id: string; userId: string; name: string; dosage: string; unit: string; frequency: string; startedAt: string; endedAt?: string; active: boolean; notes: string };
 export type Lab = { id: string; userId: string; name: string; value: string; unit: string; date: string; low: string; high: string; source: string; notes: string };
-export type HealthData = { version: 1; user: { id: string; name: string }; logs: Log[]; medications: Medication[]; labs: Lab[]; questions: string[]; appointments: { date: string; title: string }[]; personalize: boolean };
+import type { QuizResult } from './quiz-types';
+export type { QuizResult };
+
+export type HealthData = { version: 1; user: { id: string; name: string }; logs: Log[]; medications: Medication[]; labs: Lab[]; questions: string[]; appointments: { date: string; title: string }[]; personalize: boolean; quizResult?: QuizResult };
+
+export const LBS_PER_KG = 2.20462262;
+
+export function convertWeight(weight: number, from: 'lbs' | 'kg', to: 'lbs' | 'kg'): number {
+  if (from === to) return Math.round(weight * 10) / 10;
+  if (from === 'kg' && to === 'lbs') {
+    return Math.round(weight * LBS_PER_KG * 10) / 10;
+  }
+  return Math.round((weight / LBS_PER_KG) * 10) / 10;
+}
+
+export function formatWeight(val: number | undefined | null, unit: 'lbs' | 'kg' = 'lbs'): string {
+  if (val === undefined || val === null || !Number.isFinite(val)) return 'Not recorded';
+  return `${val.toFixed(1)} ${unit}`;
+}
+
+export type WeightSummary = {
+  count: number;
+  latest: { date: string; value: number; unit: 'lbs' | 'kg'; note?: string } | null;
+  earliest: { date: string; value: number; unit: 'lbs' | 'kg'; note?: string } | null;
+  min: number | null;
+  max: number | null;
+  range: number | null;
+  average: number | null;
+  netChange: number | null;
+};
+
+export function weightStats(logs: Log[], targetUnit: 'lbs' | 'kg' = 'lbs'): WeightSummary {
+  const withWeight = logs
+    .filter((l) => l.weight !== undefined && Number.isFinite(l.weight) && l.weight > 0)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (!withWeight.length) {
+    return {
+      count: 0,
+      latest: null,
+      earliest: null,
+      min: null,
+      max: null,
+      range: null,
+      average: null,
+      netChange: null,
+    };
+  }
+
+  const normalizedValues = withWeight.map((l) => {
+    const unit = l.weightUnit || 'lbs';
+    const converted = convertWeight(l.weight!, unit, targetUnit);
+    return {
+      date: l.date,
+      value: converted,
+      originalValue: l.weight!,
+      originalUnit: unit,
+      note: l.weightNote,
+    };
+  });
+
+  const values = normalizedValues.map((v) => v.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const sum = values.reduce((acc, v) => acc + v, 0);
+  const average = Math.round((sum / values.length) * 10) / 10;
+  const earliest = normalizedValues[0];
+  const latest = normalizedValues[normalizedValues.length - 1];
+  const netChange = Math.round((latest.value - earliest.value) * 10) / 10;
+
+  return {
+    count: normalizedValues.length,
+    latest: {
+      date: latest.date,
+      value: latest.value,
+      unit: targetUnit,
+      note: latest.note,
+    },
+    earliest: {
+      date: earliest.date,
+      value: earliest.value,
+      unit: targetUnit,
+      note: earliest.note,
+    },
+    min: Math.round(min * 10) / 10,
+    max: Math.round(max * 10) / 10,
+    range: Math.round((max - min) * 10) / 10,
+    average,
+    netChange,
+  };
+}
 export function dateKey(date = new Date()): string { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
 export function addDays(date: string, n: number) { const d = new Date(date+'T12:00:00'); d.setDate(d.getDate()+n); return dateKey(d); }
 export function daysBetween(a: string, b: string) { return Math.round((Date.parse(b+'T12:00:00Z')-Date.parse(a+'T12:00:00Z'))/86400000); }
@@ -43,5 +157,5 @@ export function duration(minutes: number|null) { return minutes===null?'Not reco
 export function medicationWindow(data: HealthData, med:Medication) { const logs=scoped(data).logs; const count=(start:string,end:string)=>logs.filter(l=>l.date>=start && l.date<=end); const before=count(addDays(med.startedAt,-14),addDays(med.startedAt,-1)); const after=count(med.startedAt,addDays(med.startedAt,13)); return {before,after,sideEffectDays:after.filter(l=>l.sideEffects[med.id]?.trim()).length}; }
 export function linkedMedicationSymptoms(logs: Log[], medicationId: string) { const counts = new Map<string, number>(); logs.forEach((log) => new Set(log.medicationSymptoms?.[medicationId] ?? []).forEach((symptom) => counts.set(symptom, (counts.get(symptom) ?? 0) + 1))); return [...counts].sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0])); }
 export function observations(data: HealthData, start:string, end:string) { const logs=rangeLogs(data,start,end); if(logs.length<3)return [{category:'Your history',text:'A few more entries will help us describe patterns. Start with how you feel today.'}]; const co=logs.filter(l=>l.symptoms.includes('Acne') && l.energy!==undefined && l.energy<=2).length; const cycles=cycleHistory(scoped(data).logs).filter(c=>c.start>=start && c.start<=end).flatMap(c=>c.length===null?[]:[c.length]); const result=[{category:'Sleep & energy',text:`Your average recorded sleep was ${duration(sleepAverage(logs))} across ${logs.filter(l=>l.sleepMinutes!==undefined).length} entries.`},{category:'Symptoms',text:`Acne and low energy were recorded together on ${co} of ${logs.length} logged days.`},{category:'Cycle',text:cycles.length?`Your completed recorded cycles in this range were ${cycles.join(', ')} days.`:'There are not enough period starts in this range to calculate a completed cycle.'}]; scoped(data).medications.filter(m=>m.startedAt>=start && m.startedAt<=end).forEach(m=>{const w=medicationWindow(data,m);result.push({category:'Medications',text:`In the first 14 days after ${m.name} was added, side effects were recorded on ${w.sideEffectDays} of ${w.after.length} logged days. This does not establish cause.`});}); return result; }
-export { validateDaily as validateLog } from './tracking-validation';
 export function emptyData(userId='local-user'):HealthData { return {version:1,user:{id:userId,name:''},logs:[],medications:[],labs:[],questions:[],appointments:[],personalize:false}; }
+

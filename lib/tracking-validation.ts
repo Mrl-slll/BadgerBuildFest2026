@@ -27,6 +27,14 @@ export function validateDaily(log: Log) {
     )
       return `${key === "sleepMinutes" ? "Sleep in minutes" : key[0].toUpperCase() + key.slice(1)} must be a whole number between ${min} and ${max}.`;
   }
+  if (log.weight !== undefined) {
+    if (!Number.isFinite(log.weight) || log.weight <= 0 || log.weight > 1000) {
+      return "Enter a valid weight between 1 and 1000.";
+    }
+  }
+  if (log.weightUnit !== undefined && !["lbs", "kg"].includes(log.weightUnit)) {
+    return "Choose either lbs or kg for weight unit.";
+  }
   if (log.symptoms.some((s) => !symptoms.includes(s)))
     return "Choose symptoms from the available options.";
   const painSymptoms: readonly string[] = symptomGroups.find((group) => group.label === "Pain & body")!.symptoms;
@@ -54,6 +62,7 @@ export function validateDaily(log: Log) {
       log.notes,
       log.meals,
       log.painNote,
+      log.weightNote,
       ...Object.values(log.sideEffects),
     ].some((v) => v && v.length > 2000)
   )

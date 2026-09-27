@@ -1,16 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { addDays, dateKey, pretty, scoped } from '../lib/health';
+import { addDays, convertWeight, dateKey, pretty, scoped } from '../lib/health';
 import type { HealthData } from '../lib/health';
 
-const layers = ['Bleeding', 'Pain', 'Energy', 'Sleep'] as const;
+const layers = ['Bleeding', 'Pain', 'Energy', 'Sleep', 'Weight'] as const;
 const bleedingLevels: Record<string, number> = { None: 0, Spotting: 1, Light: 2, Medium: 3, Heavy: 4 };
 const layerMeta: Record<typeof layers[number], { scale: string; short: string }> = {
   Bleeding: { scale: 'Flow · 0–4', short: 'Bleeding' },
   Pain: { scale: '0–10', short: 'Pain' },
   Energy: { scale: '1–5', short: 'Energy' },
   Sleep: { scale: 'Hours', short: 'Sleep' },
+  Weight: { scale: 'lbs', short: 'Weight' },
 };
 export default function HealthTimeline({data, compact=false, start:providedStart, end=dateKey()}: {data:HealthData; compact?:boolean; start?:string; end?:string}) {
   const [days,setDays] = useState(30);
@@ -25,6 +26,14 @@ export default function HealthTimeline({data, compact=false, start:providedStart
   const activeDate = selected>=start && selected<=end ? selected : end;
   const tickEvery = dates.length > 120 ? 28 : dates.length > 60 ? 14 : 7;
   const visibleLayers = layers.filter(layer=>visible.includes(layer));
+
+  const weightValues = dates
+    .map(d => logs.get(d))
+    .filter(l => l && l.weight !== undefined && Number.isFinite(l.weight) && l.weight > 0)
+    .map(l => convertWeight(l!.weight!, l!.weightUnit || 'lbs', 'lbs'));
+  const minWeight = weightValues.length ? Math.min(...weightValues) : 0;
+  const maxWeight = weightValues.length ? Math.max(...weightValues) : 0;
+
   function value(date:string, layer:typeof layers[number]) {
     const log=logs.get(date);
     if(!log) return {height:0,text:'Not recorded'};
@@ -33,6 +42,18 @@ export default function HealthTimeline({data, compact=false, start:providedStart
       const scores = Object.entries(log.painScores!);
       const highest = Math.max(...scores.map(([, score]) => score));
       return {height: Math.max(3, highest * 10), text: `${scores.map(([symptom, score]) => `${symptom}: ${score}/10`).join('; ')} (bar shows highest impact)`};
+    }
+    if (layer === 'Weight') {
+      if (log.weight === undefined || !Number.isFinite(log.weight) || log.weight <= 0) {
+        return { height: 0, text: 'Not recorded' };
+      }
+      const val = convertWeight(log.weight, log.weightUnit || 'lbs', 'lbs');
+      const diff = maxWeight - minWeight;
+      const height = diff > 0 ? Math.max(12, Math.min(100, ((val - minWeight) / diff) * 88 + 12)) : 50;
+      return {
+        height,
+        text: `${log.weight} ${log.weightUnit || 'lbs'}${log.weightNote ? ` (${log.weightNote})` : ''}`,
+      };
     }
     const n=layer==='Pain'?log.pain:layer==='Energy'?log.energy:log.sleepMinutes;
     const max=layer==='Pain'?10:layer==='Energy'?5:1440;
