@@ -1,9 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo, useSyncExternalStore } from "react";
-import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
-import { SymptomInsights } from "./symptom-insights";
-import { dateKey, HealthData, pretty } from "../lib/health";
 import { DailyLogForm, Medications, Labs, Cycles, WeightManager } from "./tracking";
+import { SymptomInsights } from "./symptom-insights";
 import { dateKey, HealthData, pretty, addDays } from "../lib/health";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -402,6 +400,7 @@ function LoadedTrackingWorkspace() {
                 );
               })()}
             </>
+          )}
           {section === "Weight" && (
             <WeightManager
               data={data}

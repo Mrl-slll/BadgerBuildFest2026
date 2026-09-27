@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { addDays, duration, pretty } from '../lib/health';
+import { addDays, dateKey, daysBetween, duration, pretty } from '../lib/health';
 import type { HealthData } from '../lib/health';
 import { summarize } from '../lib/insights';
 import { getInitialOrStoredHealthData, saveHealthDataLocally } from '../lib/health-storage';
@@ -132,23 +132,26 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
           </div>
           <div>
             {report.cycles.length ? (
-              report.cycles.map((c) => (
-                <div className="cycle-row" key={c.start}>
-                  <span>
-                    {pretty(c.start)}
-                    <small>{c.next ? `to ${pretty(c.next)}` : "No later start recorded"}</small>
-                  </span>
-                  <div className="cycle-track" aria-hidden="true">
-                    <span
-                      className={c.length === null ? "incomplete" : ""}
-                      style={{
-                        width: `${((c.length ?? 0) / Math.max(60, ...report.cycles.map((x) => x.length ?? 0))) * 100}%`,
-                      }}
-                    />
+              [...report.cycles].reverse().map((c) => {
+                const currentCycleDay = Math.max(1, daysBetween(c.start, end || dateKey()) + 1);
+                return (
+                  <div className="cycle-row" key={c.start}>
+                    <span>
+                      {pretty(c.start)}
+                      <small>{c.next ? `to ${pretty(c.next)}` : `Cycle is on day ${currentCycleDay}`}</small>
+                    </span>
+                    <div className="cycle-track" aria-hidden="true">
+                      <span
+                        className={c.length === null ? "incomplete" : ""}
+                        style={{
+                          width: `${((c.length ?? 0) / Math.max(60, ...report.cycles.map((x) => x.length ?? 0))) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <strong>{c.length === null ? "Incomplete" : `${c.length} days`}</strong>
                   </div>
-                  <strong>{c.length === null ? "Incomplete" : `${c.length} days`}</strong>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p>No period starts recorded by the end of this range.</p>
             )}
