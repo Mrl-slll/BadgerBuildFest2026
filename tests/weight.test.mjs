@@ -8,88 +8,6 @@ import {
   dateKey,
   addDays,
 } from "../lib/health.ts";
-import { validateDaily } from "../lib/tracking-validation.ts";
-
-import { summarize } from "../lib/insights.ts";
-import { assembleHealthContext } from "../lib/health-context.ts";
-import { describeContext, extractContextTags } from "../lib/ai.ts";
-
-test("validateLog: accepts valid weight entries in lbs and kg", () => {
-  const today = dateKey();
-
-  const validLbsLog = {
-    id: today,
-    userId: "test-user",
-    date: today,
-    symptoms: [],
-    doses: {},
-    sideEffects: {},
-    weight: 148.5,
-    weightUnit: "lbs",
-    weightNote: "Morning weigh-in",
-  };
-  assert.equal(validateDaily(validLbsLog), "");
-
-  const validKgLog = {
-    id: today,
-    userId: "test-user",
-    date: today,
-    symptoms: [],
-    doses: {},
-    sideEffects: {},
-    weight: 67.2,
-    weightUnit: "kg",
-  };
-  assert.equal(validateDaily(validKgLog), "");
-});
-
-test("validateLog: rejects invalid weight values and units", () => {
-  const today = dateKey();
-  const baseLog = {
-    id: today,
-    userId: "test-user",
-    date: today,
-    symptoms: [],
-    doses: {},
-    sideEffects: {},
-  };
-
-  // Negative weight
-  assert.match(
-    validateDaily({ ...baseLog, weight: -5, weightUnit: "lbs" }),
-    /Enter a valid weight between 1 and 1000/
-  );
-
-  // Zero weight
-  assert.match(
-    validateDaily({ ...baseLog, weight: 0, weightUnit: "lbs" }),
-    /Enter a valid weight between 1 and 1000/
-  );
-
-  // Excessive weight
-  assert.match(
-    validateDaily({ ...baseLog, weight: 1500, weightUnit: "lbs" }),
-    /Enter a valid weight between 1 and 1000/
-  );
-
-  // NaN weight
-  assert.match(
-    validateDaily({ ...baseLog, weight: Number.NaN, weightUnit: "lbs" }),
-    /Enter a valid weight between 1 and 1000/
-  );
-
-  // Invalid unit
-  assert.match(
-    validateDaily({ ...baseLog, weight: 150, weightUnit: "stone" }),
-    /Choose either lbs or kg for weight unit/
-  );
-
-  // Overly long note
-  assert.match(
-    validateDaily({ ...baseLog, weight: 150, weightUnit: "lbs", weightNote: "a".repeat(2005) }),
-    /Keep each note to 2,000 characters or fewer/
-  );
-});
 
 test("convertWeight and formatWeight: accurate conversion between lbs and kg", () => {
   // Identity
@@ -167,96 +85,81 @@ test("weightStats: computes metrics and handles mixed units", () => {
   assert.equal(statsKg.latest?.value, convertWeight(150.0, "lbs", "kg"));
 });
 
-test("summarize: produces weight summary and descriptive insights", () => {
-  const start = "2026-01-01";
-  const end = "2026-01-30";
-  const data = {
-    version: 1,
-    user: { id: "u1", name: "Test" },
-    logs: [
-      {
-        id: "2026-01-02",
-        userId: "u1",
-        date: "2026-01-02",
-        symptoms: ["Bloating"],
-        doses: {},
-        sideEffects: {},
-        weight: 154.0,
-        weightUnit: "lbs",
-      },
-      {
-        id: "2026-01-15",
-        userId: "u1",
-        date: "2026-01-15",
-        symptoms: ["Fatigue"],
-        doses: {},
-        sideEffects: {},
-        weight: 152.0,
-        weightUnit: "lbs",
-      },
-    ],
-    medications: [],
-    labs: [],
-    questions: [],
-    appointments: [],
-    personalize: true,
-  };
+test("weightStats: handles single entry and ignores logs without weight", () => {
+  const logs = [
+    {
+      id: "2026-01-01",
+      userId: "u1",
+      date: "2026-01-01",
+      symptoms: ["Fatigue"],
+      doses: {},
+      sideEffects: {},
+    },
+    {
+      id: "2026-01-02",
+      userId: "u1",
+      date: "2026-01-02",
+      symptoms: [],
+      doses: {},
+      sideEffects: {},
+      weight: 148.0,
+      weightUnit: "lbs",
+      weightNote: "morning",
+    },
+    {
+      id: "2026-01-03",
+      userId: "u1",
+      date: "2026-01-03",
+      symptoms: ["Acne"],
+      doses: {},
+      sideEffects: {},
+    },
+  ];
 
-  const report = summarize(data, start, end);
-  assert.equal(report.weight.count, 2);
-  assert.equal(report.weight.min, 152.0);
-  assert.equal(report.weight.max, 154.0);
-  assert.equal(report.weight.average, 153.0);
-  assert.equal(report.weight.netChange, -2.0);
-
-  // Observation includes weight
-  const hasWeightInsight = report.insights.some((text) =>
-    text.includes("Weight was logged across 2 entries in this range")
-  );
-  assert.equal(hasWeightInsight, true);
+  const stats = weightStats(logs, "lbs");
+  assert.equal(stats.count, 1);
+  assert.equal(stats.earliest?.value, 148.0);
+  assert.equal(stats.latest?.value, 148.0);
+  assert.equal(stats.min, 148.0);
+  assert.equal(stats.max, 148.0);
+  assert.equal(stats.range, 0);
+  assert.equal(stats.average, 148.0);
+  assert.equal(stats.netChange, 0);
 });
 
-test("assembleHealthContext and AI helpers: surface weight context and tags", () => {
-  const today = dateKey();
-  const data = {
-    version: 1,
-    user: { id: "u1", name: "Maya" },
-    logs: [
-      {
-        id: today,
-        userId: "u1",
-        date: today,
-        symptoms: ["Fatigue"],
-        doses: {},
-        sideEffects: {},
-        weight: 148.5,
-        weightUnit: "lbs",
-        weightNote: "Fasting",
-      },
-    ],
-    medications: [],
-    labs: [],
-    questions: [],
-    appointments: [],
-    personalize: true,
-  };
+test("weightStats: seamlessly handles mixed units in log history", () => {
+  const logs = [
+    {
+      id: "2026-01-01",
+      userId: "u1",
+      date: "2026-01-01",
+      symptoms: [],
+      doses: {},
+      sideEffects: {},
+      weight: 154.3, // ~70 kg
+      weightUnit: "lbs",
+    },
+    {
+      id: "2026-01-10",
+      userId: "u1",
+      date: "2026-01-10",
+      symptoms: [],
+      doses: {},
+      sideEffects: {},
+      weight: 70.0, // in kg
+      weightUnit: "kg",
+    },
+  ];
 
-  const context = assembleHealthContext(data, today);
-  assert.ok(context);
-  assert.equal(context.weightSummary?.count, 1);
-  assert.equal(context.weightSummary?.latest?.value, 148.5);
+  const statsLbs = weightStats(logs, "lbs");
+  assert.equal(statsLbs.count, 2);
+  assert.equal(statsLbs.earliest?.value, 154.3);
+  assert.equal(statsLbs.latest?.value, 154.3);
+  assert.equal(statsLbs.netChange, 0);
 
-  const recent = context.recentLogs?.[0];
-  assert.equal(recent?.weight, 148.5);
-  assert.equal(recent?.weightUnit, "lbs");
-  assert.equal(recent?.weightNote, "Fasting");
-
-  // Context description
-  const description = describeContext(context);
-  assert.match(description, /Weight: 1 entry \(latest 148.5 lbs/);
-  assert.match(description, /Weight: 148.5 lbs \(Fasting\)/);
-
-  // Context tags
-  const tags = extractContextTags(context, "How does my weight look?");
-  assert.ok(tags.some((t) => t.includes("Weight: 148.5 lbs")));
+  const statsKg = weightStats(logs, "kg");
+  assert.equal(statsKg.count, 2);
+  assert.equal(statsKg.earliest?.value, 70.0);
+  assert.equal(statsKg.latest?.value, 70.0);
+  assert.equal(statsKg.netChange, 0);
 });

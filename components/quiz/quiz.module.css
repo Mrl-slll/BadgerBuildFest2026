@@ -348,31 +348,55 @@
 }
 
 .scaleButton {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 48px;
+  height: 54px;
   border-radius: 10px;
-  border: 1.5px solid var(--line, #d6dcd5);
-  background: #fff;
-  font-size: 1.15rem;
+  border: 2px solid var(--line, #d6dcd5);
+  background: #ffffff;
+  font-size: 1.25rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--foreground, #243f40);
   cursor: pointer;
-  transition: all 160ms ease;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.scaleButton:hover {
+.scaleButton:hover:not(.scaleButtonActive) {
   border-color: #66a3bf;
-  background: #f7faf9;
+  background: #f0f7f6;
+  color: #184e4d;
+  transform: translateY(-1px);
 }
 
-.scaleButtonActive {
-  background: #246563;
-  color: #ffffff;
-  border-color: #246563;
-  box-shadow: 0 2px 8px rgba(36, 101, 99, 0.3);
+.scaleButtonActive,
+.scaleButtonActive:hover,
+.scaleButtonActive:focus {
+  background: #184e4d !important;
+  color: #ffffff !important;
+  border-color: #184e4d !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(24, 78, 77, 0.4), 0 0 0 3px #66a3bf !important;
+  transform: translateY(-2px) scale(1.05) !important;
+  z-index: 2;
+}
+
+.scaleButtonValue {
+  display: inline-block;
+  line-height: 1;
+}
+
+.scaleCheckBadge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 0.72rem;
+  line-height: 1;
+  font-weight: 900;
+  color: #72cfc2;
 }
 
 .scaleLabels {

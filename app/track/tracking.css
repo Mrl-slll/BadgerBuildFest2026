@@ -349,7 +349,7 @@
 }
 .tracking .med-log {
   display: grid;
-  grid-template-columns: minmax(160px, 0.7fr) 140px minmax(260px, 1.3fr);
+  grid-template-columns: minmax(160px, 0.7fr) 175px minmax(260px, 1.3fr);
   gap: 20px;
   align-items: start;
   margin: 18px 0;
@@ -358,6 +358,9 @@
   border-radius: 8px;
   border-bottom: 1px solid #dbe1d9;
   transition: background-color 160ms ease;
+}
+.tracking .med-dose-select {
+  min-width: 175px;
 }
 .tracking .med-log:hover {
   background: rgba(200, 223, 219, 0.16);

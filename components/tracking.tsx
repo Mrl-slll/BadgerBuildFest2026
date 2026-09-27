@@ -512,6 +512,7 @@ export function DailyLogForm({
               <label>
                 Dose
                 <select
+                  className="med-dose-select"
                   value={log.doses[m.id] || ""}
                   onChange={(e) =>
                     field("doses", { ...log.doses, [m.id]: e.target.value })

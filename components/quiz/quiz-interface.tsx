@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { QuizAnswers, QuizResult } from '../../lib/quiz-types';
 import { calculateQuizResult } from '../../lib/quiz-algorithm';
 import { saveQuizResultLocally, syncQuizResultToCloud } from '../../lib/quiz-storage';
@@ -36,26 +36,33 @@ export function QuizInterface({
   onFinish,
   isModal = false,
 }: QuizInterfaceProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [result, setResult] = useState<QuizResult | null>(initialResult);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Form State
-  const [answers, setAnswers] = useState<QuizAnswers>(
-    initialResult?.answers ?? {
-      cravingsIntensity: 2,
-      stressLevel: 2,
-      skinMarkers: ['neither'],
-      hirsutismSites: ['none_vellus'],
-      acnePatterns: ['rarely_never'],
-      nervousSleepPatterns: [],
-      inflammatorySymptoms: ['none'],
-      relatedConditions: [],
-    }
-  );
+  // Form State - start completely blank with no pre-selections
+  const [answers, setAnswers] = useState<QuizAnswers>({});
 
   const section = QUIZ_SECTIONS[currentStep - 1];
   const progressPercent = Math.round((currentStep / QUIZ_SECTIONS.length) * 100);
+
+  // Scroll to top of both window and any modal/parent container whenever section changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      let parent = containerRef.current.parentElement;
+      while (parent) {
+        if (parent.scrollTop > 0) {
+          parent.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        parent = parent.parentElement;
+      }
+    }
+  }, [currentStep]);
 
   // Handle single choice updates
   const handleSingleSelect = <K extends keyof QuizAnswers>(key: K, value: QuizAnswers[K]) => {
@@ -77,9 +84,6 @@ export function QuizInterface({
       let updated: T[];
       if (currentList.includes(value)) {
         updated = currentList.filter((item) => item !== value);
-        if (updated.length === 0 && exclusiveOption) {
-          updated = [exclusiveOption];
-        }
       } else {
         const withoutExclusive = exclusiveOption ? currentList.filter((item) => item !== exclusiveOption) : currentList;
         updated = [...withoutExclusive, value];
@@ -95,7 +99,12 @@ export function QuizInterface({
       case 1:
         return Boolean(answers.cyclePattern && answers.birthControlTimeline && answers.fertileMucus);
       case 2:
-        return Boolean(answers.carbReaction && answers.fatStorage && (answers.skinMarkers?.length ?? 0) > 0);
+        return Boolean(
+          answers.carbReaction &&
+          answers.cravingsIntensity !== undefined &&
+          answers.fatStorage &&
+          (answers.skinMarkers?.length ?? 0) > 0
+        );
       case 3:
         return Boolean(answers.androgenOnset && (answers.hirsutismSites?.length ?? 0) > 0 && (answers.acnePatterns?.length ?? 0) > 0);
       case 4:
@@ -112,9 +121,6 @@ export function QuizInterface({
   const handleNext = () => {
     if (currentStep < QUIZ_SECTIONS.length) {
       setCurrentStep((prev) => prev + 1);
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
     } else {
       handleSubmit();
     }
@@ -123,9 +129,6 @@ export function QuizInterface({
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
     }
   };
 
@@ -146,6 +149,7 @@ export function QuizInterface({
 
   const handleRetake = () => {
     setResult(null);
+    setAnswers({});
     setCurrentStep(1);
   };
 
@@ -162,7 +166,7 @@ export function QuizInterface({
   }
 
   return (
-    <div className={isModal ? styles.modalWrapper : styles.container}>
+    <div ref={containerRef} className={isModal ? styles.modalWrapper : styles.container}>
       {/* Progress Header */}
       <div className={styles.progressHeader}>
         <div className={styles.progressMeta}>
@@ -334,7 +338,8 @@ export function QuizInterface({
                       onClick={() => handleSingleSelect('cravingsIntensity', val)}
                       aria-pressed={isActive}
                     >
-                      {val}
+                      <span className={styles.scaleButtonValue}>{val}</span>
+                      {isActive && <span className={styles.scaleCheckBadge} aria-hidden="true">✓</span>}
                     </button>
                   );
                 })}
@@ -583,7 +588,8 @@ export function QuizInterface({
                       onClick={() => handleSingleSelect('stressLevel', val)}
                       aria-pressed={isActive}
                     >
-                      {val}
+                      <span className={styles.scaleButtonValue}>{val}</span>
+                      {isActive && <span className={styles.scaleCheckBadge} aria-hidden="true">✓</span>}
                     </button>
                   );
                 })}
