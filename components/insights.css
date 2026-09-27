@@ -129,7 +129,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 28px;
-  align-items: start;
+  align-items: stretch;
   padding: 0;
   border-top: none;
   border-bottom: none;
@@ -138,7 +138,13 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 28px;
-  align-items: start;
+  align-items: stretch;
+}
+.insights-app .trend-columns > section,
+.insights-app .insights-two-col > section {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .insights-app #history {
   margin-bottom: 8px;
