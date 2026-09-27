@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { validateMedication, validateLab } from "../lib/tracking-validation";
 import { SymptomInsights } from "./symptom-insights";
+import { MedicationInsights } from "./medication-insights";
 import {
   HealthData,
   Log,
@@ -38,6 +39,7 @@ export function DailyLogForm({
   const [status, setStatus] = useState("");
   const [nextDate, setNextDate] = useState<string | null>(null);
   const [changed, setChanged] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   useEffect(() => {
     if (window.location.hash === "#cycle-bleeding") {
       const section = document.getElementById("cycle-bleeding");
@@ -197,7 +199,6 @@ export function DailyLogForm({
           ))}
         </div>
       </fieldset>
-      {log.symptoms.length > 0 && <SymptomInsights symptoms={log.symptoms} />}
       <fieldset>
         <legend>Pain</legend>
         <p className="field-hint" id="pain-scale-help">
@@ -272,6 +273,28 @@ export function DailyLogForm({
           <p className="field-hint">Previously recorded overall pain: {log.pain}/10.</p>
         )}
       </fieldset>
+      {log.symptoms.length > 0 && (
+        <div className="centered-suggestions-trigger">
+          <button
+            type="button"
+            className="get-suggestions-button"
+            onClick={() => setShowSuggestions(!showSuggestions)}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
+            </svg>
+            <span>{showSuggestions ? "Hide" : "Get"} Personalized Suggestions</span>
+          </button>
+        </div>
+      )}
+      {showSuggestions && log.symptoms.length > 0 && (
+        <SymptomInsights symptoms={log.symptoms} />
+      )}
       <fieldset id="cycle-bleeding" tabIndex={-1}>
         <legend>Cycle & bleeding</legend>
         <div className="chips">
@@ -435,7 +458,7 @@ export function DailyLogForm({
                   >
                     <option value="">
                       {log.symptoms.length
-                        ? "Link one of today’s symptoms…"
+                        ? "Link one of today's symptoms…"
                         : "Select a symptom above first"}
                     </option>
                     {log.symptoms.map((symptom) => (
@@ -503,6 +526,13 @@ export function DailyLogForm({
             No medications for this date. Add a medication in the Medications
             tab to log doses here.
           </p>
+        )}
+        {data.medications.length > 0 && (
+          <MedicationInsights
+            medicationName={data.medications.map(m => m.name).join(", ")}
+            notes=""
+            sideEffects=""
+          />
         )}
       </fieldset>
       <label>
