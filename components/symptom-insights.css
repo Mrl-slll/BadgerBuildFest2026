@@ -1,3 +1,43 @@
+/* Centered Suggestions Trigger Button */
+.centered-suggestions-trigger {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0;
+  padding: 24px 0;
+}
+
+.get-suggestions-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--teal, #66A3BF) 0%, #5892ad 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102, 163, 191, 0.25);
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.get-suggestions-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 163, 191, 0.35);
+}
+
+.get-suggestions-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 163, 191, 0.3);
+}
+
+.get-suggestions-button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 /* Symptom Insights in Track Page */
 .symptom-insights {
   background: linear-gradient(135deg, rgba(102, 163, 191, 0.04) 0%, rgba(200, 223, 219, 0.04) 100%);
@@ -201,6 +241,91 @@
   margin: 0;
 }
 
+/* Medication Insights Chatbox */
+.medication-insights-chatbox {
+  margin-top: 20px;
+  background: linear-gradient(135deg, rgba(200, 223, 219, 0.03) 0%, rgba(102, 163, 191, 0.03) 100%);
+  border: 1px solid var(--line, #e5e5e5);
+  border-radius: 10px;
+  padding: 18px;
+  animation: fadeSlideIn 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chatbox-input-area label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink, #1a1a1a);
+  margin-bottom: 10px;
+}
+
+.chatbox-controls {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.chatbox-controls input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--line, #e5e5e5);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--surface, #ffffff);
+  transition: border-color 200ms ease;
+}
+
+.chatbox-controls input:focus {
+  outline: none;
+  border-color: var(--teal, #66A3BF);
+  box-shadow: 0 0 0 3px rgba(102, 163, 191, 0.1);
+}
+
+.chatbox-controls .analyze-button {
+  padding: 10px 20px;
+  background: var(--teal, #66A3BF);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 200ms ease;
+  white-space: nowrap;
+}
+
+.chatbox-controls .analyze-button:hover:not(:disabled) {
+  background: #5892ad;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 163, 191, 0.3);
+}
+
+.chatbox-controls .analyze-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.chatbox-controls .analyze-button:disabled {
+  background: var(--line, #e5e5e5);
+  color: var(--ink-dim, #999999);
+  cursor: not-allowed;
+}
+
+.medication-insights-results {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line, #e5e5e5);
+}
+
+.medication-insights-results .insights-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.medication-insights-results .insight-card {
+  border-top: 3px solid var(--teal, #66A3BF);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .symptom-insights {
@@ -209,5 +334,13 @@
 
   .insights-cards {
     grid-template-columns: 1fr;
+  }
+
+  .chatbox-controls {
+    flex-direction: column;
+  }
+
+  .chatbox-controls .analyze-button {
+    width: 100%;
   }
 }
