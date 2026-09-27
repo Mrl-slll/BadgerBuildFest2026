@@ -62,10 +62,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="brand-mark">
               <Icon name="leaf" />
             </span>
-            <span className="brand-text">
-              PHASE
-              <small>Your health, in context</small>
-            </span>
+            <span className="brand-text">PHASE</span>
           </Link>
 
           {/* Desktop Navigation */}
