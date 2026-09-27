@@ -325,6 +325,19 @@ Clinical consensus from the *British Journal of Dermatology*:
 • **Combination Approach**: Anti-androgenic therapies (such as Spironolactone or specific progestin oral contraceptives) combined with insulin-sensitizing lifestyle changes yield superior clearance compared to isolated interventions.`;
       clinician = 'Should we check free testosterone, DHEA-S, and SHBG to measure my androgen excess, and could anti-androgenic therapy be appropriate for my symptoms?';
     }
+    // Weight & Metabolic Regulation
+    else if (/weight|gain|loss|scale|pound|lbs|kg|heavy|fat/.test(qLower)) {
+      interpretation = `Weight regulation in PCOS is closely linked to metabolic and endocrine pathways rather than simple caloric mathematics. Elevated fasting insulin impairs lipolysis (fat breakdown) and promotes lipid storage, while cyclical progesterone and aldosterone fluctuations frequently cause 2 to 5 pounds of water retention during the luteal phase.
+
+Key clinical findings from *The Journal of Clinical Endocrinology & Metabolism*:
+• **Insulin-Driven Metabolic Resistance**: Hyperinsulinemia directly inhibits SHBG production, increasing bioactive free androgens and favoring abdominal fat storage while blunting postprandial fat oxidation.
+• **Cyclical Fluid Retention**: Pre-menstrual weight increases are overwhelmingly fluid shifts rather than changes in tissue mass, typically normalizing within 1–2 days of menstrual flow onset.
+• **Pattern Focus Over Scale Numbers**: Clinical guidelines emphasize monitoring fasting insulin, HOMA-IR, waist-to-hip ratio, and symptom resolution rather than daily scale changes.`;
+      if (context?.weightSummary && context.weightSummary.count > 0) {
+        interpretation += `\n\nYour recorded history shows **${context.weightSummary.count} weight ${context.weightSummary.count === 1 ? 'entry' : 'entries'}** (averaging ${context.weightSummary.average} lbs, with a recorded range of ${context.weightSummary.min}–${context.weightSummary.max} lbs). Observing how these fluctuations coincide with your cycle days provides valuable context for your care team.`;
+      }
+      clinician = 'How do my fasting insulin, lipid profile, and cycle phases correlate with my weight patterns, and what non-scale metabolic indicators should we track together?';
+    }
     // Doctor Questions Intent
     else if (hasDoctorIntent) {
       interpretation = `Preparing for a clinical appointment with structured, longitudinal data dramatically improves appointment outcomes and shared decision-making.

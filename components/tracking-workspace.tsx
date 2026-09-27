@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo, useSyncExternalStore } from "react";
-import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
+import { DailyLogForm, Medications, Labs, Cycles, WeightManager } from "./tracking";
 import { dateKey, HealthData, pretty, addDays } from "../lib/health";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -12,6 +12,7 @@ import { ScrollReveal, PhysicsInteractive } from "./motion";
 
 const sections = [
   "Daily log",
+  "Weight",
   "Cycles",
   "Medications",
   "Lab results",
@@ -95,6 +96,7 @@ function getLogSearchData(log: HealthData["logs"][number]) {
     log.bleeding ? `Bleeding ${log.bleeding} Flow` : "",
     log.periodStart ? "Period started cycle day 1" : "",
     log.periodEnd ? "Period ended" : "",
+    log.weight !== undefined ? `Weight ${log.weight} ${log.weightUnit || "lbs"} ${log.weightNote || ""}` : "",
     log.notes || "",
     log.painNote || "",
     log.meals || "",
@@ -380,6 +382,14 @@ function LoadedTrackingWorkspace() {
               onDirty={setDirty}
             />
           )}
+          {section === "Weight" && (
+            <WeightManager
+              data={data}
+              save={save}
+              onDirty={setDirty}
+              onEditDate={(d) => navigate("Daily log", d)}
+            />
+          )}
           {section === "Cycles" && (
             <Cycles
               data={data}
@@ -550,6 +560,7 @@ function LoadedTrackingWorkspace() {
                         l.bleeding && `Bleeding: ${l.bleeding}`,
                         l.periodStart && "Period started",
                         l.periodEnd && "Period ended",
+                        l.weight !== undefined && `Weight: ${l.weight} ${l.weightUnit || "lbs"}${l.weightNote ? ` (${l.weightNote})` : ""}`,
                       ]
                         .filter(Boolean)
                         .join(" · ")}

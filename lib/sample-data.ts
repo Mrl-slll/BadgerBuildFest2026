@@ -1,6 +1,6 @@
 // Auto-generated 2-year sample dataset for PCOS journal
 // Covers 2024-09-27 to 2026-09-26 (731 days) with realistic clinical cycles, medications, and labs.
-import type { HealthData } from './health';
+import type { HealthData } from "./health";
 
 export const sampleHealthData: HealthData = {
   "version": 1,
@@ -27,7 +27,10 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 462,
       "sleepQuality": "Restful",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 159.7,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-09-28",
@@ -75,7 +78,10 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 485,
       "sleepQuality": "Restful",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 159.7,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2024-10-01",
@@ -116,7 +122,9 @@ export const sampleHealthData: HealthData = {
       "sleepQuality": "Moderate",
       "notes": "Period started today. Warm bath and hydration helped with cramping.",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-03",
@@ -140,7 +148,9 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 472,
       "sleepQuality": "Restful",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-04",
@@ -196,7 +206,10 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 454,
       "sleepQuality": "Restful",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.5,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-10-07",
@@ -246,7 +259,9 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 466,
       "sleepQuality": "Restful",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-10",
@@ -295,7 +310,9 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 461,
       "sleepQuality": "Restful",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-13",
@@ -347,7 +364,10 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 356,
       "sleepQuality": "Interrupted",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.3,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-10-16",
@@ -364,7 +384,9 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 480,
       "sleepQuality": "Restful",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-17",
@@ -397,7 +419,9 @@ export const sampleHealthData: HealthData = {
       "sleepMinutes": 436,
       "sleepQuality": "Moderate",
       "doses": {},
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-19",
@@ -450,7 +474,9 @@ export const sampleHealthData: HealthData = {
       "doses": {
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-22",
@@ -484,7 +510,9 @@ export const sampleHealthData: HealthData = {
       "doses": {
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-24",
@@ -502,7 +530,10 @@ export const sampleHealthData: HealthData = {
       "doses": {
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.1,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-10-25",
@@ -557,7 +588,9 @@ export const sampleHealthData: HealthData = {
       "doses": {
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-28",
@@ -610,7 +643,9 @@ export const sampleHealthData: HealthData = {
       "doses": {
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-10-31",
@@ -663,7 +698,10 @@ export const sampleHealthData: HealthData = {
       "doses": {
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-11-03",
@@ -743,7 +781,9 @@ export const sampleHealthData: HealthData = {
           "Nausea",
           "Stomach pain"
         ]
-      }
+      },
+      "weight": 157.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-06",
@@ -773,7 +813,9 @@ export const sampleHealthData: HealthData = {
           "Nausea",
           "Stomach pain"
         ]
-      }
+      },
+      "weight": 157.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-07",
@@ -835,7 +877,9 @@ export const sampleHealthData: HealthData = {
           "Nausea",
           "Stomach pain"
         ]
-      }
+      },
+      "weight": 158,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-09",
@@ -929,7 +973,10 @@ export const sampleHealthData: HealthData = {
           "Nausea",
           "Stomach pain"
         ]
-      }
+      },
+      "weight": 158.7,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-11-12",
@@ -990,7 +1037,9 @@ export const sampleHealthData: HealthData = {
           "Nausea",
           "Stomach pain"
         ]
-      }
+      },
+      "weight": 159.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-14",
@@ -1022,7 +1071,10 @@ export const sampleHealthData: HealthData = {
           "Nausea",
           "Stomach pain"
         ]
-      }
+      },
+      "weight": 159.2,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2024-11-15",
@@ -1104,7 +1156,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-18",
@@ -1178,7 +1232,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-11-21",
@@ -1238,7 +1295,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-24",
@@ -1301,7 +1360,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-27",
@@ -1322,7 +1383,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-11-28",
@@ -1361,7 +1424,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-11-30",
@@ -1418,7 +1484,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-03",
@@ -1458,7 +1526,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-05",
@@ -1478,7 +1548,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-06",
@@ -1533,7 +1605,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-12-09",
@@ -1589,7 +1664,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-12",
@@ -1651,7 +1728,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-15",
@@ -1709,7 +1788,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-12-18",
@@ -1731,7 +1813,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-19",
@@ -1765,7 +1849,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-21",
@@ -1824,7 +1910,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-24",
@@ -1860,7 +1948,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-26",
@@ -1876,7 +1966,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.3,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2024-12-27",
@@ -1934,7 +2027,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Missed",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2024-12-30",
@@ -1992,7 +2087,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Missed",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-02",
@@ -2052,7 +2149,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-01-05",
@@ -2112,7 +2212,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.4,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-01-08",
@@ -2133,7 +2236,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 158.6,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-01-09",
@@ -2179,7 +2285,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Missed",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-11",
@@ -2253,7 +2361,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-01-14",
@@ -2295,7 +2406,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-16",
@@ -2314,7 +2427,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-17",
@@ -2372,7 +2487,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-20",
@@ -2432,7 +2549,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-01-23",
@@ -2489,7 +2609,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-26",
@@ -2546,7 +2668,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-29",
@@ -2564,7 +2688,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-01-30",
@@ -2603,7 +2729,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.3,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-02-01",
@@ -2666,7 +2795,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-04",
@@ -2702,7 +2833,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Missed",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-06",
@@ -2718,7 +2851,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-07",
@@ -2773,7 +2908,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-02-10",
@@ -2836,7 +2974,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-13",
@@ -2895,7 +3035,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-16",
@@ -2954,7 +3096,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-02-19",
@@ -2972,7 +3117,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 157.3,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-02-20",
@@ -3025,7 +3173,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-22",
@@ -3090,7 +3240,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-25",
@@ -3134,7 +3286,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-02-27",
@@ -3153,7 +3307,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.3,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-02-28",
@@ -3212,7 +3369,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-03",
@@ -3263,7 +3422,9 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-06",
@@ -3321,7 +3482,10 @@ export const sampleHealthData: HealthData = {
         "med-metformin": "Taken",
         "med-vitamind": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-03-09",
@@ -3382,7 +3546,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-12",
@@ -3401,7 +3567,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-13",
@@ -3442,7 +3610,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-15",
@@ -3505,7 +3675,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-03-18",
@@ -3545,7 +3718,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-20",
@@ -3564,7 +3739,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-21",
@@ -3627,7 +3804,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-24",
@@ -3688,7 +3867,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-03-27",
@@ -3746,7 +3928,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-03-30",
@@ -3805,7 +3989,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-02",
@@ -3825,7 +4011,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-03",
@@ -3868,7 +4056,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.5,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-04-05",
@@ -3933,7 +4124,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-08",
@@ -3973,7 +4166,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.3,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-04-10",
@@ -3992,7 +4188,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 156.9,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-04-11",
@@ -4070,7 +4269,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.3,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-04-14",
@@ -4139,7 +4341,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-17",
@@ -4201,7 +4405,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-20",
@@ -4260,7 +4466,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Missed",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-04-23",
@@ -4281,7 +4490,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-24",
@@ -4323,7 +4534,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-26",
@@ -4384,7 +4597,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-04-29",
@@ -4425,7 +4640,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-01",
@@ -4445,7 +4662,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Missed"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-05-02",
@@ -4502,7 +4722,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-05",
@@ -4564,7 +4786,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-08",
@@ -4625,7 +4849,10 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-05-11",
@@ -4689,7 +4916,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-14",
@@ -4710,7 +4939,9 @@ export const sampleHealthData: HealthData = {
         "med-vitamind": "Taken",
         "med-inositol": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-15",
@@ -4777,7 +5008,9 @@ export const sampleHealthData: HealthData = {
         "med-spironolactone": [
           "Dizziness"
         ]
-      }
+      },
+      "weight": 154.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-17",
@@ -4872,7 +5105,10 @@ export const sampleHealthData: HealthData = {
         "med-spironolactone": [
           "Dizziness"
         ]
-      }
+      },
+      "weight": 154.3,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-05-20",
@@ -4937,7 +5173,9 @@ export const sampleHealthData: HealthData = {
         "med-spironolactone": [
           "Dizziness"
         ]
-      }
+      },
+      "weight": 156,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-22",
@@ -4971,7 +5209,9 @@ export const sampleHealthData: HealthData = {
         "med-spironolactone": [
           "Dizziness"
         ]
-      }
+      },
+      "weight": 156.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-05-23",
@@ -5047,7 +5287,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.9,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-05-26",
@@ -5132,7 +5375,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.1,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-05-29",
@@ -5200,7 +5446,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-01",
@@ -5259,7 +5507,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-04",
@@ -5279,7 +5529,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-05",
@@ -5322,7 +5574,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-06-07",
@@ -5382,7 +5637,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-10",
@@ -5422,7 +5679,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-12",
@@ -5442,7 +5701,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-13",
@@ -5501,7 +5762,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.7,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-06-16",
@@ -5561,7 +5825,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-19",
@@ -5621,7 +5887,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-22",
@@ -5684,7 +5952,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-06-25",
@@ -5702,7 +5973,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-26",
@@ -5741,7 +6014,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-06-28",
@@ -5797,7 +6072,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Missed"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-01",
@@ -5837,7 +6114,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.9,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-07-03",
@@ -5857,7 +6137,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 155.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-07-04",
@@ -5941,7 +6224,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-07",
@@ -6009,7 +6294,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-10",
@@ -6068,7 +6355,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-07-13",
@@ -6128,7 +6418,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-16",
@@ -6149,7 +6441,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-17",
@@ -6192,7 +6486,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-19",
@@ -6248,7 +6544,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.1,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-07-22",
@@ -6286,7 +6585,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-24",
@@ -6308,7 +6609,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-25",
@@ -6372,7 +6675,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Missed",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-07-28",
@@ -6431,7 +6736,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-07-31",
@@ -6490,7 +6798,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-03",
@@ -6551,7 +6861,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-06",
@@ -6573,7 +6885,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-07",
@@ -6611,7 +6925,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-08-09",
@@ -6691,7 +7008,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-12",
@@ -6740,7 +7059,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-14",
@@ -6762,7 +7083,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-15",
@@ -6824,7 +7147,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-08-18",
@@ -6884,7 +7210,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-21",
@@ -6947,7 +7275,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-24",
@@ -7011,7 +7341,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-08-27",
@@ -7032,7 +7365,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-28",
@@ -7073,7 +7408,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-08-30",
@@ -7133,7 +7470,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-02",
@@ -7173,7 +7512,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-04",
@@ -7194,7 +7535,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-09-05",
@@ -7255,7 +7599,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-08",
@@ -7314,7 +7660,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-11",
@@ -7376,7 +7724,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-09-14",
@@ -7463,7 +7814,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-17",
@@ -7485,7 +7838,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-18",
@@ -7531,7 +7886,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-20",
@@ -7590,7 +7947,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-09-23",
@@ -7626,7 +7986,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-25",
@@ -7647,7 +8009,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-26",
@@ -7706,7 +8070,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-09-29",
@@ -7768,7 +8134,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-10-02",
@@ -7831,7 +8200,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-10-05",
@@ -7896,7 +8267,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-10-08",
@@ -7916,7 +8289,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-10-09",
@@ -7956,7 +8331,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-10-11",
@@ -8018,7 +8396,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-10-14",
@@ -8059,7 +8439,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.2,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-10-16",
@@ -8079,7 +8462,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 154.3,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-10-17",
@@ -8165,7 +8551,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-10-20",
@@ -8237,7 +8626,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-10-23",
@@ -8300,7 +8691,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-10-26",
@@ -8365,7 +8758,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-10-29",
@@ -8385,7 +8781,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-10-30",
@@ -8428,7 +8826,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-01",
@@ -8486,7 +8886,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-04",
@@ -8526,7 +8928,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-06",
@@ -8544,7 +8948,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-11-07",
@@ -8604,7 +9011,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-10",
@@ -8664,7 +9073,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-13",
@@ -8724,7 +9135,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-11-16",
@@ -8785,7 +9199,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-19",
@@ -8805,7 +9221,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-20",
@@ -8843,7 +9261,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.7,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-11-22",
@@ -8924,7 +9345,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.1,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-11-25",
@@ -8973,7 +9397,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Missed"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-27",
@@ -8997,7 +9423,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-11-28",
@@ -9059,7 +9487,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-01",
@@ -9117,7 +9547,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-12-04",
@@ -9179,7 +9612,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-07",
@@ -9242,7 +9677,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Missed"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-10",
@@ -9260,7 +9697,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Missed",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-11",
@@ -9301,7 +9740,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-12-13",
@@ -9362,7 +9804,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-16",
@@ -9406,7 +9850,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-18",
@@ -9427,7 +9873,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-19",
@@ -9488,7 +9936,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-12-22",
@@ -9551,7 +10002,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 153.5,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2025-12-25",
@@ -9627,7 +10081,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2025-12-28",
@@ -9698,7 +10154,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.5,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2025-12-31",
@@ -9722,7 +10181,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-01",
@@ -9762,7 +10223,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-03",
@@ -9823,7 +10286,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Missed",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-06",
@@ -9863,7 +10328,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-08",
@@ -9883,7 +10350,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-01-09",
@@ -9944,7 +10414,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Missed",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-12",
@@ -10006,7 +10478,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Missed"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-15",
@@ -10065,7 +10539,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-01-18",
@@ -10126,7 +10603,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-21",
@@ -10144,7 +10623,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-22",
@@ -10185,7 +10666,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-24",
@@ -10243,7 +10726,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Missed",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.1,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-01-27",
@@ -10285,7 +10771,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-01-29",
@@ -10314,7 +10803,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-01-30",
@@ -10392,7 +10883,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-02",
@@ -10456,7 +10949,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.1,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-02-05",
@@ -10517,7 +11013,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-08",
@@ -10575,7 +11073,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-11",
@@ -10595,7 +11095,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-12",
@@ -10635,7 +11137,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-02-14",
@@ -10697,7 +11202,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-17",
@@ -10735,7 +11242,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-19",
@@ -10756,7 +11265,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-20",
@@ -10819,7 +11330,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-02-23",
@@ -10877,7 +11391,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-02-26",
@@ -10934,7 +11450,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-01",
@@ -10999,7 +11517,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-03-04",
@@ -11021,7 +11542,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 152.6,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-03-05",
@@ -11080,7 +11604,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-07",
@@ -11154,7 +11680,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-10",
@@ -11200,7 +11728,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-12",
@@ -11218,7 +11748,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-03-13",
@@ -11274,7 +11807,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-16",
@@ -11337,7 +11872,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-19",
@@ -11397,7 +11934,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.5,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-03-22",
@@ -11458,7 +11998,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-25",
@@ -11478,7 +12020,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-26",
@@ -11516,7 +12060,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-03-28",
@@ -11578,7 +12124,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-03-31",
@@ -11616,7 +12165,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-02",
@@ -11637,7 +12188,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-03",
@@ -11696,7 +12249,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.5,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-04-06",
@@ -11783,7 +12339,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Missed"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.7,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-04-09",
@@ -11851,7 +12410,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-12",
@@ -11913,7 +12474,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-15",
@@ -11931,7 +12494,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-16",
@@ -11969,7 +12534,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-04-18",
@@ -12032,7 +12600,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-21",
@@ -12070,7 +12640,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-23",
@@ -12091,7 +12663,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-24",
@@ -12152,7 +12726,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.5,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-04-27",
@@ -12211,7 +12788,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Missed"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-04-30",
@@ -12270,7 +12849,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-03",
@@ -12329,7 +12910,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Missed",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.7,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-05-06",
@@ -12347,7 +12931,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.9,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-05-07",
@@ -12388,7 +12975,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.2,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-05-09",
@@ -12476,7 +13066,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-12",
@@ -12520,7 +13112,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-14",
@@ -12544,7 +13138,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-05-15",
@@ -12603,7 +13200,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-18",
@@ -12663,7 +13262,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-21",
@@ -12724,7 +13325,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-05-24",
@@ -12783,7 +13387,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-27",
@@ -12803,7 +13409,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-28",
@@ -12842,7 +13450,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-05-30",
@@ -12902,7 +13512,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-06-02",
@@ -12943,7 +13556,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-04",
@@ -12964,7 +13579,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-05",
@@ -13025,7 +13642,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-08",
@@ -13088,7 +13707,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 151.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-06-11",
@@ -13163,7 +13785,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-14",
@@ -13236,7 +13860,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-17",
@@ -13260,7 +13886,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-18",
@@ -13302,7 +13930,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-06-20",
@@ -13360,7 +13991,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-23",
@@ -13398,7 +14031,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-25",
@@ -13419,7 +14054,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-06-26",
@@ -13481,7 +14118,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.9,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-06-29",
@@ -13542,7 +14182,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-02",
@@ -13598,7 +14240,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-05",
@@ -13658,7 +14302,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.7,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-07-08",
@@ -13676,7 +14323,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-09",
@@ -13717,7 +14366,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-11",
@@ -13780,7 +14431,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.1,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-07-14",
@@ -13832,7 +14486,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.5,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-16",
@@ -13859,7 +14515,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.6,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-07-17",
@@ -13933,7 +14592,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-20",
@@ -13997,7 +14658,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-23",
@@ -14055,7 +14718,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.4,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-07-26",
@@ -14118,7 +14784,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-29",
@@ -14138,7 +14806,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-07-30",
@@ -14177,7 +14847,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-01",
@@ -14235,7 +14907,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-08-04",
@@ -14274,7 +14949,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-06",
@@ -14292,7 +14969,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-07",
@@ -14355,7 +15034,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.4,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-10",
@@ -14417,7 +15098,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.1,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-08-13",
@@ -14471,7 +15155,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.6,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-16",
@@ -14528,7 +15214,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 150.1,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-08-19",
@@ -14558,7 +15247,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.3,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-20",
@@ -14616,7 +15307,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-08-22",
@@ -14684,7 +15378,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-25",
@@ -14722,7 +15418,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-27",
@@ -14743,7 +15441,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.2,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-08-28",
@@ -14803,7 +15503,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 147.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-08-31",
@@ -14862,7 +15565,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 147.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-09-03",
@@ -14921,7 +15626,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 147.9,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-09-06",
@@ -14979,7 +15686,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-09-09",
@@ -15000,7 +15710,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Missed",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 148.1,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-09-10",
@@ -15039,7 +15751,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 147.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-09-12",
@@ -15096,7 +15810,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 147.8,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-09-15",
@@ -15134,7 +15850,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-09-17",
@@ -15154,7 +15872,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.2,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     },
     {
       "id": "log-2026-09-18",
@@ -15215,7 +15936,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 149.3,
+      "weightUnit": "lbs",
+      "weightNote": "Luteal fullness / water retention"
     },
     {
       "id": "log-2026-09-21",
@@ -15297,7 +16021,9 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 147.7,
+      "weightUnit": "lbs"
     },
     {
       "id": "log-2026-09-24",
@@ -15368,7 +16094,10 @@ export const sampleHealthData: HealthData = {
         "med-inositol": "Taken",
         "med-spironolactone": "Taken"
       },
-      "sideEffects": {}
+      "sideEffects": {},
+      "weight": 147.8,
+      "weightUnit": "lbs",
+      "weightNote": "Morning, fasting"
     }
   ],
   "medications": [

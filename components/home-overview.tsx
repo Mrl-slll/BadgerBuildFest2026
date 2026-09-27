@@ -22,6 +22,10 @@ import {
   AmbientBackground,
   AnimatedFingerprintCycle,
 } from "./motion";
+import { PhenotypeSummaryCard } from "./quiz/phenotype-summary-card";
+import { QuizModal } from "./quiz/quiz-modal";
+import { useStoredQuizResult } from "../lib/quiz-storage";
+import type { QuizResult } from "../lib/quiz-types";
 import "./home-overview.css";
 
 type Props = { data: HealthData; today: string };
@@ -45,6 +49,19 @@ function LoadedHomeOverview(props: Props) {
   const { isLoaded, isSignedIn, user } = useUser();
   const currentUserId = isSignedIn && user ? user.id : "local-user";
   const userName = user?.firstName || null;
+  const quizResult = useStoredQuizResult(currentUserId);
+  const [autoQuizOpen, setAutoQuizOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    const alreadyAutoShown = typeof window !== 'undefined' && sessionStorage.getItem('pcos-quiz-auto-shown');
+    if (!quizResult && !alreadyAutoShown) {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('pcos-quiz-auto-shown', 'true');
+      }
+      setAutoQuizOpen(true);
+    }
+  }, [isLoaded, isSignedIn, quizResult]);
 
   const [personalData, setPersonalData] = useState<HealthData | null>(null);
 
@@ -66,7 +83,17 @@ function LoadedHomeOverview(props: Props) {
     }
   }, [isLoaded, isSignedIn, currentUserId]);
 
-  return <HomeOverviewContent {...props} personalData={personalData} userName={userName} />;
+  return (
+    <HomeOverviewContent
+      {...props}
+      personalData={personalData}
+      userName={userName}
+      userId={currentUserId}
+      quizResult={quizResult}
+      autoQuizOpen={autoQuizOpen}
+      setAutoQuizOpen={setAutoQuizOpen}
+    />
+  );
 }
 
 function HomeOverviewContent({
@@ -74,7 +101,18 @@ function HomeOverviewContent({
   personalData,
   today,
   userName,
-}: Props & { personalData: HealthData | null; userName?: string | null }) {
+  userId,
+  quizResult,
+  autoQuizOpen,
+  setAutoQuizOpen,
+}: Props & {
+  personalData: HealthData | null;
+  userName?: string | null;
+  userId?: string | null;
+  quizResult?: QuizResult | null;
+  autoQuizOpen?: boolean;
+  setAutoQuizOpen?: (open: boolean) => void;
+}) {
   const data = scoped(personalData ?? emptyStateData);
   const logs = [...data.logs]
     .filter((log) => log.date <= today)
@@ -168,6 +206,15 @@ function HomeOverviewContent({
       {/* SVG Path Tracing Divider */}
       <TracingDivider variant="wave" color="#66A3BF" />
 
+      {/* Phenotype & Cycle Assessment Summary Card */}
+      <ScrollReveal yOffset={24}>
+        <PhenotypeSummaryCard
+          quizResult={quizResult ?? null}
+          userId={userId}
+          userName={userName}
+        />
+      </ScrollReveal>
+
       <ScrollReveal yOffset={24}>
         <div className="home-summary-row">
         <CycleWheel cycles={cycles} today={today} />
@@ -226,7 +273,7 @@ function HomeOverviewContent({
                         <p className="recent-entry-no-symptoms">No symptoms recorded in this check-in</p>
                       )}
 
-                      {(log.pain !== undefined || log.energy !== undefined || log.sleepMinutes !== undefined || log.notes) && (
+                      {(log.pain !== undefined || log.energy !== undefined || log.sleepMinutes !== undefined || log.weight !== undefined || log.notes) && (
                         <div className="recent-entry-meta">
                           {log.pain !== undefined && (
                             <span className="meta-pill">Pain: {log.pain}/10</span>
@@ -237,6 +284,11 @@ function HomeOverviewContent({
                           {log.sleepMinutes !== undefined && (
                             <span className="meta-pill">
                               Sleep: {Math.floor(log.sleepMinutes / 60)}h {log.sleepMinutes % 60}m
+                            </span>
+                          )}
+                          {log.weight !== undefined && (
+                            <span className="meta-pill">
+                              Weight: {log.weight} {log.weightUnit || "lbs"}
                             </span>
                           )}
                           {log.notes && (
@@ -379,6 +431,14 @@ function HomeOverviewContent({
           </section>
         </ScrollReveal>
       )}
+
+      {/* Auto-launching Onboarding Quiz Modal for new users */}
+      <QuizModal
+        isOpen={Boolean(autoQuizOpen)}
+        onClose={() => setAutoQuizOpen?.(false)}
+        userId={userId}
+        initialResult={null}
+      />
     </>
   );
 }

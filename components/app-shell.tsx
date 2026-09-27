@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { SignInButton, SignUpButton, Show, UserButton, useUser } from "@clerk/nextjs";
 import { Icon, type IconName } from "./ui";
 import { PageTransition, MagneticButton, GlobalAmbientFlow } from "./motion";
+import { useStoredQuizResult } from "../lib/quiz-storage";
 import "./app-shell.css";
 
 export const navigation: {
@@ -18,11 +19,15 @@ export const navigation: {
   { href: "/track", label: "Track", icon: "track", description: "Daily symptoms & logs" },
   { href: "/insights", label: "Insights", icon: "insights", description: "Patterns & visit summary" },
   { href: "/ask", label: "Ask", icon: "ask", description: "Questions for care team" },
+  { href: "/quiz", label: "Quiz", icon: "leaf", description: "PCOS phenotype & ovulatory pillars" },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isSignedIn } = useUser();
+  const currentUserId = isSignedIn && user ? user.id : 'local-user';
+  const quizResult = useStoredQuizResult(currentUserId);
 
   // Close mobile menu on route changes
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -113,6 +118,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 />
               </div>
 
+              <Link
+                href="/quiz"
+                className="header-quiz-button"
+                title={quizResult ? "Retake your PCOS Phenotype assessment" : "Take the PCOS Phenotype assessment"}
+              >
+                <Icon name="leaf" />
+                <span>{quizResult ? "Retake Quiz" : "Take Quiz"}</span>
+              </Link>
+
               <MagneticButton magneticStrength={0.25} innerStrength={0.15}>
                 <Link href="/track" className="header-cta-button">
                   <Icon name="track" />
@@ -197,6 +211,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
 
               <Show when="signed-in">
+                <Link
+                  href="/quiz"
+                  className="button button-quiet mobile-cta-btn"
+                  style={{ marginBottom: "8px" }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon name="leaf" />
+                  <span>{quizResult ? "Retake Phenotype Quiz" : "Take Phenotype Quiz"}</span>
+                </Link>
+
                 <Link
                   href="/track"
                   className="button button-primary mobile-cta-btn"

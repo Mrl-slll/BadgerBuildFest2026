@@ -59,6 +59,13 @@ export function extractContextTags(context?: HealthContext, question = ''): stri
     }
   }
 
+  // Weight tags
+  if (context.weightSummary && context.weightSummary.count > 0 && (q.includes('weight') || q.includes('scale') || q.includes('pound') || q.includes('lbs') || q.includes('kg') || tags.length < 4)) {
+    if (context.weightSummary.latest) {
+      tags.push(`Weight: ${context.weightSummary.latest.value} ${context.weightSummary.latest.unit}`);
+    }
+  }
+
   return tags;
 }
 
@@ -74,6 +81,9 @@ export function describeContext(context?: HealthContext): string {
   const labs = context.labs.length > 0
     ? ` Recent labs: ${context.labs.map(l => `${l.name} (${l.value} ${l.unit})`).join(', ')}.`
     : '';
+  const weight = context.weightSummary && context.weightSummary.count > 0
+    ? ` Weight: ${context.weightSummary.count} ${context.weightSummary.count === 1 ? 'entry' : 'entries'} (latest ${context.weightSummary.latest?.value} ${context.weightSummary.latest?.unit}, range ${context.weightSummary.min}–${context.weightSummary.max}).`
+    : '';
 
   let detailedLogs = '';
   if (context.recentLogs && context.recentLogs.length > 0) {
@@ -84,13 +94,14 @@ export function describeContext(context?: HealthContext): string {
       if (log.energy !== undefined) items.push(`Energy: ${log.energy}/5`);
       if (log.mood !== undefined) items.push(`Mood: ${log.mood}/5`);
       if (log.sleepMinutes !== undefined) items.push(`Sleep: ${Math.round(log.sleepMinutes / 60 * 10) / 10}h (${log.sleepQuality || 'Normal'})`);
+      if (log.weight !== undefined) items.push(`Weight: ${log.weight} ${log.weightUnit || 'lbs'}${log.weightNote ? ` (${log.weightNote})` : ''}`);
       if (log.periodStart) items.push(`[Period Started]`);
       return `  - ${items.join(' | ')}`;
     });
     detailedLogs = `\n\nDETAILED USER JOURNAL ENTRIES (Reference these specific dates and trends directly):\n` + formattedRows.join('\n');
   }
 
-  return `${context.loggedDays} distinct ${context.loggedDays === 1 ? 'day' : 'days'} logged from ${context.start} to ${context.end}. ${symptoms ? `Symptoms tracked: ${symptoms}.` : 'No symptoms recorded in this window.'} Period starts: ${context.periodStarts.length}.${meds}${labs}${detailedLogs}`;
+  return `${context.loggedDays} distinct ${context.loggedDays === 1 ? 'day' : 'days'} logged from ${context.start} to ${context.end}. ${symptoms ? `Symptoms tracked: ${symptoms}.` : 'No symptoms recorded in this window.'} Period starts: ${context.periodStarts.length}.${meds}${labs}${weight}${detailedLogs}`;
 }
 export class DevelopmentAIService implements AIService {
   private readonly research: ResearchRetriever;

@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { validateMedication, validateLab } from "../lib/tracking-validation";
+import { useEffect, useState, useMemo } from "react";
+import { validateMedication, validateLab, validateDaily as validateLog } from "../lib/tracking-validation";
 import { SymptomInsights } from "./symptom-insights";
 import { MedicationInsights } from "./medication-insights";
 import {
@@ -10,9 +10,12 @@ import {
   Lab,
   dateKey,
   symptomGroups,
-  validateLog,
   pretty,
   cycleHistory,
+  addDays,
+  convertWeight,
+  formatWeight,
+  weightStats,
 } from "../lib/health";
 type Props = {
   data: HealthData;
@@ -332,7 +335,7 @@ export function DailyLogForm({
       </fieldset>
       <details>
         <summary>
-          More about your day <span>Energy, mood & sleep</span>
+          More about your day <span>Energy, mood, sleep & weight</span>
         </summary>
         <div className="form-grid">
           {(["energy", "mood"] as const).map((key) => (
@@ -410,6 +413,82 @@ export function DailyLogForm({
                 <option key={v}>{v}</option>
               ))}
             </select>
+          </label>
+
+          <div className="weight-tracking-field">
+            <div className="weight-label-row">
+              <label htmlFor="daily-weight-input" style={{ marginBottom: 0 }}>Weight</label>
+              <div className="unit-toggle-chips" role="group" aria-label="Weight unit">
+                <button
+                  type="button"
+                  className={`chip-unit ${(!log.weightUnit || log.weightUnit === "lbs") ? "active" : ""}`}
+                  onClick={() => {
+                    if (log.weightUnit === "kg" && log.weight !== undefined) {
+                      field("weight", convertWeight(log.weight, "kg", "lbs"));
+                    }
+                    field("weightUnit", "lbs");
+                  }}
+                >
+                  lbs
+                </button>
+                <button
+                  type="button"
+                  className={`chip-unit ${log.weightUnit === "kg" ? "active" : ""}`}
+                  onClick={() => {
+                    if ((!log.weightUnit || log.weightUnit === "lbs") && log.weight !== undefined) {
+                      field("weight", convertWeight(log.weight, "lbs", "kg"));
+                    }
+                    field("weightUnit", "kg");
+                  }}
+                >
+                  kg
+                </button>
+              </div>
+            </div>
+            <div className="weight-input-container">
+              <input
+                id="daily-weight-input"
+                name="weight"
+                type="number"
+                min="20"
+                max="1000"
+                step="0.1"
+                placeholder={log.weightUnit === "kg" ? "e.g. 67.5" : "e.g. 148.5"}
+                value={log.weight ?? ""}
+                onChange={(e) =>
+                  field(
+                    "weight",
+                    e.target.value === "" ? undefined : Number(e.target.value)
+                  )
+                }
+              />
+              {log.weight !== undefined && (
+                <button
+                  type="button"
+                  className="weight-clear-button"
+                  onClick={() => {
+                    field("weight", undefined);
+                    field("weightNote", undefined);
+                  }}
+                  title="Clear weight for today"
+                  aria-label="Clear weight entry"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          <label>
+            Weight context or note (optional)
+            <input
+              name="weightNote"
+              type="text"
+              maxLength={200}
+              placeholder="e.g. Morning, before breakfast"
+              value={log.weightNote || ""}
+              onChange={(e) => field("weightNote", e.target.value)}
+            />
           </label>
         </div>
       </details>
@@ -941,5 +1020,600 @@ export function Cycles({
         </p>
       )}
     </>
+  );
+}
+
+export function WeightManager({
+  data,
+  save,
+  onDirty,
+  onEditDate,
+}: Props & { onEditDate?: (date: string) => void }) {
+  const [targetUnit, setTargetUnit] = useState<"lbs" | "kg">("lbs");
+  const [selectedRangeDays, setSelectedRangeDays] = useState<number>(90);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [editDate, setEditDate] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formDate, setFormDate] = useState(dateKey());
+  const [formWeight, setFormWeight] = useState("");
+  const [formUnit, setFormUnit] = useState<"lbs" | "kg">("lbs");
+  const [formNote, setFormNote] = useState("");
+  const [status, setStatus] = useState("");
+
+  const stats = weightStats(data.logs, targetUnit);
+
+  // Filter logs for weight trend
+  const allWeightLogs = useMemo(() => {
+    return data.logs
+      .filter((l) => l.weight !== undefined && Number.isFinite(l.weight) && l.weight > 0)
+      .sort((a, b) => b.date.localeCompare(a.date));
+  }, [data.logs]);
+
+  const filteredLogs = useMemo(() => {
+    let list = allWeightLogs;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter((l) => {
+        const val = convertWeight(l.weight!, l.weightUnit || "lbs", targetUnit);
+        return (
+          l.date.includes(q) ||
+          pretty(l.date).toLowerCase().includes(q) ||
+          String(val).includes(q) ||
+          Boolean(l.weightNote && l.weightNote.toLowerCase().includes(q))
+        );
+      });
+    }
+    return list;
+  }, [allWeightLogs, searchQuery, targetUnit]);
+
+  // Chart data: chronological within selected range
+  const chartData = useMemo(() => {
+    const rangeStart = addDays(dateKey(), 1 - selectedRangeDays);
+    const inRange = data.logs
+      .filter(
+        (l) =>
+          l.date >= rangeStart &&
+          l.date <= dateKey() &&
+          l.weight !== undefined &&
+          Number.isFinite(l.weight) &&
+          l.weight > 0
+      )
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (!inRange.length) return null;
+
+    const points = inRange.map((l) => ({
+      date: l.date,
+      value: convertWeight(l.weight!, l.weightUnit || "lbs", targetUnit),
+      note: l.weightNote,
+      periodStart: Boolean(l.periodStart),
+      bleeding: Boolean(l.bleeding && l.bleeding !== "None"),
+    }));
+
+    const vals = points.map((p) => p.value);
+    const minVal = Math.min(...vals);
+    const maxVal = Math.max(...vals);
+    const padding = Math.max(1, (maxVal - minVal) * 0.15);
+    const yMin = Math.floor(minVal - padding);
+    const yMax = Math.ceil(maxVal + padding);
+
+    return { points, minVal, maxVal, yMin, yMax };
+  }, [data.logs, selectedRangeDays, targetUnit]);
+
+  function handleSaveEntry(e: React.FormEvent) {
+    e.preventDefault();
+    const parsedWeight = parseFloat(formWeight);
+    if (!Number.isFinite(parsedWeight) || parsedWeight <= 0 || parsedWeight > 1000) {
+      setStatus("Enter a valid weight between 1 and 1000.");
+      return;
+    }
+
+    const existingLog = data.logs.find((l) => l.date === formDate);
+    const updatedLog: Log = existingLog
+      ? {
+          ...existingLog,
+          weight: parsedWeight,
+          weightUnit: formUnit,
+          weightNote: formNote.trim() || undefined,
+        }
+      : {
+          id: formDate,
+          userId: data.user.id,
+          date: formDate,
+          symptoms: [],
+          doses: {},
+          sideEffects: {},
+          weight: parsedWeight,
+          weightUnit: formUnit,
+          weightNote: formNote.trim() || undefined,
+        };
+
+    const nextLogs = [
+      ...data.logs.filter((l) => l.date !== formDate),
+      updatedLog,
+    ];
+
+    if (save({ ...data, logs: nextLogs })) {
+      setStatus(`Weight entry saved for ${pretty(formDate)}.`);
+      setIsFormOpen(false);
+      setFormWeight("");
+      setFormNote("");
+      setEditDate(null);
+      onDirty?.(false);
+    } else {
+      setStatus("Could not save. Please try again.");
+    }
+  }
+
+  function handleStartEdit(log: Log) {
+    setFormDate(log.date);
+    setFormWeight(String(log.weight ?? ""));
+    setFormUnit(log.weightUnit || "lbs");
+    setFormNote(log.weightNote || "");
+    setEditDate(log.date);
+    setIsFormOpen(true);
+    setStatus("");
+  }
+
+  function handleDeleteEntry(date: string) {
+    if (
+      !window.confirm(
+        `Are you sure you want to remove the weight entry for ${pretty(date)}?`
+      )
+    ) {
+      return;
+    }
+    const log = data.logs.find((l) => l.date === date);
+    if (!log) return;
+
+    const updatedLog: Log = {
+      ...log,
+      weight: undefined,
+      weightUnit: undefined,
+      weightNote: undefined,
+    };
+
+    const nextLogs = [
+      ...data.logs.filter((l) => l.date !== date),
+      updatedLog,
+    ];
+
+    save({ ...data, logs: nextLogs });
+    setStatus(`Weight entry for ${pretty(date)} was removed.`);
+  }
+
+  return (
+    <div className="weight-manager">
+      <div className="section-head">
+        <div>
+          <h2>Weight & body patterns</h2>
+          <p>
+            Track weight on your terms. Observe longitudinal rhythms and normal cycle-linked fluid shifts without judgment.
+          </p>
+        </div>
+        <div className="weight-header-controls">
+          <div className="unit-toggle-chips" role="group" aria-label="Preferred display unit">
+            <button
+              type="button"
+              className={`chip-unit ${targetUnit === "lbs" ? "active" : ""}`}
+              onClick={() => setTargetUnit("lbs")}
+            >
+              lbs
+            </button>
+            <button
+              type="button"
+              className={`chip-unit ${targetUnit === "kg" ? "active" : ""}`}
+              onClick={() => setTargetUnit("kg")}
+            >
+              kg
+            </button>
+          </div>
+          <button
+            type="button"
+            className="primary"
+            onClick={() => {
+              if (isFormOpen && !editDate) {
+                setIsFormOpen(false);
+              } else {
+                setFormDate(dateKey());
+                setFormWeight("");
+                setFormNote("");
+                setFormUnit(targetUnit);
+                setEditDate(null);
+                setIsFormOpen(true);
+                setStatus("");
+              }
+            }}
+          >
+            {isFormOpen && !editDate ? "Close form" : "Log weight"}
+          </button>
+        </div>
+      </div>
+
+      {/* Summary Statistics Cards */}
+      <div className="weight-stats-grid">
+        <div className="weight-stat-card">
+          <span className="stat-label">Latest recorded</span>
+          <strong className="stat-value">
+            {stats.latest ? `${stats.latest.value} ${targetUnit}` : "—"}
+          </strong>
+          <small className="stat-sub">
+            {stats.latest ? `${pretty(stats.latest.date)} · ${stats.latest.date.slice(0, 4)}` : "No entries yet"}
+          </small>
+        </div>
+
+        <div className="weight-stat-card">
+          <span className="stat-label">Recorded entries</span>
+          <strong className="stat-value">{stats.count}</strong>
+          <small className="stat-sub">
+            {stats.count === 1 ? "1 check-in" : `${stats.count} logged check-ins`}
+          </small>
+        </div>
+
+        <div className="weight-stat-card">
+          <span className="stat-label">Recorded range</span>
+          <strong className="stat-value">
+            {stats.min !== null && stats.max !== null
+              ? `${stats.min} – ${stats.max} ${targetUnit}`
+              : "—"}
+          </strong>
+          <small className="stat-sub">
+            {stats.range !== null ? `Fluctuation: ±${(stats.range / 2).toFixed(1)} ${targetUnit}` : "Requires 2+ entries"}
+          </small>
+        </div>
+
+        <div className="weight-stat-card">
+          <span className="stat-label">Average weight</span>
+          <strong className="stat-value">
+            {stats.average !== null ? `${stats.average} ${targetUnit}` : "—"}
+          </strong>
+          <small className="stat-sub">
+            {stats.netChange !== null
+              ? `Net span change: ${stats.netChange > 0 ? "+" : ""}${stats.netChange} ${targetUnit}`
+              : "Overall average"}
+          </small>
+        </div>
+      </div>
+
+      {/* Quick Add / Edit Form */}
+      {isFormOpen && (
+        <form className="panel weight-form-panel" onSubmit={handleSaveEntry}>
+          <div className="panel-title-row">
+            <h3>{editDate ? `Edit weight for ${pretty(formDate)}` : "Log a weight check-in"}</h3>
+            <button
+              type="button"
+              className="button button-quiet"
+              style={{ padding: "4px 8px", fontSize: "12px" }}
+              onClick={() => {
+                setIsFormOpen(false);
+                setEditDate(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+          <div className="form-grid">
+            <label>
+              Date
+              <input
+                type="date"
+                required
+                max={dateKey()}
+                value={formDate}
+                onChange={(e) => setFormDate(e.target.value)}
+              />
+            </label>
+            <div className="weight-log-field">
+              <div className="weight-label-row">
+                <label htmlFor="weight-entry-input" style={{ marginBottom: 0 }}>Weight</label>
+                <div className="unit-toggle-chips" role="group" aria-label="Input unit">
+                  <button
+                    type="button"
+                    className={`chip-unit ${formUnit === "lbs" ? "active" : ""}`}
+                    onClick={() => setFormUnit("lbs")}
+                  >
+                    lbs
+                  </button>
+                  <button
+                    type="button"
+                    className={`chip-unit ${formUnit === "kg" ? "active" : ""}`}
+                    onClick={() => setFormUnit("kg")}
+                  >
+                    kg
+                  </button>
+                </div>
+              </div>
+              <input
+                id="weight-entry-input"
+                type="number"
+                min="20"
+                max="1000"
+                step="0.1"
+                required
+                placeholder={formUnit === "kg" ? "e.g. 67.5" : "e.g. 148.5"}
+                value={formWeight}
+                onChange={(e) => setFormWeight(e.target.value)}
+              />
+            </div>
+            <label style={{ gridColumn: "1 / -1" }}>
+              Context or note (optional)
+              <input
+                type="text"
+                maxLength={200}
+                placeholder="e.g. Morning, before breakfast, fasting"
+                value={formNote}
+                onChange={(e) => setFormNote(e.target.value)}
+              />
+            </label>
+          </div>
+          <div className="actions">
+            <button type="submit" className="primary">
+              {editDate ? "Update entry" : "Save weight entry"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsFormOpen(false);
+                setEditDate(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      {status && <p role="status" className="weight-status-msg">{status}</p>}
+
+      {/* Visual Weight Trend Chart */}
+      <section className="weight-chart-section card-surface" aria-labelledby="weight-chart-title">
+        <div className="weight-chart-header">
+          <div>
+            <h3 id="weight-chart-title">Weight over time</h3>
+            <p>
+              Longitudinal tracking. Dot markers with amber rings indicate period starts (Cycle Day 1).
+            </p>
+          </div>
+          <div className="range-pills" role="group" aria-label="Chart time window">
+            {[
+              [30, "30 days"],
+              [90, "90 days"],
+              [180, "180 days"],
+              [365, "1 year"],
+              [730, "2 years"],
+            ].map(([days, label]) => (
+              <button
+                key={days}
+                type="button"
+                className={`range-pill ${selectedRangeDays === days ? "active" : ""}`}
+                onClick={() => setSelectedRangeDays(Number(days))}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {chartData && chartData.points.length > 0 ? (
+          <div className="weight-chart-wrapper">
+            <svg
+              className="weight-svg-chart"
+              viewBox="0 0 800 240"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label={`Weight trend chart over ${selectedRangeDays} days`}
+            >
+              <defs>
+                <linearGradient id="weightLineGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--teal)" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="var(--teal)" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              {/* Grid Lines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+                const y = 20 + ratio * 180;
+                const val = Math.round(chartData.yMax - ratio * (chartData.yMax - chartData.yMin));
+                return (
+                  <g key={ratio} className="chart-grid-line">
+                    <line x1="45" y1={y} x2="785" y2={y} stroke="currentColor" strokeDasharray="3 3" opacity="0.15" />
+                    <text x="38" y={y + 4} textAnchor="end" fontSize="11" fill="var(--muted)">
+                      {val}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Area Fill */}
+              {chartData.points.length > 1 && (
+                <polygon
+                  points={`
+                    45,200
+                    ${chartData.points
+                      .map((pt, i) => {
+                        const x = 45 + (i / (chartData.points.length - 1)) * 740;
+                        const y = 200 - ((pt.value - chartData.yMin) / (chartData.yMax - chartData.yMin)) * 180;
+                        return `${x},${y}`;
+                      })
+                      .join(" ")}
+                    785,200
+                  `}
+                  fill="url(#weightLineGrad)"
+                />
+              )}
+
+              {/* Trend Polyline */}
+              {chartData.points.length > 1 && (
+                <polyline
+                  points={chartData.points
+                    .map((pt, i) => {
+                      const x = 45 + (i / (chartData.points.length - 1)) * 740;
+                      const y = 200 - ((pt.value - chartData.yMin) / (chartData.yMax - chartData.yMin)) * 180;
+                      return `${x},${y}`;
+                    })
+                    .join(" ")}
+                  fill="none"
+                  stroke="var(--teal)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+
+              {/* Points */}
+              {chartData.points.map((pt, i) => {
+                const x = chartData.points.length === 1 ? 400 : 45 + (i / (chartData.points.length - 1)) * 740;
+                const y = 200 - ((pt.value - chartData.yMin) / (chartData.yMax - chartData.yMin)) * 180;
+                return (
+                  <g key={pt.date + i} className="chart-point-group">
+                    {pt.periodStart && (
+                      <circle cx={x} cy={y} r="8" fill="none" stroke="#b45309" strokeWidth="2" strokeDasharray="2 2" />
+                    )}
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={pt.periodStart ? 5 : 4}
+                      fill={pt.periodStart ? "#b45309" : "var(--teal)"}
+                      stroke="#fffdf8"
+                      strokeWidth="1.5"
+                    >
+                      <title>{`${pretty(pt.date)}: ${pt.value} ${targetUnit}${pt.periodStart ? " (Cycle Day 1)" : ""}${pt.note ? ` · ${pt.note}` : ""}`}</title>
+                    </circle>
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* X-axis dates */}
+            <div className="weight-chart-xaxis">
+              <span>{pretty(chartData.points[0].date)}</span>
+              {chartData.points.length > 2 && (
+                <span>{pretty(chartData.points[Math.floor(chartData.points.length / 2)].date)}</span>
+              )}
+              <span>{pretty(chartData.points[chartData.points.length - 1].date)}</span>
+            </div>
+
+            <div className="weight-chart-legend">
+              <span className="legend-item">
+                <span className="legend-dot weight-dot" />
+                Weight entry ({targetUnit})
+              </span>
+              <span className="legend-item">
+                <span className="legend-dot period-dot" />
+                Period start (Cycle Day 1)
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p className="empty-chart-note">
+            No weight entries recorded in the last {selectedRangeDays} days. Log an entry to see your pattern.
+          </p>
+        )}
+      </section>
+
+      {/* History Management Table */}
+      <section className="weight-history-section" aria-labelledby="weight-history-title">
+        <div className="section-head">
+          <div>
+            <h3 id="weight-history-title">Weight history</h3>
+            <p>View, update, or remove recorded check-ins.</p>
+          </div>
+          <div className="weight-search-box">
+            <input
+              type="text"
+              placeholder="Search by date or note (e.g. 'fasting', 'Sep')..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search weight history"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="search-clear-action"
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
+        {filteredLogs.length ? (
+          <div className="weight-entries-list">
+            {filteredLogs.map((l) => {
+              const convertedVal = convertWeight(l.weight!, l.weightUnit || "lbs", targetUnit);
+              const isDifferentUnit = l.weightUnit && l.weightUnit !== targetUnit;
+
+              return (
+                <article className="record weight-entry-card" key={l.date}>
+                  <div className="entry-main-col">
+                    <div className="entry-header-line">
+                      <time dateTime={l.date} className="entry-date-text">
+                        {pretty(l.date)}, {l.date.slice(0, 4)}
+                      </time>
+                      {l.periodStart && (
+                        <span className="badge" style={{ background: "#fef3c7", color: "#92400e" }}>
+                          Cycle Day 1
+                        </span>
+                      )}
+                      {l.bleeding && l.bleeding !== "None" && (
+                        <span className="badge">Flow: {l.bleeding}</span>
+                      )}
+                    </div>
+                    <div className="entry-weight-val">
+                      <strong>
+                        {convertedVal} {targetUnit}
+                      </strong>
+                      {isDifferentUnit && (
+                        <small className="muted" style={{ marginLeft: "8px" }}>
+                          (logged as {l.weight} {l.weightUnit})
+                        </small>
+                      )}
+                    </div>
+                    {l.weightNote && <p className="entry-note-text">&ldquo;{l.weightNote}&rdquo;</p>}
+                  </div>
+
+                  <div className="entry-actions-col">
+                    <button
+                      type="button"
+                      onClick={() => handleStartEdit(l)}
+                      aria-label={`Edit weight entry for ${pretty(l.date)}`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="button-danger-quiet"
+                      onClick={() => handleDeleteEntry(l.date)}
+                      aria-label={`Delete weight entry for ${pretty(l.date)}`}
+                    >
+                      Remove
+                    </button>
+                    {onEditDate && (
+                      <button
+                        type="button"
+                        className="button-quiet"
+                        onClick={() => onEditDate(l.date)}
+                        aria-label={`Open full check-in for ${pretty(l.date)}`}
+                        title="Open full daily check-in"
+                      >
+                        Full log
+                      </button>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="empty-state">
+            {searchQuery
+              ? "No weight entries match your search."
+              : "No weight check-ins recorded yet. Click 'Log weight' above to begin."}
+          </p>
+        )}
+      </section>
+    </div>
   );
 }

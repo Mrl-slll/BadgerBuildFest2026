@@ -1,4 +1,4 @@
-import { addDays, dateKey, type HealthData } from './health';
+import { addDays, dateKey, weightStats, type HealthData, type Log, type WeightSummary } from './health';
 
 export type LogEntrySummary = {
   date: string;
@@ -8,6 +8,9 @@ export type LogEntrySummary = {
   energy?: number;
   sleepMinutes?: number;
   sleepQuality?: string;
+  weight?: number;
+  weightUnit?: 'lbs' | 'kg';
+  weightNote?: string;
   periodStart?: boolean;
 };
 
@@ -18,6 +21,7 @@ export type HealthContext = {
   periodStarts: string[];
   medications: { name: string; startedAt: string; endedAt?: string }[];
   labs: { name: string; value: string; unit: string; date: string; low: string; high: string }[];
+  weightSummary?: WeightSummary;
   recentLogs?: LogEntrySummary[];
 };
 function record(value: unknown): Record<string, unknown> {
@@ -76,8 +80,14 @@ export function assembleHealthContext(input?: HealthData | unknown, end = dateKe
     energy: typeof log.energy === 'number' ? log.energy : undefined,
     sleepMinutes: typeof log.sleepMinutes === 'number' ? log.sleepMinutes : undefined,
     sleepQuality: typeof log.sleepQuality === 'string' ? log.sleepQuality : undefined,
+    weight: typeof log.weight === 'number' ? log.weight : undefined,
+    weightUnit: typeof log.weightUnit === 'string' && (log.weightUnit === 'lbs' || log.weightUnit === 'kg') ? (log.weightUnit as 'lbs' | 'kg') : undefined,
+    weightNote: typeof log.weightNote === 'string' ? log.weightNote : undefined,
     periodStart: Boolean(log.periodStart),
   }));
+
+  const typedLogs: Log[] = logs.map(l => l as unknown as Log);
+  const weightSummary = weightStats(typedLogs, 'lbs');
 
   return {
     start, end,
@@ -86,6 +96,7 @@ export function assembleHealthContext(input?: HealthData | unknown, end = dateKe
     periodStarts: [...new Set(logs.filter(log => log.periodStart === true).map(log => date(log.date)))].sort(),
     medications: own(data.medications).filter(row => date(row.startedAt) <= end && (!row.endedAt || date(row.endedAt) >= start)).map(row => ({ name: string(row.name), startedAt: date(row.startedAt), ...(row.endedAt ? { endedAt: date(row.endedAt) } : {}) })),
     labs: own(data.labs).filter(row => inRange(row.date)).map(row => ({ name: string(row.name), value: string(row.value), unit: string(row.unit), date: date(row.date), low: string(row.low), high: string(row.high) })),
+    weightSummary,
     recentLogs,
   };
 }

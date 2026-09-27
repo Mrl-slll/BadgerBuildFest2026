@@ -1,5 +1,5 @@
-import { addDays, daysBetween, linkedMedicationSymptoms, scoped } from './health';
-import type { HealthData, Log } from './health';
+import { addDays, convertWeight, daysBetween, linkedMedicationSymptoms, scoped, weightStats } from './health';
+import type { HealthData, Log, WeightSummary } from './health';
 
 export function summarize(data: HealthData, start: string, end: string) {
   const own = scoped(data);
@@ -23,11 +23,21 @@ export function summarize(data: HealthData, start: string, end: string) {
     const values = rows.flatMap(l => l[key] === undefined ? [] : [l[key]!]);
     return { count: values.length, value: values.length ? values.reduce((a,b)=>a+b,0)/values.length : null };
   };
+  const averageWeight = (rows: Log[], targetUnit: 'lbs' | 'kg' = 'lbs') => {
+    const values = rows.flatMap(l => (l.weight !== undefined && Number.isFinite(l.weight) && l.weight > 0) ? [convertWeight(l.weight, l.weightUnit || 'lbs', targetUnit)] : []);
+    return { count: values.length, value: values.length ? Math.round((values.reduce((a,b)=>a+b,0)/values.length) * 10) / 10 : null };
+  };
   const weeks = [];
   for (let day=start; day<=end; day=addDays(day,7)) {
     const last = addDays(day,6) < end ? addDays(day,6) : end;
     const rows = logs.filter(l => l.date>=day && l.date<=last);
-    weeks.push({ start: day, end: last, sleep: average(rows,'sleepMinutes'), energy: average(rows,'energy') });
+    weeks.push({
+      start: day,
+      end: last,
+      sleep: average(rows,'sleepMinutes'),
+      energy: average(rows,'energy'),
+      weight: averageWeight(rows, 'lbs'),
+    });
   }
   const paired = logs.filter(l => l.energy !== undefined);
   const co = paired.filter(l => l.symptoms.includes('Acne') && l.energy! <= 2).length;
@@ -37,10 +47,47 @@ export function summarize(data: HealthData, start: string, end: string) {
     ...(m.startedAt >= start ? [{ date:m.startedAt, text:`${m.name} started · ${m.dosage} ${m.unit} · ${m.frequency}` }] : []),
     ...(m.endedAt && m.endedAt <= end ? [{date:m.endedAt,text:`${m.name} ended`}] : []),
   ]).sort((a,b)=>a.date.localeCompare(b.date));
-  const insights = logs.length ? [
-    frequency.length ? `${frequency[0][0]} was selected on ${frequency[0][1]} of ${logs.length} logged days.` : `No symptoms were selected in ${logs.length} daily entries. This does not confirm symptom absence.`,
-    paired.length ? `Acne and low energy (1–2 of 5) were recorded together on ${co} of ${paired.length} days with an energy entry.` : 'No energy entries in this period; a sleep and energy comparison is not available.',
-    'These observations describe recorded entries only. Missing days and changes in logging can affect the picture; overlap does not establish cause.',
-  ] : ['No entries in this period. Choose a longer time range to explore earlier records.'];
-  return { logs, cycles, frequency, symptomTrends, midpoint, earlierDays:earlier.length, recentDays:recent.length, weeks, medications, medicationSymptoms, events, insights, sleep:average(logs,'sleepMinutes'), energy:average(logs,'energy'), totalDays:daysBetween(start,end)+1 };
+
+  const weightSummary: WeightSummary = weightStats(logs, 'lbs');
+
+  const insightsList: string[] = [];
+  if (logs.length) {
+    if (frequency.length) {
+      insightsList.push(`${frequency[0][0]} was selected on ${frequency[0][1]} of ${logs.length} logged days.`);
+    } else {
+      insightsList.push(`No symptoms were selected in ${logs.length} daily entries. This does not confirm symptom absence.`);
+    }
+    if (paired.length) {
+      insightsList.push(`Acne and low energy (1–2 of 5) were recorded together on ${co} of ${paired.length} days with an energy entry.`);
+    } else {
+      insightsList.push('No energy entries in this period; a sleep and energy comparison is not available.');
+    }
+    if (weightSummary.count >= 2) {
+      insightsList.push(`Weight was logged across ${weightSummary.count} entries in this range (average ${weightSummary.average} lbs; range ${weightSummary.min}–${weightSummary.max} lbs).`);
+    } else if (weightSummary.count === 1) {
+      insightsList.push(`Weight was logged on 1 day in this range (${weightSummary.latest?.value} lbs on ${weightSummary.latest?.date}).`);
+    }
+    insightsList.push('These observations describe recorded entries only. Missing days and changes in logging can affect the picture; overlap does not establish cause.');
+  } else {
+    insightsList.push('No entries in this period. Choose a longer time range to explore earlier records.');
+  }
+
+  return {
+    logs,
+    cycles,
+    frequency,
+    symptomTrends,
+    midpoint,
+    earlierDays: earlier.length,
+    recentDays: recent.length,
+    weeks,
+    medications,
+    medicationSymptoms,
+    events,
+    insights: insightsList,
+    sleep: average(logs,'sleepMinutes'),
+    energy: average(logs,'energy'),
+    weight: weightSummary,
+    totalDays: daysBetween(start,end)+1,
+  };
 }
