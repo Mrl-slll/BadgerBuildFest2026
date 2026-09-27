@@ -167,12 +167,14 @@ export function CycleWheel({ cycles, today }: { cycles: ReturnType<typeof cycleH
                     tabIndex={0}
                     role="button"
                     aria-label={`${phase.name}: ${phase.days}. ${phase.description}`}
+                    onMouseDown={(e) => e.preventDefault()}
                     onMouseEnter={() => setHoveredPhase(phase.name)}
                     onMouseLeave={() => setHoveredPhase(null)}
                     onFocus={() => setHoveredPhase(phase.name)}
                     onBlur={() => setHoveredPhase(null)}
                     style={{
                       cursor: "pointer",
+                      outline: "none",
                       opacity: isAnyHovered ? (isHovered ? 1 : 0.35) : 1,
                       transition: "opacity 0.22s ease",
                     }}
@@ -283,11 +285,12 @@ export function CycleWheel({ cycles, today }: { cycles: ReturnType<typeof cycleH
                   tabIndex={0}
                   role="button"
                   aria-label={`${phase.name}, ${phase.days}`}
+                  onMouseDown={(e) => e.preventDefault()}
                   onMouseEnter={() => setHoveredPhase(phase.name)}
                   onMouseLeave={() => setHoveredPhase(null)}
                   onFocus={() => setHoveredPhase(phase.name)}
                   onBlur={() => setHoveredPhase(null)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", outline: "none" }}
                 >
                   <span
                     className="cycle-legend-swatch"
