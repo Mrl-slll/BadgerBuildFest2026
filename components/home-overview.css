@@ -558,6 +558,30 @@
   border: 1px solid #ebd0cb;
 }
 
+.entry-badge.badge-flow.badge-flow-light {
+  background: #e1f3e7;
+  color: #1b5e32;
+  border-color: #bde4ca;
+}
+
+.entry-badge.badge-flow.badge-flow-medium {
+  background: #fef4d8;
+  color: #795708;
+  border-color: #f7e0a3;
+}
+
+.entry-badge.badge-flow.badge-flow-spotting {
+  background: #eef3f2;
+  color: #345c58;
+  border-color: #d1dedc;
+}
+
+.entry-badge.badge-flow.badge-flow-heavy {
+  background: #fae4e1;
+  color: #8c281e;
+  border-color: #f2c7c1;
+}
+
 .entry-badge.badge-period {
   background: #c8dfdb;
   color: #1b4b47;

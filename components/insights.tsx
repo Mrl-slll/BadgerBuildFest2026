@@ -55,7 +55,7 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
         </section>
       </ScrollReveal>
 
-      <TracingDivider variant="pulse" color="#66A3BF" />
+      <TracingDivider variant="pulse" color="#66A3BF" className="insights-divider" />
 
       <div className="range-bar">
         <div>
@@ -71,6 +71,8 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
       <div id="history">
         <HealthTimeline data={data} start={start} end={end} />
       </div>
+
+      <TracingDivider variant="pulse" color="#66A3BF" className="insights-divider" />
 
       <div className="insights-two-col">
         <section id="patterns" className="patterns-section card-surface">
@@ -124,12 +126,14 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
         </section>
       </div>
 
+      <TracingDivider variant="pulse" color="#66A3BF" className="insights-divider" />
+
       <div className="trend-columns">
         <section className="card-surface">
           <h2>Symptom frequency</h2>
-          <p>Days selected, out of {report.logs.length} logged days.</p>
+          <p>Top 5 symptoms by days selected, out of {report.logs.length} logged days.</p>
           {report.frequency.length ? (
-            report.frequency.map(([name, count]) => (
+            report.frequency.slice(0, 5).map(([name, count]) => (
               <div className="frequency-row" key={name}>
                 <div>
                   <span>{name}</span>
@@ -185,36 +189,10 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
               </div>
             ))}
           </div>
-          <details>
-            <summary>View weekly counts and values</summary>
-            <div className="table-scroll">
-              <table>
-                <caption>Only recorded values contribute to each average.</caption>
-                <thead>
-                  <tr>
-                    <th>Week of</th>
-                    <th>Sleep</th>
-                    <th>Energy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sleepReport.weeks.map((w) => (
-                    <tr key={w.start}>
-                      <th>{pretty(w.start)}</th>
-                      <td>
-                        {w.sleep.value === null ? "—" : duration(Math.round(w.sleep.value))} ({w.sleep.count} entries)
-                      </td>
-                      <td>
-                        {w.energy.value?.toFixed(1) ?? "—"} / 5 ({w.energy.count} entries)
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </details>
         </section>
       </div>
+
+      <TracingDivider variant="pulse" color="#66A3BF" className="insights-divider" />
 
       <div className="insights-two-col">
         <section className="symptom-trends card-surface">
@@ -305,6 +283,8 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
           )}
         </section>
       </div>
+
+      <TracingDivider variant="pulse" color="#66A3BF" className="insights-divider" />
 
       <section id="visit" className="visit-section">
         <div className="section-heading">
