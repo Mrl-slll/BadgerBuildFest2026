@@ -332,12 +332,22 @@
 }
 
 /* Center wheel typography and interactive hover states */
+.cycle-wheel,
+.cycle-wheel *,
+.cycle-wheel-arc {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .cycle-wheel-arc {
   transition: opacity 200ms ease, stroke-width 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cycle-wheel-arc:focus-visible {
-  outline: none;
+.cycle-wheel-arc:focus,
+.cycle-wheel-arc:focus-visible,
+.cycle-wheel-arc:active {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .cycle-wheel-center-group text {
