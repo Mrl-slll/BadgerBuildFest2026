@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "./ui";
+import { PageTransition, MagneticButton, GlobalAmbientFlow } from "./motion";
 
 export const navigation: {
   href: string;
@@ -47,6 +48,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app-shell">
+      <GlobalAmbientFlow />
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -84,10 +86,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Header Action & Hamburger Button */}
           <div className="header-actions">
-            <Link href="/track" className="header-cta-button">
-              <Icon name="track" />
-              <span>Log Today</span>
-            </Link>
+            <MagneticButton magneticStrength={0.25} innerStrength={0.15}>
+              <Link href="/track" className="header-cta-button">
+                <Icon name="track" />
+                <span>Log Today</span>
+              </Link>
+            </MagneticButton>
 
             <button
               type="button"
@@ -156,7 +160,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Main Page Content */}
       <main id="main-content" tabIndex={-1}>
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
 
       {/* App Footer */}
@@ -212,15 +216,17 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span>Your experience is more than a single number.</span>
               <span>A private journal for reflection, not diagnosis.</span>
             </div>
-            <button
-              type="button"
-              className="footer-back-to-top"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              aria-label="Scroll back to top of page"
-            >
-              <span>Back to top</span>
-              <Icon name="arrow-up" />
-            </button>
+            <MagneticButton magneticStrength={0.25} innerStrength={0.12}>
+              <button
+                type="button"
+                className="footer-back-to-top"
+                onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
+                aria-label="Scroll back to top of page"
+              >
+                <span>Back to top</span>
+                <Icon name="arrow-up" />
+              </button>
+            </MagneticButton>
           </div>
         </div>
       </footer>
