@@ -276,6 +276,7 @@
   gap: 14px;
   width: 100%;
   align-items: flex-start;
+  scroll-margin-top: 84px;
 }
 
 .assistantAvatar {
