@@ -145,6 +145,25 @@ function LoadedTrackingWorkspace() {
     section: Section;
     date: string;
   } | null>(null);
+  const [syncStatus, setSyncStatus] = useState<"idle" | "syncing" | "saved" | "local_only">("idle");
+
+  useEffect(() => {
+    // Attempt to load latest records from Databricks Lakehouse if logged in
+    fetch("/api/user-data")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        if (payload?.data && Array.isArray(payload.data.logs) && payload.data.logs.length > 0) {
+          setData(payload.data);
+          try {
+            localStorage.setItem(healthStorageKey, JSON.stringify(payload.data));
+          } catch {}
+          setSyncStatus("saved");
+          setTimeout(() => setSyncStatus("idle"), 4000);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     const prevent = (e: BeforeUnloadEvent) => {
       if (dirty) e.preventDefault();
@@ -166,6 +185,29 @@ function LoadedTrackingWorkspace() {
       localStorage.setItem(healthStorageKey, JSON.stringify(next));
       setData(next);
       setDirty(false);
+      setSyncStatus("syncing");
+
+      // Background sync to Databricks Delta Lake
+      fetch("/api/user-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: next }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.success || res.destination === "databricks-delta-lake") {
+            setSyncStatus("saved");
+            setTimeout(() => setSyncStatus("idle"), 4000);
+          } else {
+            setSyncStatus("local_only");
+            setTimeout(() => setSyncStatus("idle"), 4000);
+          }
+        })
+        .catch(() => {
+          setSyncStatus("local_only");
+          setTimeout(() => setSyncStatus("idle"), 4000);
+        });
+
       return true;
     } catch {
       return false;
@@ -221,6 +263,68 @@ function LoadedTrackingWorkspace() {
             {sampleLoadedNotice && (
               <span className="badge" role="status">
                 {sampleLoadedNotice}
+              </span>
+            )}
+            {syncStatus === "syncing" && (
+              <span
+                className="badge"
+                role="status"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  background: "rgba(217, 119, 6, 0.1)",
+                  color: "#d97706",
+                  border: "1px solid rgba(217, 119, 6, 0.2)",
+                  fontSize: "0.75rem",
+                }}
+              >
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "#d97706",
+                  }}
+                />
+                Syncing to Databricks…
+              </span>
+            )}
+            {syncStatus === "saved" && (
+              <span
+                className="badge"
+                role="status"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  background: "rgba(34, 197, 94, 0.1)",
+                  color: "#16a34a",
+                  border: "1px solid rgba(34, 197, 94, 0.2)",
+                  fontSize: "0.75rem",
+                }}
+              >
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "#16a34a",
+                  }}
+                />
+                Saved to Databricks Delta Lake
+              </span>
+            )}
+            {syncStatus === "local_only" && (
+              <span
+                className="badge"
+                role="status"
+                style={{
+                  fontSize: "0.75rem",
+                  opacity: 0.8,
+                }}
+              >
+                Saved locally
               </span>
             )}
           </div>
