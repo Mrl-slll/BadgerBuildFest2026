@@ -6,6 +6,7 @@ import { type HealthData } from '../lib/health';
 import { getInitialOrStoredHealthData } from '../lib/health-storage';
 import styles from '../app/ask/ask.module.css';
 import { ScrollReveal, PhysicsInteractive, MagneticButton } from './motion';
+import { SymptomSearch } from './SymptomSearch';
 
 const starterSuggestions = [
   'What symptoms have I logged most frequently?',
@@ -27,6 +28,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   const [question, setQuestion] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -149,13 +151,50 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
                   A Gemini-style conversational space to explore your symptoms, cycles, and doctor-ready questions.
                 </p>
               </div>
-              <div className={styles.statusPill}>
-                <span className={styles.statusDot} aria-hidden="true" />
-                <span>Personalized with your journal</span>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowSearch((prev) => !prev)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 14px',
+                    fontSize: '12.5px',
+                    fontWeight: 600,
+                    borderRadius: '20px',
+                    border: '1px solid var(--line)',
+                    background: showSearch ? 'var(--teal)' : 'var(--surface)',
+                    color: showSearch ? '#ffffff' : 'var(--ink)',
+                    cursor: 'pointer',
+                    transition: 'all 180ms ease',
+                  }}
+                  aria-expanded={showSearch}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                  </svg>
+                  <span>{showSearch ? 'Hide Vector Search' : 'Search Symptoms & Evidence'}</span>
+                </button>
+                <div className={styles.statusPill}>
+                  <span className={styles.statusDot} aria-hidden="true" />
+                  <span>Personalized with your journal</span>
+                </div>
               </div>
             </div>
           </header>
         </ScrollReveal>
+
+        {showSearch && (
+          <ScrollReveal yOffset={10}>
+            <SymptomSearch
+              onSelectSymptom={(sym) => {
+                handleSend(`What clinical insights and clinician questions should I know about ${sym} in PCOS?`);
+              }}
+            />
+          </ScrollReveal>
+        )}
 
         {/* Message History (Scrollable Conversation Area) */}
         <main className={styles.conversation} aria-live="polite" aria-relevant="additions">
