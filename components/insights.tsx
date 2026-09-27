@@ -19,6 +19,8 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
   const [days,setDays]=useState(90);
   const start=addDays(end,1-days);
   const report=summarize(data,start,end);
+  const sleepStart = start > addDays(end, -41) ? start : addDays(end, -41);
+  const sleepReport = summarize(data, sleepStart, end);
   const [excluded,setExcluded]=useState<string[]>([]);
   const questions=[...new Set([...data.questions,'What additional details would be useful to record before our next visit?'])];
   const selectedQuestions=questions.filter(q=>!excluded.includes(q));
@@ -147,13 +149,13 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
 
         <section className="card-surface">
           <h2>Sleep & energy</h2>
-          <p>Weekly averages, with separate scales. Gaps mean no entries.</p>
+          <p>Weekly averages · {pretty(sleepStart)}–{pretty(end)} · up to six weeks. Gaps mean no entries.</p>
           <div className="average-line">
             <span>
-              <strong>{duration(report.sleep.value === null ? null : Math.round(report.sleep.value))}</strong> average sleep · {report.sleep.count} entries
+              <strong>{duration(sleepReport.sleep.value === null ? null : Math.round(sleepReport.sleep.value))}</strong> average sleep · {sleepReport.sleep.count} entries
             </span>
             <span>
-              <strong>{report.energy.value?.toFixed(1) ?? "—"} / 5</strong> average energy · {report.energy.count} entries
+              <strong>{sleepReport.energy.value?.toFixed(1) ?? "—"} / 5</strong> average energy · {sleepReport.energy.count} entries
             </span>
           </div>
           <div className="weekly-chart">
@@ -162,7 +164,7 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
               <span>Sleep · 0–24 h</span>
               <span>Energy · 1–5</span>
             </div>
-            {report.weeks.map((w) => (
+            {sleepReport.weeks.map((w) => (
               <div className="weekly-row" key={w.start}>
                 <span>{pretty(w.start)}</span>
                 {(["sleep", "energy"] as const).map((key) => (
@@ -196,7 +198,7 @@ export default function Insights({ data: propData, end }: {data:HealthData; end:
                   </tr>
                 </thead>
                 <tbody>
-                  {report.weeks.map((w) => (
+                  {sleepReport.weeks.map((w) => (
                     <tr key={w.start}>
                       <th>{pretty(w.start)}</th>
                       <td>
