@@ -1,6 +1,7 @@
 # PHASE — Your Health, In Context
 
-> A calm, intelligent clinical companion and longitudinal tracking platform designed to bridge the gap between patients managing Polycystic Ovary Syndrome (PCOS) and evidence-based clinical care. Built with Next.js, Databricks Mosaic AI, and Clerk.
+> A calm. intelligent clinical companion and longitudinal tracking platform designed to bridge the gap between patients managing Polycystic Ovary Syndrome (PCOS) and 
+evidence-based clinical care. Built with Next.js, Databricks Mosaic AI, and Clerk.
 
 ---
 
