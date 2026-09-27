@@ -40,7 +40,7 @@ function readStorage(): { data: HealthData | null; error: string } {
     return {
       data: null,
       error:
-        "Your saved records could not be loaded. They have not been overwritten. Check that browser storage is available, then reload.",
+        "Your saved records could not be loaded. Please reload and try again.",
     };
   }
 }
@@ -93,10 +93,6 @@ function LoadedTrackingWorkspace() {
             <p className="hero-badge">Your personal health journal</p>
             <h1 id="track-hero-title">Make room for how you feel.</h1>
             <p className="hero-subtitle">A few details today. A clearer record over time.</p>
-            <div className="privacy-pill">
-              <span className="privacy-dot" aria-hidden="true" />
-              <span>Stored in this browser only · Private & local</span>
-            </div>
           </div>
           <div style={{ marginTop: '0.875rem', display: 'flex', gap: '0.625rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
@@ -228,10 +224,6 @@ function LoadedTrackingWorkspace() {
           )}
         </section>
       )}
-      <footer className="track-footer">
-        Your records stay on this device. Clearing browser data removes them.
-        Anyone using this browser profile may be able to view them.
-      </footer>
     </div>
   );
 }

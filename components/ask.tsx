@@ -30,20 +30,64 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
   const [error, setError] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
+  const latestResponseRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const busy = useRef(false);
+  const userJustSubmitted = useRef(false);
+  const agentJustResponded = useRef(false);
 
   const hasMounted = useRef(false);
 
-  // Auto-scroll to latest message only after user starts chatting
+  const scrollToPromptBox = (behavior: ScrollBehavior = 'smooth') => {
+    if (!chatContainerRef.current) return;
+    const containerRect = chatContainerRef.current.getBoundingClientRect();
+    const targetY = containerRect.bottom + window.scrollY - window.innerHeight;
+    const clampedTargetY = Math.max(0, targetY);
+
+    if (Math.abs(window.scrollY - clampedTargetY) > 4) {
+      window.scrollTo({
+        top: clampedTargetY,
+        behavior,
+      });
+    }
+  };
+
+  const scrollToLatestResponse = (behavior: ScrollBehavior = 'smooth') => {
+    if (!latestResponseRef.current) return;
+    const headerHeight = 84;
+    const rect = latestResponseRef.current.getBoundingClientRect();
+    const targetY = window.scrollY + rect.top - headerHeight;
+    window.scrollTo({
+      top: Math.max(0, targetY),
+      behavior,
+    });
+  };
+
+  // Scroll logic:
+  // 1. When agent responds: scroll to the prompt response
+  // 2. When user submits a prompt: scroll to the prompt box
   useEffect(() => {
     if (!hasMounted.current) {
       hasMounted.current = true;
       return;
     }
-    if (messages.length > 0 || pending) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+    if (agentJustResponded.current) {
+      agentJustResponded.current = false;
+      const timer = setTimeout(() => {
+        scrollToLatestResponse('smooth');
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+
+    if (userJustSubmitted.current) {
+      userJustSubmitted.current = false;
+      const animFrame = requestAnimationFrame(() => {
+        scrollToPromptBox('smooth');
+      });
+      return () => cancelAnimationFrame(animFrame);
     }
   }, [messages, pending]);
 
@@ -78,6 +122,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
     setError('');
     busy.current = true;
     setPending(true);
+    userJustSubmitted.current = true;
 
     try {
       const contextLogs = currentRecords.logs.length > 120
@@ -110,6 +155,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
+      agentJustResponded.current = true;
       setMessages((prev) => [...prev, assistantMsg]);
     } catch (cause) {
       setError(
@@ -139,7 +185,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
 
   return (
     <div className={styles.page}>
-      <div className={styles.chatContainer}>
+      <div ref={chatContainerRef} className={styles.chatContainer}>
         {/* Top Header */}
         <ScrollReveal yOffset={20}>
           <header className={styles.header}>
@@ -231,7 +277,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
             </div>
           )}
 
-          {messages.map((message) => {
+          {messages.map((message, idx) => {
             if (message.role === 'user') {
               return (
                 <div key={message.id} className={styles.userRow}>
@@ -250,9 +296,16 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
             const clinicianSection = answerSections.find((s) => s.source === 'Questions for your clinician');
             const researchSection = answerSections.find((s) => s.source === 'Research');
             const tags = interpretationSection?.tags ?? dataSection?.tags ?? [];
+            const isLatestAssistant =
+              message.role === 'assistant' &&
+              idx === messages.map((m) => m.role).lastIndexOf('assistant');
 
             return (
-              <div key={message.id} className={styles.assistantRow}>
+              <div
+                key={message.id}
+                ref={isLatestAssistant ? latestResponseRef : undefined}
+                className={styles.assistantRow}
+              >
                 <div className={styles.assistantAvatar}>
                   <svg viewBox="0 0 24 24" fill="none" className={styles.assistantAvatarIcon}>
                     <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="currentColor" />
@@ -368,11 +421,10 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
             </div>
           )}
 
-          <div ref={messagesEndRef} />
         </main>
 
         {/* Bottom Sticky Prompt Box */}
-        <div className={styles.bottomComposerArea}>
+        <div ref={composerRef} className={styles.bottomComposerArea}>
           <form className={styles.composerForm} onSubmit={onSubmit}>
             <div className={styles.inputWrapper}>
               <textarea

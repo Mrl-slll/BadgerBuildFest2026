@@ -114,7 +114,7 @@ export function DailyLogForm({
           setStatus("Your entry is saved. You can edit it anytime.");
         } else
           setStatus(
-            "Could not save. Your entry is still here. Check browser storage and try again.",
+            "Could not save. Your entry is still here. Please try again.",
           );
       }}
     >
@@ -590,7 +590,7 @@ export function Medications({ data, save, onDirty }: Props) {
               onDirty?.(false);
             } else
               setStatus(
-                "Could not save. Your changes are still here. Check browser storage and try again.",
+                "Could not save. Your changes are still here. Please try again.",
               );
           }}
         >
@@ -770,7 +770,7 @@ export function Labs({ data, save, onDirty }: Props) {
               setStatus("Lab result saved.");
             } else
               setStatus(
-                "Could not save. Your result is still here. Check browser storage and try again.",
+                "Could not save. Your result is still here. Please try again.",
               );
           }}
         >
