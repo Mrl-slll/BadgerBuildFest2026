@@ -2,9 +2,10 @@
 import { useEffect, useState, useMemo, useSyncExternalStore } from "react";
 import { DailyLogForm, Medications, Labs, Cycles } from "./tracking";
 import { dateKey, HealthData, pretty } from "../lib/health";
+import { useUser } from "@clerk/nextjs";
 import {
   getInitialOrStoredHealthData,
-  healthStorageKey,
+  saveHealthDataLocally,
 } from "../lib/health-storage";
 import { sampleHealthData } from "../lib/sample-data";
 import { ScrollReveal, PhysicsInteractive } from "./motion";
@@ -119,22 +120,13 @@ export function TrackingWorkspace() {
     </div>
   );
 }
-function readStorage(): { data: HealthData | null; error: string } {
-  try {
-    const data = getInitialOrStoredHealthData();
-    return { data, error: "" };
-  } catch {
-    return {
-      data: null,
-      error:
-        "Your saved records could not be loaded. Please reload and try again.",
-    };
-  }
-}
+
 function LoadedTrackingWorkspace() {
-  const [initial] = useState(readStorage);
-  const [data, setData] = useState(initial.data);
-  const error = initial.error;
+  const { isLoaded, isSignedIn, user } = useUser();
+  const currentUserId = isSignedIn && user ? user.id : "local-user";
+
+  const [data, setData] = useState<HealthData | null>(null);
+  const [error] = useState("");
   const [sampleLoadedNotice, setSampleLoadedNotice] = useState("");
   const [section, setSection] = useState<Section>("Daily log");
   const [date, setDate] = useState(dateKey());
@@ -145,24 +137,27 @@ function LoadedTrackingWorkspace() {
     section: Section;
     date: string;
   } | null>(null);
-  const [syncStatus, setSyncStatus] = useState<"idle" | "syncing" | "saved" | "local_only">("idle");
 
   useEffect(() => {
-    // Attempt to load latest records from Databricks Lakehouse if logged in
-    fetch("/api/user-data")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((payload) => {
-        if (payload?.data && Array.isArray(payload.data.logs) && payload.data.logs.length > 0) {
-          setData(payload.data);
-          try {
-            localStorage.setItem(healthStorageKey, JSON.stringify(payload.data));
-          } catch {}
-          setSyncStatus("saved");
-          setTimeout(() => setSyncStatus("idle"), 4000);
-        }
-      })
-      .catch(() => {});
-  }, []);
+    if (!isLoaded) return;
+
+    // Load locally saved data for this specific user
+    const local = getInitialOrStoredHealthData(currentUserId);
+    setData(local);
+
+    // If signed in, query Databricks for this user's cloud records
+    if (isSignedIn) {
+      fetch("/api/user-data")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          if (payload?.data && Array.isArray(payload.data.logs)) {
+            setData(payload.data);
+            saveHealthDataLocally(payload.data, currentUserId);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoaded, isSignedIn, currentUserId]);
 
   useEffect(() => {
     const prevent = (e: BeforeUnloadEvent) => {
@@ -182,31 +177,29 @@ function LoadedTrackingWorkspace() {
   }
   function save(next: HealthData) {
     try {
-      localStorage.setItem(healthStorageKey, JSON.stringify(next));
-      setData(next);
-      setDirty(false);
-      setSyncStatus("syncing");
+      const scopedNext: HealthData = {
+        ...next,
+        user: {
+          id: currentUserId,
+          name: user?.fullName || next.user?.name || "User",
+        },
+        logs: (next.logs || []).map((l) => ({ ...l, userId: currentUserId })),
+        medications: (next.medications || []).map((m) => ({ ...m, userId: currentUserId })),
+        labs: (next.labs || []).map((l) => ({ ...l, userId: currentUserId })),
+      };
 
-      // Background sync to Databricks Delta Lake
-      fetch("/api/user-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: next }),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          if (res.success || res.destination === "databricks-delta-lake") {
-            setSyncStatus("saved");
-            setTimeout(() => setSyncStatus("idle"), 4000);
-          } else {
-            setSyncStatus("local_only");
-            setTimeout(() => setSyncStatus("idle"), 4000);
-          }
-        })
-        .catch(() => {
-          setSyncStatus("local_only");
-          setTimeout(() => setSyncStatus("idle"), 4000);
-        });
+      saveHealthDataLocally(scopedNext, currentUserId);
+      setData(scopedNext);
+      setDirty(false);
+
+      // Background sync to Databricks Delta Lake if signed in
+      if (isSignedIn) {
+        fetch("/api/user-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data: scopedNext }),
+        }).catch(() => {});
+      }
 
       return true;
     } catch {
@@ -263,68 +256,6 @@ function LoadedTrackingWorkspace() {
             {sampleLoadedNotice && (
               <span className="badge" role="status">
                 {sampleLoadedNotice}
-              </span>
-            )}
-            {syncStatus === "syncing" && (
-              <span
-                className="badge"
-                role="status"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.375rem",
-                  background: "rgba(217, 119, 6, 0.1)",
-                  color: "#d97706",
-                  border: "1px solid rgba(217, 119, 6, 0.2)",
-                  fontSize: "0.75rem",
-                }}
-              >
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: "#d97706",
-                  }}
-                />
-                Syncing to Databricks…
-              </span>
-            )}
-            {syncStatus === "saved" && (
-              <span
-                className="badge"
-                role="status"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.375rem",
-                  background: "rgba(34, 197, 94, 0.1)",
-                  color: "#16a34a",
-                  border: "1px solid rgba(34, 197, 94, 0.2)",
-                  fontSize: "0.75rem",
-                }}
-              >
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: "#16a34a",
-                  }}
-                />
-                Saved to Databricks Delta Lake
-              </span>
-            )}
-            {syncStatus === "local_only" && (
-              <span
-                className="badge"
-                role="status"
-                style={{
-                  fontSize: "0.75rem",
-                  opacity: 0.8,
-                }}
-              >
-                Saved locally
               </span>
             )}
           </div>

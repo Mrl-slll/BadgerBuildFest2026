@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { CycleWheel } from "./cycle-wheel";
-import { useState, useMemo, useSyncExternalStore } from "react";
+import { useState, useEffect, useMemo, useSyncExternalStore } from "react";
+import { useUser } from "@clerk/nextjs";
 import {
   addDays,
   cycleHistory,
@@ -11,7 +12,7 @@ import {
   type HealthData,
 } from "../lib/health";
 import { EmptyState, Icon, SectionHeading } from "./ui";
-import { getInitialOrStoredHealthData } from "../lib/health-storage";
+import { getInitialOrStoredHealthData, saveHealthDataLocally } from "../lib/health-storage";
 import {
   MagneticButton,
   ScrollReveal,
@@ -41,9 +42,28 @@ export function HomeOverview(props: Props) {
 }
 
 function LoadedHomeOverview(props: Props) {
-  const [personalData] = useState(() => {
-    return getInitialOrStoredHealthData();
-  });
+  const { isLoaded, isSignedIn, user } = useUser();
+  const currentUserId = isSignedIn && user ? user.id : "local-user";
+
+  const [personalData, setPersonalData] = useState<HealthData | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const local = getInitialOrStoredHealthData(currentUserId);
+    setPersonalData(local);
+
+    if (isSignedIn) {
+      fetch("/api/user-data")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          if (payload?.data && Array.isArray(payload.data.logs)) {
+            setPersonalData(payload.data);
+            saveHealthDataLocally(payload.data, currentUserId);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoaded, isSignedIn, currentUserId]);
 
   return <HomeOverviewContent {...props} personalData={personalData} />;
 }
