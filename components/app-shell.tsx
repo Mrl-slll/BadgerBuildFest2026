@@ -238,9 +238,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <p className="footer-tagline">
                 A calm space to understand patterns in your symptoms and cycle over time.
               </p>
-              <div className="footer-privacy-pill">
-                <span>Local browser storage · Stays on your device</span>
-              </div>
             </div>
 
             <div className="footer-nav-col">
