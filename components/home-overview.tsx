@@ -44,6 +44,7 @@ export function HomeOverview(props: Props) {
 function LoadedHomeOverview(props: Props) {
   const { isLoaded, isSignedIn, user } = useUser();
   const currentUserId = isSignedIn && user ? user.id : "local-user";
+  const userName = user?.firstName || null;
 
   const [personalData, setPersonalData] = useState<HealthData | null>(null);
 
@@ -65,14 +66,15 @@ function LoadedHomeOverview(props: Props) {
     }
   }, [isLoaded, isSignedIn, currentUserId]);
 
-  return <HomeOverviewContent {...props} personalData={personalData} />;
+  return <HomeOverviewContent {...props} personalData={personalData} userName={userName} />;
 }
 
 function HomeOverviewContent({
   data: emptyStateData,
   personalData,
   today,
-}: Props & { personalData: HealthData | null }) {
+  userName,
+}: Props & { personalData: HealthData | null; userName?: string | null }) {
   const data = scoped(personalData ?? emptyStateData);
   const logs = [...data.logs]
     .filter((log) => log.date <= today)
@@ -123,8 +125,7 @@ function HomeOverviewContent({
               <StaggerItem>
                 <div className="hero-headline-group">
                   <h1 id="home-hero-title">
-                    A little more context.
-                    <br />A clearer picture of you.
+                    {userName ? `Welcome to PHASE, ${userName}` : "Welcome to PHASE"}
                   </h1>
                   <div className="hero-tablet-emblem" aria-hidden="true">
                     <AnimatedFingerprintCycle size={120} />
@@ -133,7 +134,7 @@ function HomeOverviewContent({
               </StaggerItem>
               <StaggerItem>
                 <p className="hero-subtitle">
-                  Bring the small details together, one day at a time, to understand your patterns and cycles.
+                  Here is your recent health context, cycle patterns, and longitudinal journal.
                 </p>
               </StaggerItem>
               <StaggerItem>

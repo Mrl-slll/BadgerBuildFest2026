@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, Show, UserButton, useUser } from "@clerk/nextjs";
 import { Icon, type IconName } from "./ui";
 import { PageTransition, MagneticButton, GlobalAmbientFlow } from "./motion";
 import "./app-shell.css";
@@ -112,14 +112,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                   }}
                 />
               </div>
-            </Show>
 
-            <MagneticButton magneticStrength={0.25} innerStrength={0.15}>
-              <Link href="/track" className="header-cta-button">
-                <Icon name="track" />
-                <span>Log Today</span>
-              </Link>
-            </MagneticButton>
+              <MagneticButton magneticStrength={0.25} innerStrength={0.15}>
+                <Link href="/track" className="header-cta-button">
+                  <Icon name="track" />
+                  <span>Log Today</span>
+                </Link>
+              </MagneticButton>
+            </Show>
 
             <button
               type="button"
@@ -196,14 +196,16 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Show>
               </div>
 
-              <Link
-                href="/track"
-                className="button button-primary mobile-cta-btn"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Icon name="track" />
-                <span>Log Today</span>
-              </Link>
+              <Show when="signed-in">
+                <Link
+                  href="/track"
+                  className="button button-primary mobile-cta-btn"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon name="track" />
+                  <span>Log Today</span>
+                </Link>
+              </Show>
               <div className="mobile-note">
                 <span className="note-rule" />
                 <p>
@@ -264,24 +266,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                 })}
               </nav>
             </div>
-          </div>
-
-          <div className="footer-bottom">
-            <div className="footer-copy">
-              <span>Your experience is more than a single number.</span>
-              <span>A private journal for reflection, not diagnosis.</span>
-            </div>
-            <MagneticButton magneticStrength={0.25} innerStrength={0.12}>
-              <button
-                type="button"
-                className="footer-back-to-top"
-                onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
-                aria-label="Scroll back to top of page"
-              >
-                <span>Back to top</span>
-                <Icon name="arrow-up" />
-              </button>
-            </MagneticButton>
           </div>
         </div>
       </footer>
