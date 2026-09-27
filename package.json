@@ -12,6 +12,7 @@
     "test:ask": "node --test tests/ask.test.cjs"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.9.7",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",
     "@types/three": "^0.186.0",

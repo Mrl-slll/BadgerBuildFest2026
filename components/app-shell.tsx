@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 import { Icon, type IconName } from "./ui";
 import { PageTransition, MagneticButton, GlobalAmbientFlow } from "./motion";
+import "./app-shell.css";
 
 export const navigation: {
   href: string;
@@ -84,8 +86,37 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          {/* Header Action & Hamburger Button */}
+          {/* Header Action, Auth & Hamburger Button */}
           <div className="header-actions">
+            <div className="desktop-auth-controls">
+              <Show when="signed-out">
+                <SignInButton mode="modal">
+                  <button type="button" className="auth-btn auth-btn-ghost">
+                    Sign In
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button type="button" className="auth-btn auth-btn-subtle">
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </Show>
+            </div>
+            <Show when="signed-in">
+              <div className="user-button-wrapper">
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox: {
+                        width: "32px",
+                        height: "32px",
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </Show>
+
             <MagneticButton magneticStrength={0.25} innerStrength={0.15}>
               <Link href="/track" className="header-cta-button">
                 <Icon name="track" />
@@ -138,6 +169,36 @@ export function AppShell({ children }: { children: ReactNode }) {
               })}
             </nav>
             <div className="mobile-nav-footer">
+              <div className="mobile-auth-wrapper">
+                <Show when="signed-out">
+                  <div className="mobile-auth-buttons">
+                    <SignInButton mode="modal">
+                      <button
+                        type="button"
+                        className="button button-quiet mobile-auth-btn"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Sign In
+                      </button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <button
+                        type="button"
+                        className="button button-primary mobile-auth-btn"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Sign Up
+                      </button>
+                    </SignUpButton>
+                  </div>
+                </Show>
+                <Show when="signed-in">
+                  <div className="mobile-user-card">
+                    <UserButton showName />
+                  </div>
+                </Show>
+              </div>
+
               <Link
                 href="/track"
                 className="button button-primary mobile-cta-btn"

@@ -21,6 +21,7 @@ import {
   AmbientBackground,
   AnimatedFingerprintCycle,
 } from "./motion";
+import "./home-overview.css";
 
 type Props = { data: HealthData; today: string };
 const subscribe = () => () => {};
