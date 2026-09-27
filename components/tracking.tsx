@@ -1,5 +1,4 @@
 "use client";
-import { validateMedication, validateLab } from "../lib/tracking-validation";
 import { useEffect, useState, useMemo } from "react";
 import { validateMedication, validateLab, validateDaily as validateLog } from "../lib/tracking-validation";
 import { SymptomInsights } from "./symptom-insights";
