@@ -69,10 +69,15 @@ function HomeOverviewContent({
                 <p className="hero-badge">Your personal health journal</p>
               </StaggerItem>
               <StaggerItem>
-                <h1 id="home-hero-title">
-                  A little more context.
-                  <br />A clearer picture of you.
-                </h1>
+                <div className="hero-headline-group">
+                  <h1 id="home-hero-title">
+                    A little more context.
+                    <br />A clearer picture of you.
+                  </h1>
+                  <div className="hero-tablet-emblem" aria-hidden="true">
+                    <AnimatedFingerprintCycle size={120} />
+                  </div>
+                </div>
               </StaggerItem>
               <StaggerItem>
                 <p className="hero-subtitle">
