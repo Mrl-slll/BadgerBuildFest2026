@@ -40,6 +40,8 @@ export class DatabricksLakehouseAnalytics {
           },
           body: JSON.stringify({
             warehouse_id: this.warehouseId,
+            wait_timeout: '20s',
+            on_wait_timeout: 'CONTINUE',
             statement: `
               SELECT insight_summary, sample_size, p_value
               FROM health_lakehouse.pcos_cohorts.deidentified_aggregates
@@ -50,10 +52,18 @@ export class DatabricksLakehouseAnalytics {
         });
         if (res.ok) {
           const data = await res.json();
-          const row = data.result?.data_array?.[0];
-          if (row && row[0]) {
-            return `From Databricks Lakehouse cohort analysis (N=${row[1] ?? '2,400'} de-identified records, Delta Table: health_lakehouse.pcos_cohorts): ${row[0]}`;
+          const state = data.status?.state;
+          if (state === 'SUCCEEDED') {
+            const row = data.result?.data_array?.[0];
+            if (row && row[0]) {
+              return `From Databricks Lakehouse cohort analysis (N=${row[1] ?? '2,400'} de-identified records, Delta Table: health_lakehouse.pcos_cohorts): ${row[0]}`;
+            }
+          } else {
+            console.info(`[Databricks Lakehouse] SQL statement status: ${state}. Warehouse may be starting.`);
           }
+        } else {
+          const errorText = await res.text().catch(() => '');
+          console.warn(`[Databricks Lakehouse] SQL API returned HTTP ${res.status}: ${errorText}. Using cohort models.`);
         }
       } catch (err) {
         console.warn('[Databricks Lakehouse] Live SQL warehouse query skipped, using cached aggregate models:', err);

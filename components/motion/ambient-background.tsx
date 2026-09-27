@@ -130,3 +130,82 @@ export function AmbientBackground({
     </div>
   );
 }
+
+/**
+ * GlobalAmbientFlow: Full-viewport, fixed background that gives every page
+ * an organic, tranquil, swimmy aquatic atmosphere while keeping the text
+ * crisp and contrast high.
+ */
+export function GlobalAmbientFlow() {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) return null;
+
+  return (
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden select-none z-[-1]"
+      aria-hidden="true"
+      style={{ zIndex: 0 }}
+    >
+      {/* Upper-right tranquil water swell */}
+      <motion.div
+        className="absolute -top-[15%] right-[-10%] w-[680px] h-[680px] rounded-full filter blur-[120px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(200, 223, 219, 0.45) 0%, rgba(102, 163, 191, 0.22) 50%, transparent 75%)",
+        }}
+        animate={{
+          x: [0, 45, -35, 0],
+          y: [0, -50, 30, 0],
+          scale: [1, 1.14, 0.94, 1],
+          opacity: [0.35, 0.55, 0.4, 0.35],
+        }}
+        transition={{
+          duration: 26,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      {/* Lower-left deep calm ocean current */}
+      <motion.div
+        className="absolute bottom-[-15%] -left-[10%] w-[720px] h-[720px] rounded-full filter blur-[130px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(102, 163, 191, 0.32) 0%, rgba(36, 101, 99, 0.16) 55%, transparent 80%)",
+        }}
+        animate={{
+          x: [0, -40, 35, 0],
+          y: [0, 40, -30, 0],
+          scale: [1, 0.92, 1.12, 1],
+          opacity: [0.3, 0.5, 0.35, 0.3],
+        }}
+        transition={{
+          duration: 32,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      {/* Mid-screen floating luminous tide */}
+      <motion.div
+        className="absolute top-[35%] left-[25%] w-[500px] h-[500px] rounded-full filter blur-[140px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(215, 236, 232, 0.35) 0%, rgba(102, 163, 191, 0.14) 60%, transparent 80%)",
+        }}
+        animate={{
+          x: [0, 60, -40, 0],
+          y: [0, -40, 50, 0],
+          scale: [0.95, 1.15, 0.95],
+          opacity: [0.25, 0.45, 0.25],
+        }}
+        transition={{
+          duration: 28,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </div>
+  );
+}

@@ -95,9 +95,10 @@ ${JSON.stringify(research.sources.map(s => ({ title: s.title, publisher: s.publi
           if (content) {
             let parsed: { interpretation?: string; clinicianQuestions?: string } | null = null;
             try {
-              // Try parsing JSON block
-              const clean = content.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
-              parsed = JSON.parse(clean);
+              // Extract JSON block robustly (handling markdown fences or embedded JSON object)
+              const match = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || content.match(/(\{[\s\S]*\})/);
+              const toParse = match ? match[1] : content.trim();
+              parsed = JSON.parse(toParse);
             } catch {
               parsed = { interpretation: content };
             }
@@ -129,6 +130,9 @@ ${JSON.stringify(research.sources.map(s => ({ title: s.title, publisher: s.publi
               return answer;
             }
           }
+        } else {
+          const errorText = await res.text().catch(() => '');
+          console.warn(`[Databricks Model Serving] API returned HTTP ${res.status}: ${errorText}. Falling back to grounded mock synthesis.`);
         }
       } catch (err) {
         console.warn('[Databricks Model Serving] Live call failed or timed out, synthesizing grounded mock response:', err);

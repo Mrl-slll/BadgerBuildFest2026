@@ -19,8 +19,14 @@ export async function POST(request: Request) {
     return Response.json({ error: 'The question or included records could not be read. Ask without records or check the data and try again.' }, { status: 400, headers });
   }
   try {
-    return Response.json({ answer: await getAIService().answerHealthQuestion(question, data), provider: 'development' }, { headers });
-  } catch {
+    const service = getAIService();
+    const answer = await service.answerHealthQuestion(question, data);
+    return Response.json(
+      { answer, provider: process.env.AI_PROVIDER || 'development' },
+      { headers }
+    );
+  } catch (err) {
+    console.error('[API /api/ask Error]:', err);
     return Response.json({ error: 'The assistant is unavailable. Your question is still here; try again shortly.' }, { status: 503, headers });
   }
 }

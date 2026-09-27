@@ -3,6 +3,8 @@ import { DevelopmentAIService, type Answer, type AIService } from '../ai';
 import type { HealthContext } from '../health-context';
 import type { ResearchResult, ResearchRetriever } from '../research';
 
+import { DatabricksAIService } from './databricks-ai';
+
 /** Server-managed OAuth/workload identity only; never accept credentials from a browser. */
 export interface DatabricksModelServing {
   answer(input: { question: string; context?: HealthContext; research: ResearchResult }, options?: { signal?: AbortSignal }): Promise<Answer>;
@@ -16,8 +18,16 @@ export interface HealthContextRepository {
   getContext(authenticatedUserId: string, range: { start: string; end: string }, options?: { signal?: AbortSignal }): Promise<HealthContext>;
 }
 export function getAIService(): AIService {
-  if (process.env.AI_PROVIDER && process.env.AI_PROVIDER !== 'development') {
-    throw new Error('Provider requires a server-side authenticated integration');
+  const provider = process.env.AI_PROVIDER;
+
+  // Support Databricks (live or mock fallback) and explicit databricks-mock
+  if (provider === 'databricks' || provider === 'databricks-mock') {
+    return new DatabricksAIService();
   }
-  return new DevelopmentAIService();
+
+  if (!provider || provider === 'development') {
+    return new DevelopmentAIService();
+  }
+
+  throw new Error(`Unsupported AI provider: ${provider}`);
 }
