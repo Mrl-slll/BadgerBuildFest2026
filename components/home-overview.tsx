@@ -62,7 +62,6 @@ function HomeOverviewContent({
   );
   const cycleScale = Math.max(45, ...visibleCycleDays);
   const dates = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13));
-  const recent = logs.slice(0, 4);
   return (
     <>
       <section className="page-hero" aria-labelledby="home-hero-title">
@@ -196,13 +195,13 @@ function HomeOverviewContent({
           </section>
 
           <section
-            className="recent-context recent-context-condensed"
+            className="recent-context"
             aria-label="Recent health context"
           >
-            <div>
+            <div className="recent-context-main">
               <span className="context-label">Most recent entry</span>
               <h2>{logs[0] ? pretty(logs[0].date) : "No entries yet"}</h2>
-              <p>
+              <p className="recent-context-symptoms">
                 {logs[0]?.symptoms.length
                   ? logs[0].symptoms.join(", ")
                   : "No symptoms selected in this entry."}
@@ -212,12 +211,16 @@ function HomeOverviewContent({
               </a>
             </div>
             <div className="check-in-note">
-              <Icon name="leaf" />
-              <h3>There’s room for the everyday.</h3>
-              <p>
-                Sleep, symptoms, or simply how you felt. The details you choose
-                to record belong in your story.
-              </p>
+              <span className="check-in-icon">
+                <Icon name="leaf" />
+              </span>
+              <div>
+                <h3>There’s room for the everyday.</h3>
+                <p>
+                  Sleep, symptoms, or simply how you felt. The details you choose
+                  to record belong in your story.
+                </p>
+              </div>
             </div>
           </section>
           <section className="history-surface" aria-labelledby="history-title">
@@ -287,56 +290,6 @@ function HomeOverviewContent({
               selected; it does not confirm the absence of a symptom.
             </p>
           </section>
-          <div className="home-bottom">
-            <section id="recent-entries" className="entries-section">
-              <SectionHeading
-                title="Recent entries"
-                description="The details, in your own time."
-              />
-              <ol className="entry-list">
-                {recent.map((log) => (
-                  <li key={log.id}>
-                    <time dateTime={log.date}>{pretty(log.date)}</time>
-                    <div>
-                      <h3>
-                        {log.symptoms.length
-                          ? log.symptoms.join(", ")
-                          : "Daily check-in"}
-                      </h3>
-                      <p>
-                        {log.sleepMinutes !== undefined
-                          ? `Sleep: ${Math.floor(log.sleepMinutes / 60)}h ${log.sleepMinutes % 60}m`
-                          : "Sleep not recorded"}
-                        {log.energy !== undefined
-                          ? ` · Energy: ${log.energy}/5`
-                          : ""}
-                      </p>
-                      <details>
-                        <summary>Entry details</summary>
-                        <p>{log.notes || "No additional note recorded."}</p>
-                        <p>
-                          Bleeding: {log.bleeding ?? "not recorded"}. Movement:{" "}
-                          {log.movement ?? "not recorded"}.
-                        </p>
-                      </details>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
-            <aside className="care-note">
-              <span className="context-label">A moment to reflect</span>
-              <h2>What would you like to remember?</h2>
-              <p>
-                A change in your routine. A question for your next appointment.
-                Something that felt different.
-              </p>
-              <p>You don’t need to have an explanation to make a note of it.</p>
-              <div className="care-note-footer">
-                Small details can help tell a fuller story.
-              </div>
-            </aside>
-          </div>
         </>
       ) : (
         <section className="history-surface">
