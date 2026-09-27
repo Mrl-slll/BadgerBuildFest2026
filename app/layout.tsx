@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PCOS journal | Your health, in context",
+  title: "PHASE | Your health, in context",
   description:
     "A calm space to explore your health history, one day at a time.",
 };

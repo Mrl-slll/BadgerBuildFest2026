@@ -189,6 +189,9 @@
   margin-bottom: 12px;
   gap: 16px 8px;
 }
+.tracking #cycle-bleeding {
+  scroll-margin-top: 100px;
+}
 .tracking .pain-scale-option {
   width: 88px;
   display: flex;
