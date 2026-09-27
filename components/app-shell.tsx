@@ -160,72 +160,70 @@ export function AppShell({ children }: { children: ReactNode }) {
       </main>
 
       {/* App Footer */}
-      {pathname !== "/" && (
-        <footer className="app-footer">
-          <div className="app-footer-inner">
-            <div className="footer-main">
-              <div className="footer-brand-col">
-                <Link href="/" className="footer-brand" aria-label="PCOS journal home">
-                  <span className="brand-mark">
-                    <Icon name="leaf" />
-                  </span>
-                  <span className="brand-text">
-                    PCOS journal
-                    <small>Your health, in context</small>
-                  </span>
-                </Link>
-                <p className="footer-tagline">
-                  A calm space to understand patterns in your symptoms and cycle over time.
-                </p>
-                <div className="footer-privacy-pill">
-                  <span>Local browser storage · Stays on your device</span>
-                </div>
-              </div>
-
-              <div className="footer-nav-col">
-                <span className="footer-nav-heading">Navigate</span>
-                <nav className="footer-nav-grid" aria-label="Footer navigation">
-                  {navigation.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`footer-nav-card ${isActive ? "is-active" : ""}`}
-                        aria-current={isActive ? "page" : undefined}
-                      >
-                        <span className="footer-nav-icon">
-                          <Icon name={item.icon} />
-                        </span>
-                        <span className="footer-nav-text">
-                          <span className="footer-nav-label">{item.label}</span>
-                          <span className="footer-nav-desc">{item.description}</span>
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </nav>
+      <footer className="app-footer">
+        <div className="app-footer-inner">
+          <div className="footer-main">
+            <div className="footer-brand-col">
+              <Link href="/" className="footer-brand" aria-label="PCOS journal home">
+                <span className="brand-mark">
+                  <Icon name="leaf" />
+                </span>
+                <span className="brand-text">
+                  PCOS journal
+                  <small>Your health, in context</small>
+                </span>
+              </Link>
+              <p className="footer-tagline">
+                A calm space to understand patterns in your symptoms and cycle over time.
+              </p>
+              <div className="footer-privacy-pill">
+                <span>Local browser storage · Stays on your device</span>
               </div>
             </div>
 
-            <div className="footer-bottom">
-              <div className="footer-copy">
-                <span>Your experience is more than a single number.</span>
-                <span>A private journal for reflection, not diagnosis.</span>
-              </div>
-              <button
-                type="button"
-                className="footer-back-to-top"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                aria-label="Scroll back to top of page"
-              >
-                <span>Back to top</span>
-                <Icon name="arrow-up" />
-              </button>
+            <div className="footer-nav-col">
+              <span className="footer-nav-heading">Navigate</span>
+              <nav className="footer-nav-grid" aria-label="Footer navigation">
+                {navigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`footer-nav-card ${isActive ? "is-active" : ""}`}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      <span className="footer-nav-icon">
+                        <Icon name={item.icon} />
+                      </span>
+                      <span className="footer-nav-text">
+                        <span className="footer-nav-label">{item.label}</span>
+                        <span className="footer-nav-desc">{item.description}</span>
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
           </div>
-        </footer>
-      )}
+
+          <div className="footer-bottom">
+            <div className="footer-copy">
+              <span>Your experience is more than a single number.</span>
+              <span>A private journal for reflection, not diagnosis.</span>
+            </div>
+            <button
+              type="button"
+              className="footer-back-to-top"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              aria-label="Scroll back to top of page"
+            >
+              <span>Back to top</span>
+              <Icon name="arrow-up" />
+            </button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
