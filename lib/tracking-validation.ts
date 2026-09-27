@@ -1,5 +1,5 @@
 import type { Lab, Log, Medication } from "./health";
-import { dateKey, symptoms } from "./health";
+import { dateKey, symptoms, symptomGroups } from "./health";
 
 export function validDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -29,6 +29,11 @@ export function validateDaily(log: Log) {
   }
   if (log.symptoms.some((s) => !symptoms.includes(s)))
     return "Choose symptoms from the available options.";
+  const painSymptoms: readonly string[] = symptomGroups.find((group) => group.label === "Pain & body")!.symptoms;
+  if (Object.entries(log.painScores ?? {}).some(([symptom, score]) =>
+    !painSymptoms.includes(symptom) || !log.symptoms.includes(symptom) ||
+    !Number.isInteger(score) || score < 0 || score > 10,
+  )) return "Rate selected pain symptoms using whole numbers from 0 to 10.";
   if (Object.values(log.medicationSymptoms ?? {}).some((values) =>
     !Array.isArray(values) || values.some(
       (symptom) =>

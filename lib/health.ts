@@ -26,7 +26,7 @@ export const symptomGroups = [
 ] as const;
 export const symptoms: string[] = symptomGroups.flatMap((group) => [...group.symptoms]);
 export const quickSymptoms = symptomGroups[0].symptoms;
-export type Log = { id: string; userId: string; date: string; symptoms: string[]; bleeding?: string; periodStart?: boolean; periodEnd?: boolean; pain?: number; painNote?: string; mood?: number; energy?: number; sleepMinutes?: number; sleepQuality?: string; movement?: string; meals?: string; notes?: string; doses: Record<string, string>; sideEffects: Record<string, string>; medicationSymptoms?: Record<string, string[]> };
+export type Log = { id: string; userId: string; date: string; symptoms: string[]; bleeding?: string; periodStart?: boolean; periodEnd?: boolean; pain?: number; painScores?: Record<string, number>; painNote?: string; mood?: number; energy?: number; sleepMinutes?: number; sleepQuality?: string; movement?: string; meals?: string; notes?: string; doses: Record<string, string>; sideEffects: Record<string, string>; medicationSymptoms?: Record<string, string[]> };
 export type Medication = { id: string; userId: string; name: string; dosage: string; unit: string; frequency: string; startedAt: string; endedAt?: string; active: boolean; notes: string };
 export type Lab = { id: string; userId: string; name: string; value: string; unit: string; date: string; low: string; high: string; source: string; notes: string };
 export type HealthData = { version: 1; user: { id: string; name: string }; logs: Log[]; medications: Medication[]; labs: Lab[]; questions: string[]; appointments: { date: string; title: string }[]; personalize: boolean };

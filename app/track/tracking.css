@@ -178,6 +178,41 @@
   max-width: 390px;
   margin-top: 18px;
 }
+.tracking .symptom-categories > div {
+  min-width: 0;
+}
+.tracking .symptom-categories .selected-symptoms button {
+  white-space: normal;
+  text-align: left;
+}
+.tracking .pain-scale {
+  margin-bottom: 12px;
+  gap: 16px 8px;
+}
+.tracking .pain-scale-option {
+  width: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.tracking .pain-scale-caption {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+.tracking .pain-symptom-rating {
+  margin-top: 20px;
+}
+.tracking .pain-symptom-rating h3 {
+  margin-bottom: 10px;
+}
+.tracking .pain-scale button {
+  min-width: 44px;
+  padding-inline: 12px;
+  font-variant-numeric: tabular-nums;
+}
 .tracking .selected-symptoms,
 .tracking .medication-symptom-links {
   display: flex;

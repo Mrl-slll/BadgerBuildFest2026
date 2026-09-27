@@ -7,7 +7,6 @@ import {
   Medication,
   Lab,
   dateKey,
-  quickSymptoms,
   symptomGroups,
   validateLog,
   pretty,
@@ -62,6 +61,9 @@ export function DailyLogForm({
         ? log.symptoms.filter((item) => item !== symptom)
         : [...log.symptoms, symptom],
       medicationSymptoms,
+      painScores: removing
+        ? Object.fromEntries(Object.entries(log.painScores ?? {}).filter(([key]) => key !== symptom))
+        : log.painScores,
     });
     setStatus("");
     onDirty?.(true);
@@ -160,66 +162,105 @@ export function DailyLogForm({
       <fieldset>
         <legend>How are you feeling?</legend>
         <p className="field-hint">Choose any that feel relevant today.</p>
-        <div className="chips">
-          {quickSymptoms.map((s) => (
-            <button
-              type="button"
-              key={s}
-              aria-pressed={log.symptoms.includes(s)}
-              onClick={() => toggleSymptom(s)}
-            >
-              {log.symptoms.includes(s) ? "✓ " : ""}
-              {s}
-            </button>
+        <div className="form-grid symptom-categories">
+          {symptomGroups.filter((group) => group.label !== "Pain & body").map((group) => (
+            <div key={group.label}>
+              <label>
+                {group.label}
+                <select name={group.label} value="" onChange={(e) => { if (e.target.value) toggleSymptom(e.target.value); }}>
+                  <option value="">Choose a symptom…</option>
+                  {group.symptoms.map((symptom) => (
+                    <option key={symptom} value={symptom} disabled={log.symptoms.includes(symptom)}>
+                      {symptom}{log.symptoms.includes(symptom) ? " — selected" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {group.symptoms.some((symptom) => log.symptoms.includes(symptom)) && (
+                <div className="selected-symptoms" aria-label={`Selected ${group.label.toLowerCase()} symptoms`}>
+                  {group.symptoms.filter((symptom) => log.symptoms.includes(symptom)).map((symptom) => (
+                    <button type="button" key={symptom} onClick={() => toggleSymptom(symptom)} aria-label={`Remove ${symptom}`}>
+                      {symptom} <span aria-hidden="true">×</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
-        <label className="symptom-picker">
-          Add another symptom
-          <select
-            name="additionalSymptom"
-            value=""
-            onChange={(event) => {
-              toggleSymptom(event.target.value);
-              event.target.value = "";
-            }}
-          >
-            <option value="">Choose from the full list…</option>
-            {symptomGroups.map((group) => (
-              <optgroup label={group.label} key={group.label}>
-                {group.symptoms.map((symptom) => (
-                  <option
-                    value={symptom}
-                    key={symptom}
-                    disabled={log.symptoms.includes(symptom)}
-                  >
-                    {symptom}
-                    {log.symptoms.includes(symptom) ? " — selected" : ""}
-                  </option>
+      </fieldset>
+      <fieldset>
+        <legend>Pain</legend>
+        <p className="field-hint" id="pain-scale-help">
+          Rate each selected symptom separately, from 0 to 10.
+        </p>
+        <div className="form-grid symptom-categories">
+          {symptomGroups.filter((group) => group.label === "Pain & body").map((group) => (
+            <div key={group.label}>
+              <label>
+                {group.label}
+                <select name={group.label} value="" onChange={(e) => { if (e.target.value) toggleSymptom(e.target.value); }}>
+                  <option value="">Choose a symptom…</option>
+                  {group.symptoms.map((symptom) => (
+                    <option key={symptom} value={symptom} disabled={log.symptoms.includes(symptom)}>
+                      {symptom}{log.symptoms.includes(symptom) ? " — selected" : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {group.symptoms.some((symptom) => log.symptoms.includes(symptom)) && (
+                <div className="selected-symptoms" aria-label={`Selected ${group.label.toLowerCase()} symptoms`}>
+                  {group.symptoms.filter((symptom) => log.symptoms.includes(symptom)).map((symptom) => (
+                    <button type="button" key={symptom} onClick={() => toggleSymptom(symptom)} aria-label={`Remove ${symptom}`}>
+                      {symptom} <span aria-hidden="true">×</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+
+          <label>
+            Pain location or note
+            <input name="painNote" maxLength={2000} value={log.painNote || ""} onChange={(e) => field("painNote", e.target.value)} />
+          </label>
+        </div>
+        {symptomGroups.filter((group) => group.label === "Pain & body").flatMap((group) => group.symptoms)
+          .filter((symptom) => log.symptoms.includes(symptom)).map((symptom) => (
+            <div className="pain-symptom-rating" key={symptom}>
+              <h3>{symptom}</h3>
+              <div className="chips pain-scale" role="group" aria-label={`${symptom} impact, 0 to 10`} aria-describedby="pain-scale-help">
+                {Array.from({ length: 11 }, (_, n) => (
+                  <div className="pain-scale-option" key={n}>
+                  <button type="button"
+                    aria-label={`${symptom}: ${n}${n === 0 ? " — No Impact" : n === 5 ? " — Moderate Impact" : n === 10 ? " — Incapacitating" : ""}`}
+                    aria-pressed={log.painScores?.[symptom] === n}
+                    onClick={() => {
+                      const scores = { ...log.painScores };
+                      if (scores[symptom] === n) delete scores[symptom];
+                      else scores[symptom] = n;
+                      field("painScores", scores);
+                    }}>
+                    {n}
+                  </button>
+                  {(n === 0 || n === 5 || n === 10) && (
+                    <span className="pain-scale-caption" aria-hidden="true">
+                      {n === 0 ? "No Impact" : n === 5 ? "Moderate Impact" : "Incapacitating"}
+                    </span>
+                  )}
+                  </div>
                 ))}
-              </optgroup>
-            ))}
-          </select>
-        </label>
-        {log.symptoms.some(
-          (symptom) => !quickSymptoms.includes(symptom as (typeof quickSymptoms)[number]),
-        ) && (
-          <div className="selected-symptoms" aria-label="Other selected symptoms">
-            {log.symptoms
-              .filter(
-                (symptom) =>
-                  !quickSymptoms.includes(symptom as (typeof quickSymptoms)[number]),
-              )
-              .map((symptom) => (
-                <button
-                  type="button"
-                  key={symptom}
-                  onClick={() => toggleSymptom(symptom)}
-                  aria-label={`Remove ${symptom}`}
-                >
-                  {symptom} <span aria-hidden="true">×</span>
-                </button>
-              ))}
-          </div>
+              </div>
+              <p className="field-hint" role="status">
+                {log.painScores?.[symptom] === undefined ? "Not recorded" : `Selected: ${log.painScores[symptom]}/10. Select again to clear.`}
+              </p>
+            </div>
+          ))}
+        {!symptomGroups.some((group) => group.label === "Pain & body" && group.symptoms.some((symptom) => log.symptoms.includes(symptom))) && (
+          <p className="field-hint">Choose a pain symptom above to record its impact.</p>
+        )}
+        {log.pain !== undefined && (
+          <p className="field-hint">Previously recorded overall pain: {log.pain}/10.</p>
         )}
       </fieldset>
       <fieldset>
@@ -259,12 +300,12 @@ export function DailyLogForm({
       </fieldset>
       <details>
         <summary>
-          More about your day <span>Energy, mood, pain, sleep & movement</span>
+          More about your day <span>Energy, mood & sleep</span>
         </summary>
         <div className="form-grid">
-          {(["energy", "mood", "pain"] as const).map((key) => (
+          {(["energy", "mood"] as const).map((key) => (
             <label key={key}>
-              {key === "energy" ? "Energy" : key === "mood" ? "Mood" : "Pain"}
+              {key === "energy" ? "Energy" : "Mood"}
               <select
                 value={log[key] ?? ""}
                 onChange={(e) =>
@@ -275,35 +316,14 @@ export function DailyLogForm({
                 }
               >
                 <option value="">Not recorded</option>
-                {Array.from({ length: key === "pain" ? 11 : 5 }, (_, i) =>
-                  key === "pain" ? i : i + 1,
-                ).map((n) => (
+                {Array.from({ length: 5 }, (_, i) => i + 1).map((n) => (
                   <option value={n} key={n}>
-                    {n}
-                    {key === "pain"
-                      ? n === 0
-                        ? " — none"
-                        : n === 10
-                          ? " — most severe"
-                          : ""
-                      : n === 1
-                        ? " — very low"
-                        : n === 5
-                          ? " — very high"
-                          : ""}
+                    {n}{n === 1 ? " — very low" : n === 5 ? " — very high" : ""}
                   </option>
                 ))}
               </select>
             </label>
           ))}
-          <label>
-            Pain location or note
-            <input
-              maxLength={2000}
-              value={log.painNote || ""}
-              onChange={(e) => field("painNote", e.target.value)}
-            />
-          </label>
           <label>
             Sleep hours
             <input
@@ -355,18 +375,6 @@ export function DailyLogForm({
             >
               <option value="">Not recorded</option>
               {["Restless", "Okay", "Restful"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Movement
-            <select
-              value={log.movement || ""}
-              onChange={(e) => field("movement", e.target.value)}
-            >
-              <option value="">Not recorded</option>
-              {["None", "Light", "Moderate", "Intense"].map((v) => (
                 <option key={v}>{v}</option>
               ))}
             </select>
