@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { validateMedication, validateLab } from "../lib/tracking-validation";
+import { SymptomInsights } from "./symptom-insights";
 import {
   HealthData,
   Log,
@@ -196,6 +197,7 @@ export function DailyLogForm({
           ))}
         </div>
       </fieldset>
+      {log.symptoms.length > 0 && <SymptomInsights symptoms={log.symptoms} />}
       <fieldset>
         <legend>Pain</legend>
         <p className="field-hint" id="pain-scale-help">
