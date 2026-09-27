@@ -1,8 +1,7 @@
 import { HomeOverview } from "../components/home-overview";
-import { dateKey } from "../lib/health";
-import { sampleHealthData } from "../lib/sample-data";
+import { dateKey, emptyData } from "../lib/health";
 
 export default function Home() {
   const today = dateKey();
-  return <HomeOverview data={sampleHealthData} today={today} />;
+  return <HomeOverview data={emptyData()} today={today} />;
 }

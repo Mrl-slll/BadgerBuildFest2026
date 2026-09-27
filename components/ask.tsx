@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useUser } from '@clerk/nextjs';
 import type { Answer } from '../lib/ai';
 import { type HealthData } from '../lib/health';
 import { getInitialOrStoredHealthData } from '../lib/health-storage';
@@ -24,6 +25,9 @@ type Message = {
 };
 
 export default function Ask({ data: initialPropData }: { data?: HealthData }) {
+  const { isSignedIn, user } = useUser();
+  const currentUserId = isSignedIn && user ? user.id : "local-user";
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState('');
   const [pending, setPending] = useState(false);
@@ -93,7 +97,7 @@ export default function Ask({ data: initialPropData }: { data?: HealthData }) {
 
   function getActiveHealthData(): HealthData {
     if (initialPropData && initialPropData.logs.length > 0) return initialPropData;
-    return getInitialOrStoredHealthData();
+    return getInitialOrStoredHealthData(currentUserId);
   }
 
   async function handleSend(textToSend?: string) {

@@ -1,25 +1,41 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { addDays, duration, pretty } from '../lib/health';
 import type { HealthData } from '../lib/health';
 import { summarize } from '../lib/insights';
-import { getInitialOrStoredHealthData } from '../lib/health-storage';
+import { getInitialOrStoredHealthData, saveHealthDataLocally } from '../lib/health-storage';
 import HealthTimeline from './timeline';
 import './insights.css';
 import { ScrollReveal, MagneticButton, TracingDivider } from './motion';
 
 export default function Insights({ data: propData, end }: {data:HealthData; end:string}) {
+  const { isLoaded, isSignedIn, user } = useUser();
+  const currentUserId = isSignedIn && user ? user.id : "local-user";
+
   const [data, setData] = useState<HealthData>(propData);
 
   useEffect(() => {
-    try {
-      const stored = getInitialOrStoredHealthData();
-      if (stored && stored.logs && stored.logs.length > 0) {
-        setData(stored);
-      }
-    } catch {}
-  }, []);
+    if (!isLoaded) return;
+
+    // Load from this user's isolated storage
+    const stored = getInitialOrStoredHealthData(currentUserId);
+    setData(stored);
+
+    // If signed in, query Databricks for this user's cloud records
+    if (isSignedIn) {
+      fetch('/api/user-data')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          if (payload?.data && Array.isArray(payload.data.logs)) {
+            setData(payload.data);
+            saveHealthDataLocally(payload.data, currentUserId);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isLoaded, isSignedIn, currentUserId]);
   const [days,setDays]=useState(90);
   const start=addDays(end,1-days);
   const report=summarize(data,start,end);
